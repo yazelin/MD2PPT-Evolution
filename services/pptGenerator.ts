@@ -73,7 +73,7 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
     const bgColor = rawBg.replace('#', '');
     const isDark = bgImage ? true : parseInt(bgColor, 16) < 0x888888;
 
-    if (bgImage) {
+    if (bgImage && typeof bgImage === 'string' && (bgImage.startsWith('http') || bgImage.startsWith('data:image'))) {
       slide.background = { data: bgImage };
     } else {
       slide.background = { fill: bgColor };
