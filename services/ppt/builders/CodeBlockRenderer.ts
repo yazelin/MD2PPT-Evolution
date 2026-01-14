@@ -21,8 +21,9 @@ export const codeBlockRenderer: BlockRenderer = {
     });
 
     // Initialize Highlighter
-    await highlighterService.init();
-    const highlighter = highlighterService.getHighlighter();
+    // await highlighterService.init();
+    // const highlighter = highlighterService.getHighlighter();
+    const highlighter = null; // FORCE DISABLE SHIKI FOR DEBUGGING
 
     if (!highlighter) {
         // Fallback
