@@ -44,7 +44,6 @@ const renderBlocksToArea = async (slide: any, blocks: ParsedBlock[], x: number, 
 };
 
 export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {}): Promise<void> => {
-  await rendererRegistry.registerAll();
   // Pre-process images: Convert all URLs to Base64 (including bgImage in metadata)
   const processedBlocks = await Promise.all(blocks.map(async (block) => {
     let updatedBlock = { ...block };

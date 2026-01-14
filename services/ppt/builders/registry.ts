@@ -1,8 +1,13 @@
 import { BlockType } from "../../types";
 import { BlockRenderer } from "./types";
+import * as Renderers from "./index";
 
 export class RendererRegistry {
   private renderers: Map<BlockType, BlockRenderer> = new Map();
+
+  constructor() {
+      this.registerAllManual();
+  }
 
   register(renderer: BlockRenderer): void {
     this.renderers.set(renderer.type, renderer);
@@ -12,16 +17,12 @@ export class RendererRegistry {
     return this.renderers.get(type);
   }
 
-  async registerAll(): Promise<void> {
-    const modules = import.meta.glob('./**/*.ts', { eager: false });
-    for (const path in modules) {
-      if (path.includes('registry.ts') || path.includes('types.ts')) continue;
-      const module: any = await modules[path]();
-      const renderer = module.default || Object.values(module).find((v: any) => v && v.type && typeof v.render === 'function');
-      if (renderer && renderer.type) {
-        this.register(renderer);
-      }
-    }
+  registerAllManual() {
+      Object.values(Renderers).forEach(renderer => {
+          if (renderer && renderer.type && typeof renderer.render === 'function') {
+              this.register(renderer);
+          }
+      });
   }
 }
 

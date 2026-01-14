@@ -61,7 +61,7 @@ export const codeBlockRenderer: BlockRenderer = {
             textObjects.push({
                 text: token.content,
                 options: {
-                    color: token.color ? token.color.replace('#', '') : undefined,
+                    color: (token.color && token.color.length > 1) ? token.color.replace('#', '').substring(0, 6) : (isDark ? "E0E0E0" : "333333"),
                     fontFace: PPT_THEME.FONTS.CODE,
                     fontSize: PPT_THEME.FONT_SIZES.CODE
                 }
