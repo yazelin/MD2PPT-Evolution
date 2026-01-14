@@ -1,6 +1,6 @@
 /**
- * BookPublisher MD2Docx
- * Copyright (c) 2025 EricHuang
+ * MD2PPT-Evolution
+ * Copyright (c) 2026 EricHuang
  * Licensed under the MIT License.
  */
 
@@ -28,36 +28,28 @@ export const EditorPane: React.FC<EditorPaneProps> = ({
       const target = e.target as HTMLTextAreaElement;
       const start = target.selectionStart;
       const end = target.selectionEnd;
-
-      // 在當前位置插入兩個空格
       const newContent = content.substring(0, start) + "  " + content.substring(end);
       setContent(newContent);
-
-      // 重新設定光標位置
-      setTimeout(() => {
-        target.selectionStart = target.selectionEnd = start + 2;
-      }, 0);
+      setTimeout(() => { target.selectionStart = target.selectionEnd = start + 2; }, 0);
     }
   };
 
   return (
-    <div className="w-1/2 flex flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">
-      <div className="bg-slate-50 dark:bg-slate-800/50 px-6 py-2 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-        <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Manuscript Editor (Draft)</span>
-        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-           {wordCount} Words
-        </span>
+    <div className="w-1/2 flex flex-col border-r border-[#E7E5E4] dark:border-[#44403C] bg-[#FDFCFB] dark:bg-[#1C1917] transition-colors duration-500">
+      <div className="bg-white dark:bg-[#292524] px-6 py-2.5 border-b border-[#E7E5E4] dark:border-[#44403C] flex justify-between items-center">
+        <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Editor</span>
+        <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">{wordCount} Words</span>
       </div>
       <textarea
         ref={textareaRef}
         onScroll={onScroll}
-        className="flex-1 w-full p-10 resize-none focus:outline-none text-base leading-[1.8] text-slate-700 dark:text-slate-300 bg-transparent selection:bg-orange-100 dark:selection:bg-orange-900/30"
+        className="flex-1 w-full p-12 resize-none focus:outline-none text-lg leading-relaxed text-stone-800 dark:text-stone-200 bg-transparent selection:bg-[#FED7AA] dark:selection:bg-[#7C2D12]/50"
         style={{ fontFamily: UI_THEME.FONTS.PREVIEW }}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
         spellCheck={false}
-        placeholder="在此輸入您的 Markdown 稿件..."
+        placeholder="在此輸入您的 Markdown..."
       />
     </div>
   );

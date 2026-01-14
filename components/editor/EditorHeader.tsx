@@ -31,60 +31,56 @@ export const EditorHeader: React.FC = () => {
   const logoPath = `${import.meta.env.BASE_URL}logo.svg`;
   const hasContent = parsedBlocks.length > 0;
 
+  const headerBg = isDark ? 'bg-[#141414]' : 'bg-[#1C1917]';
+
   return (
-    <header className="bg-[#D24726] px-8 py-3.5 flex justify-between items-center z-20 shadow-[0_4px_20px_rgba(0,0,0,0.15)] relative">
-      {/* Left: Brand & Title */}
+    <header className={`${headerBg} px-8 py-3 flex justify-between items-center z-20 shadow-2xl relative transition-all duration-500 border-b border-white/5`}>
+      {/* Left: Brand */}
       <div className="flex items-center gap-5">
-        <div className="bg-white p-1.5 rounded-lg shadow-inner ring-1 ring-black/5">
-          <img src={logoPath} alt="Logo" className="w-7 h-7" style={{ filter: 'invert(31%) sepia(84%) saturate(1415%) hue-rotate(345deg) brightness(88%) contrast(93%)' }} />
+        {/* Logo Container: Using a subtle dark background to make the orange/white logo pop */}
+        <div className="bg-stone-900 p-1.5 rounded-lg shadow-inner ring-1 ring-white/10">
+          <img 
+            src={logoPath} 
+            alt="Logo" 
+            className="w-7 h-7" 
+            style={{ 
+              filter: 'invert(48%) sepia(91%) saturate(1841%) hue-rotate(345deg) brightness(95%) contrast(92%)' // Target #EA580C
+            }} 
+          />
         </div>
         <div className="flex flex-col">
-          <h1 className="text-lg font-black text-white leading-none tracking-tight">
-            {t('title')} <span className="text-orange-200/80 font-bold ml-1">Evolution</span>
+          <h1 className="text-xl font-black text-white leading-none tracking-tight">
+            MD2PPT <span className="text-[#FB923C] font-light ml-1">EVO</span>
           </h1>
-          <p className="text-[9px] text-white/60 font-black uppercase tracking-[0.25em] mt-1.5">
-            {t('subtitle')}
+          <p className="text-[9px] text-white/40 font-bold uppercase tracking-[0.3em] mt-1.5">
+            Warm Business Pro
           </p>
         </div>
       </div>
       
       {/* Right: Actions */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center bg-black/10 p-1 rounded-xl mr-2">
-          <IconButton
-            onClick={resetToDefault}
-            title={t('reset')}
-            onBrand
-          >
+      <div className="flex items-center gap-4">
+        {/* Controls Group */}
+        <div className="flex items-center bg-white/5 p-1 rounded-xl border border-white/10 backdrop-blur-md">
+          <IconButton onClick={resetToDefault} title={t('reset')} onBrand>
             <RotateCcw className="w-4 h-4" />
           </IconButton>
-
           <div className="w-[1px] h-4 bg-white/10 mx-1" />
-
-          <IconButton
-            onClick={toggleLanguage}
-            className="gap-2 px-3 w-auto"
-            title="Switch Language"
-            onBrand
-          >
+          <IconButton onClick={toggleLanguage} className="gap-2 px-3 w-auto" onBrand>
             <Languages className="w-4 h-4" />
-            <span className="text-[10px] font-black">{language === 'zh' ? 'EN' : 'ZH'}</span>
+            <span className="text-[10px] font-black uppercase">{language === 'zh' ? 'EN' : 'ZH'}</span>
           </IconButton>
-
-          <IconButton
-            onClick={toggleDarkMode}
-            title={isDark ? t('theme.light') : t('theme.dark')}
-            onBrand
-          >
+          <IconButton onClick={toggleDarkMode} title={isDark ? t('theme.light') : t('theme.dark')} onBrand>
             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </IconButton>
         </div>
 
         <Select 
-          icon={<Settings2 className="w-4 h-4" />}
+          icon={<Settings2 className="w-4 h-4 text-[#FB923C]" />}
           value={selectedSizeIndex}
           onChange={(e) => setSelectedSizeIndex(Number(e.target.value))}
-          className="bg-white/10 text-white border-white/20 text-xs font-bold"
+          containerClassName="bg-white/5 border-white/10 hover:border-[#EA580C]/50"
+          className="text-white text-xs font-bold"
         >
             {pageSizes.map((size, index) => (
               <option key={index} value={index} className="text-slate-900 bg-white">
@@ -97,20 +93,24 @@ export const EditorHeader: React.FC = () => {
           onClick={handleExportMarkdown}
           disabled={!hasContent}
           variant="outline-white"
-          className="h-9 px-4"
+          className="h-10 px-4 font-bold border-white/10"
         >
           <FileText className="w-4 h-4" />
-          <span>{t('exportMD')}</span>
+          <span>MD</span>
         </Button>
 
+        {/* Primary Action: Warm Orange */}
         <Button
           onClick={handleDownload}
           disabled={!hasContent}
           isLoading={isGenerating}
-          className="bg-white text-[#D24726] hover:bg-orange-50 border-none shadow-xl h-9 px-6 ring-1 ring-black/5"
+          variant="brand"
+          className="h-10 px-8 shadow-[0_10px_30px_rgba(234,88,12,0.3)] border-none ring-1 ring-white/10 active:translate-y-0.5 transition-all"
         >
-          <Download className="w-4 h-4" />
-          <span className="font-black uppercase tracking-wider">{isGenerating ? t('exporting') : t('export')}</span>
+          <Download className="w-5 h-5 stroke-[2.5px]" />
+          <span className="font-black text-sm uppercase tracking-widest">
+            {isGenerating ? t('exporting') : '匯出 PPT'}
+          </span>
         </Button>
       </div>
     </header>
