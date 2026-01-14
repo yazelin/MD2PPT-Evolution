@@ -14,10 +14,10 @@ export const PPT_THEME = {
   },
   
   COLORS: {
-    // Brand Colors (Neon/Dark Theme)
-    PRIMARY: "00A3FF",    // Neon Blue
-    SECONDARY: "FF0099",  // Neon Pink
-    ACCENT: "00FF99",     // Neon Green
+    // Brand Colors (Evolution Theme)
+    PRIMARY: "D24726",    // PowerPoint Orange-Red
+    SECONDARY: "FF8C00",  // Dark Orange
+    ACCENT: "00FF99",     // Neon Green (Keep for some contrast)
     
     // Backgrounds
     BG_SLIDE: "1A1A1A",   // Dark Gray
@@ -32,11 +32,9 @@ export const PPT_THEME = {
   },
 
   LAYOUT: {
-    // 16:9 Aspect Ratio (in inches by default for pptxgenjs, but we can define standard sizes)
     WIDTH: 10,
     HEIGHT: 5.625,
-    
-    MARGIN: 0.5, // 0.5 inch margin
+    MARGIN: 0.5,
   },
   
   FONT_SIZES: {

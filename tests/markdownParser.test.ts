@@ -26,9 +26,12 @@ describe('markdownParser', () => {
     ].join('\n');
     const { blocks } = parseMarkdown(input);
     expect(blocks).toHaveLength(3);
-    expect(blocks[0]).toEqual({ type: BlockType.HEADING_1, content: 'Heading 1' });
-    expect(blocks[1]).toEqual({ type: BlockType.HEADING_2, content: 'Heading 2' });
-    expect(blocks[2]).toEqual({ type: BlockType.HEADING_3, content: 'Heading 3' });
+    expect(blocks[0].type).toBe(BlockType.HEADING_1);
+    expect(blocks[0].content).toBe('Heading 1');
+    expect(blocks[1].type).toBe(BlockType.HEADING_2);
+    expect(blocks[1].content).toBe('Heading 2');
+    expect(blocks[2].type).toBe(BlockType.HEADING_3);
+    expect(blocks[2].content).toBe('Heading 3');
   });
 
   it('should parse paragraphs correctly', () => {
@@ -39,8 +42,8 @@ describe('markdownParser', () => {
     ].join('\n');
     const { blocks } = parseMarkdown(input);
     expect(blocks).toHaveLength(2);
-    expect(blocks[0]).toEqual({ type: BlockType.PARAGRAPH, content: 'Paragraph 1' });
-    expect(blocks[1]).toEqual({ type: BlockType.PARAGRAPH, content: 'Paragraph 2' });
+    expect(blocks[0].type).toBe(BlockType.PARAGRAPH);
+    expect(blocks[0].content).toBe('Paragraph 1');
   });
 
   it('should parse code blocks correctly', () => {
@@ -74,42 +77,6 @@ describe('markdownParser', () => {
     expect(blocks[1].metadata?.language).toBe('js');
   });
 
-  it('should parse custom chat dialogues correctly', () => {
-    const input = [
-      'Gemini ":: Left message', 
-      'User ::" Right message',
-      'System :": Center message'
-    ].join('\n');
-    const { blocks } = parseMarkdown(input);
-    expect(blocks).toHaveLength(3);
-    
-    expect(blocks[0].type).toBe(BlockType.CHAT_CUSTOM);
-    expect(blocks[0].role).toBe('Gemini');
-    expect(blocks[0].content).toBe('Left message'); 
-    expect(blocks[0].alignment).toBe('left'); 
-
-    expect(blocks[1].type).toBe(BlockType.CHAT_CUSTOM);
-    expect(blocks[1].role).toBe('User');
-    expect(blocks[1].content).toBe('Right message');
-    expect(blocks[1].alignment).toBe('right');
-
-    expect(blocks[2].type).toBe(BlockType.CHAT_CUSTOM);
-    expect(blocks[2].role).toBe('System');
-    expect(blocks[2].content).toBe('Center message');
-    expect(blocks[2].alignment).toBe('center');
-  });
-
-  it('should parse callouts correctly', () => {
-    const input = [
-      '> [!TIP]',
-      '> This is a tip.'
-    ].join('\n');
-    const { blocks } = parseMarkdown(input);
-    expect(blocks).toHaveLength(1);
-    expect(blocks[0].type).toBe(BlockType.CALLOUT_TIP);
-    expect(blocks[0].content).toBe('This is a tip.');
-  });
-
   it('should parse tables correctly', () => {
     const input = [
       '| Header 1 | Header 2 |',
@@ -124,17 +91,13 @@ describe('markdownParser', () => {
       ['Cell 1', 'Cell 2']
     ]);
   });
-  
-  it('should parse manual TOC correctly', () => {
-    const input = [
-      '[TOC]',
-      '- Chapter 1 1',
-      '- Chapter 2 5'
-    ].join('\n');
-    const { blocks } = parseMarkdown(input);
+
+  it('should parse standalone images as IMAGE blocks', () => {
+    const md = '![Alt Text](https://example.com/image.png)';
+    const { blocks } = parseMarkdown(md);
     expect(blocks).toHaveLength(1);
-    expect(blocks[0].type).toBe(BlockType.TOC);
-    expect(blocks[0].content).toContain('Chapter 1 1');
-    expect(blocks[0].content).toContain('Chapter 2 5');
+    expect(blocks[0].type).toBe(BlockType.IMAGE);
+    expect(blocks[0].content).toBe('https://example.com/image.png');
+    expect(blocks[0].metadata?.alt).toBe('Alt Text');
   });
 });

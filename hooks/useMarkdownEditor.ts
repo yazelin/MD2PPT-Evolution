@@ -43,11 +43,12 @@ export const useMarkdownEditor = () => {
 
   // Actions
   const handleDownload = () => {
-    // Pass selected layout/size to export logic if needed
-    // Currently usePptExport might use default, but we can enhance it later to accept layout
     const layout = SLIDE_LAYOUTS[selectedSizeIndex];
-    // TODO: Pass layout to exportToPpt once supported
-    exportToPpt(parsedBlocks);
+    exportToPpt(parsedBlocks, {
+      layoutName: layout.name,
+      title: documentMeta.title,
+      author: documentMeta.author
+    });
   };
 
   const handleExportMarkdown = () => {

@@ -53,19 +53,33 @@ export const parseMarkdownWithAST = (markdown: string, lineOffset: number = 0, c
         }
 
         // 2. Chat Dialogues
+        // Center: Role :": Content
         const centerMatch = text.match(/^(.+?)\s*:\":\s*(.*)$/);
         if (centerMatch) {
             addBlock({ type: BlockType.CHAT_CUSTOM, role: centerMatch[1].trim(), content: centerMatch[2].trim(), alignment: 'center' });
             break;
         }
+        // Right: Role ::" Content
         const rightMatch = text.match(/^(.+?)\s*::\"\s*(.*)$/);
         if (rightMatch) {
             addBlock({ type: BlockType.CHAT_CUSTOM, role: rightMatch[1].trim(), content: rightMatch[2].trim(), alignment: 'right' });
             break;
         }
-        const leftMatch = text.match(/^(.+?)\s*\"(?:::)\s*(.*)$/);
+        // Left: Role ":: Content
+        const leftMatch = text.match(/^(.+?)\s*\"(?:::|::)\s*(.*)$/);
         if (leftMatch) {
             addBlock({ type: BlockType.CHAT_CUSTOM, role: leftMatch[1].trim(), content: leftMatch[2].trim(), alignment: 'left' });
+            break;
+        }
+
+        // 3. Simple Image Detection (Standalone Image in Paragraph)
+        const imageMatch = text.match(/^!\[(.*?)\]\((.*?)\)$/);
+        if (imageMatch) {
+            addBlock({ 
+                type: BlockType.IMAGE, 
+                content: imageMatch[2], // URL or Base64
+                metadata: { alt: imageMatch[1] } 
+            });
             break;
         }
 
