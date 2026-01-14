@@ -21,9 +21,14 @@ export const codeBlockRenderer: BlockRenderer = {
     });
 
     // Initialize Highlighter
-    // await highlighterService.init();
-    // const highlighter = highlighterService.getHighlighter();
-    const highlighter = null; // FORCE DISABLE SHIKI FOR DEBUGGING
+    let highlighter = null;
+    try {
+        await highlighterService.init();
+        highlighter = highlighterService.getHighlighter();
+    } catch (e) {
+        console.warn("Shiki highlighting failed, falling back to plain text.", e);
+        highlighter = null;
+    }
 
     if (!highlighter) {
         // Fallback
