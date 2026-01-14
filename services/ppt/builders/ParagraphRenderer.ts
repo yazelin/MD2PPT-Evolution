@@ -1,10 +1,10 @@
 import { BlockType } from "../../types";
-import { PPT_THEME } from "../../constants/theme";
+import { PPT_THEME } from "../../../constants/theme";
 import { BlockRenderer, RenderContext } from "./types";
 
 export const paragraphRenderer: BlockRenderer = {
   type: BlockType.PARAGRAPH,
-  render: (block, ctx) => {
+  render: async (block, ctx) => {
     const { slide, x, y, w, options } = ctx;
     const { big, align, isDark, color } = options;
     const textColor = isDark ? "FFFFFF" : (color || PPT_THEME.COLORS.TEXT_MAIN);

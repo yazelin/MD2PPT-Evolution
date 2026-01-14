@@ -1,5 +1,5 @@
 import { BlockType } from "../../types";
-import { PPT_THEME } from "../../constants/theme";
+import { PPT_THEME } from "../../../constants/theme";
 import { BlockRenderer, RenderContext } from "./types";
 
 function renderList(block: any, ctx: RenderContext, isBullet: boolean): number {
@@ -31,10 +31,10 @@ function renderList(block: any, ctx: RenderContext, isBullet: boolean): number {
 
 export const bulletListRenderer: BlockRenderer = {
   type: BlockType.BULLET_LIST,
-  render: (block, ctx) => renderList(block, ctx, true)
+  render: async (block, ctx) => renderList(block, ctx, true)
 };
 
 export const numberedListRenderer: BlockRenderer = {
   type: BlockType.NUMBERED_LIST,
-  render: (block, ctx) => renderList(block, ctx, false)
+  render: async (block, ctx) => renderList(block, ctx, false)
 };

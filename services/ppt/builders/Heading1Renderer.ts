@@ -1,10 +1,10 @@
 import { BlockType } from "../../types";
-import { PPT_THEME } from "../../constants/theme";
+import { PPT_THEME } from "../../../constants/theme";
 import { BlockRenderer, RenderContext } from "./types";
 
 export const heading1Renderer: BlockRenderer = {
   type: BlockType.HEADING_1,
-  render: (block, ctx) => {
+  render: async (block, ctx) => {
     const { slide, x, y, w, options } = ctx;
     const { big, align } = options;
     

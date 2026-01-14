@@ -17,7 +17,7 @@ export interface PptConfig {
   layoutName?: string; title?: string; author?: string; bg?: string;
 }
 
-const renderBlocksToArea = (slide: any, blocks: ParsedBlock[], x: number, y: number, w: number, pptx: PptxGenJS, globalOptions: any = {}) => {
+const renderBlocksToArea = async (slide: any, blocks: ParsedBlock[], x: number, y: number, w: number, pptx: PptxGenJS, globalOptions: any = {}) => {
   let currentY = y;
   const isDark = globalOptions.isDark || false;
   const textColor = isDark ? "FFFFFF" : (globalOptions.color || PPT_THEME.COLORS.TEXT_MAIN);
@@ -36,12 +36,11 @@ const renderBlocksToArea = (slide: any, blocks: ParsedBlock[], x: number, y: num
             w,
             options: { ...globalOptions, align }
           };
-          currentY = renderer.render(block, context);
+          currentY = await renderer.render(block, context);
         } else {
           console.warn(`No renderer found for block type: ${block.type}`);
         }
-      }
-    };  }
+    }
 };
 
 export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {}): Promise<void> => {
@@ -81,20 +80,24 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
       slide.background = { fill: bgColor };
     }
 
+    if (slideData.metadata?.note) {
+        slide.addNotes(slideData.metadata.note);
+    }
+
     const margin = 0.6; const contentWidth = 10 - (margin * 2);
     const titleBlocks = slideData.blocks.filter(b => b.type === BlockType.HEADING_1 || b.type === BlockType.HEADING_2);
     const otherBlocks = slideData.blocks.filter(b => b.type !== BlockType.HEADING_1 && b.type !== BlockType.HEADING_2);
 
     if (layout === 'impact' || layout === 'full-bg') {
-      renderBlocksToArea(slide, slideData.blocks, margin, 1.8, contentWidth, pptx, { align: 'center', big: true, isDark, color: bgImage ? "FFFFFF" : undefined });
+      await renderBlocksToArea(slide, slideData.blocks, margin, 1.8, contentWidth, pptx, { align: 'center', big: true, isDark, color: bgImage ? "FFFFFF" : undefined });
     } else if (layout === 'two-column') {
-      if (titleBlocks.length > 0) renderBlocksToArea(slide, titleBlocks, margin, 0.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
+      if (titleBlocks.length > 0) await renderBlocksToArea(slide, titleBlocks, margin, 0.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
       const mid = Math.ceil(otherBlocks.length / 2); const colWidth = (contentWidth - 0.5) / 2;
-      renderBlocksToArea(slide, otherBlocks.slice(0, mid), margin, 1.6, colWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
-      renderBlocksToArea(slide, otherBlocks.slice(mid), margin + colWidth + 0.5, 1.6, colWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
+      await renderBlocksToArea(slide, otherBlocks.slice(0, mid), margin, 1.6, colWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
+      await renderBlocksToArea(slide, otherBlocks.slice(mid), margin + colWidth + 0.5, 1.6, colWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
     } else {
-      if (titleBlocks.length > 0) renderBlocksToArea(slide, titleBlocks, margin, 0.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
-      renderBlocksToArea(slide, otherBlocks, margin, 1.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
+      if (titleBlocks.length > 0) await renderBlocksToArea(slide, titleBlocks, margin, 0.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
+      await renderBlocksToArea(slide, otherBlocks, margin, 1.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
     }
   }
   await pptx.writeFile({ fileName: config.title ? `${config.title}.pptx` : "Presentation.pptx" });

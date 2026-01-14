@@ -1,10 +1,10 @@
 import { BlockType } from "../../types";
-import { PPT_THEME } from "../../constants/theme";
+import { PPT_THEME } from "../../../constants/theme";
 import { BlockRenderer, RenderContext } from "./types";
 
 export const chatCustomRenderer: BlockRenderer = {
   type: BlockType.CHAT_CUSTOM,
-  render: (block, ctx) => {
+  render: async (block, ctx) => {
     const { slide, pptx, x, y, w } = ctx;
     
     const chatAlign = block.alignment || 'left';
