@@ -51,7 +51,7 @@ export const EditorPane: React.FC<EditorPaneProps> = ({
       <textarea
         ref={textareaRef}
         onScroll={onScroll}
-        className="flex-1 w-full p-10 resize-none focus:outline-none text-base leading-[1.8] text-slate-700 dark:text-slate-300 bg-transparent selection:bg-indigo-100 dark:selection:bg-indigo-900"
+        className="flex-1 w-full p-10 resize-none focus:outline-none text-base leading-[1.8] text-slate-700 dark:text-slate-300 bg-transparent selection:bg-orange-100 dark:selection:bg-orange-900/30"
         style={{ fontFamily: UI_THEME.FONTS.PREVIEW }}
         value={content}
         onChange={(e) => setContent(e.target.value)}

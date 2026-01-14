@@ -12,11 +12,15 @@ export const Select: React.FC<SelectProps> = ({
   containerClassName = '',
   ...props 
 }) => {
+  // 將背景與邊框樣式移至 container，並允許外層覆蓋
+  const isCustomContainer = containerClassName.includes('bg-') || containerClassName.includes('border-');
+  const defaultContainer = "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700";
+
   return (
-    <div className={`flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 ${containerClassName}`}>
-      {icon && <span className="text-slate-500 dark:text-slate-400 flex items-center justify-center">{icon}</span>}
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${isCustomContainer ? containerClassName : `${defaultContainer} ${containerClassName}`}`}>
+      {icon && <span className="flex items-center justify-center opacity-70 shrink-0">{icon}</span>}
       <select 
-        className={`bg-transparent text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer w-full ${className}`}
+        className={`bg-transparent text-sm font-bold focus:outline-none cursor-pointer w-full ${className}`}
         {...props}
       >
         {children}

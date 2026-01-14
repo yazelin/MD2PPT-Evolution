@@ -6,25 +6,19 @@
 
 export const PPT_THEME = {
   FONTS: {
-    MAIN: "Microsoft JhengHei", // 預設正黑體
+    MAIN: "Microsoft JhengHei",
     CODE: "Consolas",
     HEADING: "Microsoft JhengHei",
   },
   
   COLORS: {
-    // 品牌色：PowerPoint 橘紅
     PRIMARY: "D24726", 
-    SECONDARY: "444444", 
-    ACCENT: "D24726",
-    
-    // 背景預設改為白色
+    SECONDARY: "B7472A", 
+    ACCENT: "FF8C00",
     BG_SLIDE: "FFFFFF",   
     BG_CODE: "F8F8F8",
-    
-    // 文字預設深色
     TEXT_MAIN: "333333",
     TEXT_MUTED: "666666",
-    
     BORDER_CODE: "E0E0E0",
   },
 
@@ -46,5 +40,13 @@ export const PPT_THEME = {
 export const UI_THEME = {
   FONTS: {
     PREVIEW: `"Microsoft JhengHei", "Segoe UI", sans-serif`
+  },
+  COLORS: {
+    BRAND: "#D24726",
+    BRAND_DARK: "#B7472A",
+    BRAND_LIGHT: "#EA5432",
+    BRAND_GHOST: "rgba(255, 255, 255, 0.15)",
+    HEADER_TEXT: "#FFFFFF",
+    SIDEBAR_BG: "#F1F5F9"
   }
 };

@@ -1,6 +1,6 @@
 /**
- * BookPublisher MD2Docx
- * Copyright (c) 2025 EricHuang
+ * MD2PPT-Evolution
+ * Copyright (c) 2026 EricHuang
  * Licensed under the MIT License.
  */
 
@@ -32,54 +32,62 @@ export const EditorHeader: React.FC = () => {
   const hasContent = parsedBlocks.length > 0;
 
   return (
-    <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex justify-between items-center z-20 shadow-sm transition-colors">
-      <div className="flex items-center gap-4">
-        <div className="bg-slate-900 dark:bg-indigo-600 p-1 rounded-xl">
-          <img src={logoPath} alt="Logo" className="w-9 h-9" />
+    <header className="bg-[#D24726] px-8 py-3.5 flex justify-between items-center z-20 shadow-[0_4px_20px_rgba(0,0,0,0.15)] relative">
+      {/* Left: Brand & Title */}
+      <div className="flex items-center gap-5">
+        <div className="bg-white p-1.5 rounded-lg shadow-inner ring-1 ring-black/5">
+          <img src={logoPath} alt="Logo" className="w-7 h-7" style={{ filter: 'invert(31%) sepia(84%) saturate(1415%) hue-rotate(345deg) brightness(88%) contrast(93%)' }} />
         </div>
-        <div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-600">
-            {t('title')} <span className="text-slate-400 font-normal">MD2PPT-EVOLUTION</span>
-          </span>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest">{t('subtitle')}</p>
+        <div className="flex flex-col">
+          <h1 className="text-lg font-black text-white leading-none tracking-tight">
+            {t('title')} <span className="text-orange-200/80 font-bold ml-1">Evolution</span>
+          </h1>
+          <p className="text-[9px] text-white/60 font-black uppercase tracking-[0.25em] mt-1.5">
+            {t('subtitle')}
+          </p>
         </div>
       </div>
       
-      <div className="flex items-center gap-4">
-        {/* Reset Button */}
-        <IconButton
-          onClick={resetToDefault}
-          title={t('reset')}
-        >
-          <RotateCcw className="w-4 h-4" />
-        </IconButton>
+      {/* Right: Actions */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center bg-black/10 p-1 rounded-xl mr-2">
+          <IconButton
+            onClick={resetToDefault}
+            title={t('reset')}
+            onBrand
+          >
+            <RotateCcw className="w-4 h-4" />
+          </IconButton>
 
-        {/* Language Toggle */}
-        <IconButton
-          onClick={toggleLanguage}
-          className="gap-2 px-3 w-auto"
-          title="Switch Language / 切換語言"
-        >
-          <Languages className="w-4 h-4" />
-          <span className="text-xs font-medium">{language === 'zh' ? 'EN' : '中'}</span>
-        </IconButton>
+          <div className="w-[1px] h-4 bg-white/10 mx-1" />
 
-        {/* Theme Toggle */}
-        <IconButton
-          onClick={toggleDarkMode}
-          title={isDark ? t('theme.light') : t('theme.dark')}
-        >
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </IconButton>
+          <IconButton
+            onClick={toggleLanguage}
+            className="gap-2 px-3 w-auto"
+            title="Switch Language"
+            onBrand
+          >
+            <Languages className="w-4 h-4" />
+            <span className="text-[10px] font-black">{language === 'zh' ? 'EN' : 'ZH'}</span>
+          </IconButton>
 
-        {/* 版面尺寸選擇器 */}
+          <IconButton
+            onClick={toggleDarkMode}
+            title={isDark ? t('theme.light') : t('theme.dark')}
+            onBrand
+          >
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </IconButton>
+        </div>
+
         <Select 
           icon={<Settings2 className="w-4 h-4" />}
           value={selectedSizeIndex}
           onChange={(e) => setSelectedSizeIndex(Number(e.target.value))}
+          className="bg-white/10 text-white border-white/20 text-xs font-bold"
         >
             {pageSizes.map((size, index) => (
-              <option key={index} value={index} className="dark:bg-slate-800">
+              <option key={index} value={index} className="text-slate-900 bg-white">
                 {t(`sizes.${size.name}`)}
               </option>
             ))}
@@ -88,20 +96,21 @@ export const EditorHeader: React.FC = () => {
         <Button
           onClick={handleExportMarkdown}
           disabled={!hasContent}
-          variant="secondary"
-          title={t('exportMD')}
+          variant="outline-white"
+          className="h-9 px-4"
         >
-          {t('exportMD')}
           <FileText className="w-4 h-4" />
+          <span>{t('exportMD')}</span>
         </Button>
 
         <Button
           onClick={handleDownload}
           disabled={!hasContent}
           isLoading={isGenerating}
+          className="bg-white text-[#D24726] hover:bg-orange-50 border-none shadow-xl h-9 px-6 ring-1 ring-black/5"
         >
-          {isGenerating ? t('exporting') : t('export')}
           <Download className="w-4 h-4" />
+          <span className="font-black uppercase tracking-wider">{isGenerating ? t('exporting') : t('export')}</span>
         </Button>
       </div>
     </header>
