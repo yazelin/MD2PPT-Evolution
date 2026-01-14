@@ -8,6 +8,11 @@ import { ParsedBlock, BlockType } from "../types";
 
 export interface SlideData {
   blocks: ParsedBlock[];
+  metadata?: {
+    bg?: string;
+    layout?: string;
+    [key: string]: any;
+  };
 }
 
 /**
@@ -16,10 +21,15 @@ export interface SlideData {
 export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
   const slides: SlideData[] = [];
   let currentSlideBlocks: ParsedBlock[] = [];
+  let currentSlideMetadata: any = {};
 
-  const flushCurrentSlide = () => {
-    slides.push({ blocks: currentSlideBlocks });
+  const flushCurrentSlide = (nextMetadata: any = {}) => {
+    slides.push({ 
+      blocks: currentSlideBlocks,
+      metadata: { ...currentSlideMetadata }
+    });
     currentSlideBlocks = [];
+    currentSlideMetadata = nextMetadata;
   };
 
   for (const block of blocks) {
@@ -27,7 +37,7 @@ export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
     const isHorizontalRule = block.type === BlockType.HORIZONTAL_RULE;
 
     if (isHorizontalRule) {
-      flushCurrentSlide();
+      flushCurrentSlide(block.metadata || {});
       continue;
     }
 

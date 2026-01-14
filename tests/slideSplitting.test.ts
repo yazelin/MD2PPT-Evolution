@@ -39,6 +39,50 @@ describe('Slide Splitting Logic', () => {
     ];
 
     const slides = splitBlocksToSlides(blocks);
+    // [Start] --- [] --- [End] -> 3 slides
     expect(slides).toHaveLength(3); 
+  });
+
+  it('should extract background color from horizontal rule parameters', () => {
+    const blocks: ParsedBlock[] = [
+      { type: BlockType.HEADING_1, content: 'Slide 1' },
+      { type: BlockType.HORIZONTAL_RULE, content: '--- { "bg": "#FF5500" }', metadata: { bg: '#FF5500' } },
+      { type: BlockType.PARAGRAPH, content: 'Slide 2' },
+    ];
+
+    const slides = splitBlocksToSlides(blocks);
+    expect(slides).toHaveLength(2);
+    expect(slides[1].metadata?.bg).toBe('#FF5500');
+  });
+
+  it('should extract layout attribute from horizontal rule parameters', () => {
+    const blocks: ParsedBlock[] = [
+      { type: BlockType.HEADING_1, content: 'Title Only' },
+      { type: BlockType.HORIZONTAL_RULE, content: '--- { "layout": "two-column" }', metadata: { layout: 'two-column' } },
+      { type: BlockType.PARAGRAPH, content: 'Left content' },
+      { type: BlockType.PARAGRAPH, content: 'Right content' },
+    ];
+
+    const slides = splitBlocksToSlides(blocks);
+    expect(slides).toHaveLength(2);
+    expect(slides[1].metadata?.layout).toBe('two-column');
+  });
+
+  it('should handle a complex sequence of slides with mixed metadata', () => {
+    const blocks: ParsedBlock[] = [
+      { type: BlockType.HEADING_1, content: 'Title Page' },
+      { type: BlockType.HORIZONTAL_RULE, content: '--- { "bg": "#000", "layout": "impact" }', metadata: { bg: '#000', layout: 'impact' } },
+      { type: BlockType.HEADING_2, content: 'Impact Message' },
+      { type: BlockType.HORIZONTAL_RULE, content: '--- { "layout": "two-column" }', metadata: { layout: 'two-column' } },
+      { type: BlockType.PARAGRAPH, content: 'Col 1' },
+      { type: BlockType.PARAGRAPH, content: 'Col 2' },
+    ];
+
+    const slides = splitBlocksToSlides(blocks);
+    expect(slides).toHaveLength(3);
+    expect(slides[0].metadata).toEqual({});
+    expect(slides[1].metadata?.bg).toBe('#000');
+    expect(slides[1].metadata?.layout).toBe('impact');
+    expect(slides[2].metadata?.layout).toBe('two-column');
   });
 });

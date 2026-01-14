@@ -181,7 +181,17 @@ export const parseMarkdownWithAST = (markdown: string, lineOffset: number = 0, c
         break;
 
       case 'hr':
-        addBlock({ type: BlockType.HORIZONTAL_RULE, content: '' });
+        const hrRaw = token.raw.trim();
+        let hrMetadata: any = {};
+        const hrParamMatch = hrRaw.match(/^---+\s*({.*})$/);
+        if (hrParamMatch) {
+          try {
+            hrMetadata = JSON.parse(hrParamMatch[1]);
+          } catch (e) {
+            console.warn("Failed to parse HR metadata", e);
+          }
+        }
+        addBlock({ type: BlockType.HORIZONTAL_RULE, content: hrRaw, metadata: hrMetadata });
         break;
         
       case 'space':
