@@ -1,0 +1,8 @@
+{
+  "track_id": "preview_fix_layouts_20260114",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-14T10:48:00Z",
+  "updated_at": "2026-01-14T10:48:00Z",
+  "description": "修復預覽分頁不一致問題，並實作自定義背景色與雙欄、強調頁等專業簡報佈局。"
+}
