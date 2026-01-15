@@ -1,26 +1,41 @@
 # 專案概覽: MD2PPT-Evolution
 
 ## 願景 (Vision)
-MD2PPT 是一個專為開發者與技術講者打造的生產力工具。它將「簡報即程式碼 (Presentation as Code)」的概念付諸實踐，讓使用者能對簡報內容 (Markdown) 進行版本控制，並自動產生一致且精美的樣式。
+MD2PPT-Evolution 是一個專為開發者與技術講者打造的生產力工具。它將「簡報即程式碼 (Presentation as Code)」的概念付諸實踐，讓使用者能對簡報內容 (Markdown) 進行版本控制，並自動產生一致且精美的 PowerPoint 簡報。
 
-## 核心能力 (已實作與規劃中)
+## 核心架構 (System Architecture)
 
-### 1. 投影片管理 (Slide Management)
-- **投影片分割**:
-    - `---` (水平分隔線) 作為投影片換頁符號。
-    - `h1` / `h2` 可設定自動觸發新投影片 (可配置)。
-- **版面配置 (Layouts)**: 透過 Markdown frontmatter 或特殊語法支援「標題投影片 (Title Slide)」、「內容投影片 (Content Slide)」、「雙欄 (Two Column)」與「大數字 (Big Number)」等版面。
+專案採用現代化的前端架構，核心分為三層：
 
-### 2. 豐富內容 (Rich Content)
-- **圖片**: 支援拖放 (Drag & drop)，並自動縮放以適應投影片邊界。
-- **程式碼區塊**: 轉換為原生的 PowerPoint 文字方塊，包含等寬字體與背景著色。
-- **表格**: 轉換為原生的 PowerPoint 表格。
+### 1. 編輯與互動層 (Editor Layer)
+- **Editor Action Service**: 負責處理使用者的編輯操作（如插入模板、格式化文字）。
+- **Quick Action Sidebar**: 提供視覺化的快捷操作介面，降低 Markdown 語法記憶負擔。
+- **Markdown Updater**: 智慧解析與更新 Markdown 內容，支援拖放圖片時自動修改 YAML 配置。
 
-### 3. 視覺效果 (Visuals)
-- **Mermaid 圖表**: 在投影片上渲染為高解析度圖片。
-- **原生圖表 (Native Charts)**: 指定格式的 Markdown 表格可標記為渲染成 PPT 圖表（長條圖、折線圖、圓餅圖）。
+### 2. 解析與轉換層 (Parser Layer)
+- **Markdown Parser**: 基於 `marked`，將 Markdown 文本轉換為 AST (抽象語法樹)。
+- **YAML Parser**: 基於 `js-yaml`，解析每張投影片的 Frontmatter 配置 (Layout, Background)。
+- **Slide Object Model (SOM)**: 中間層數據結構，標準化了投影片的內容與配置。
 
-## 架構 (Architecture)
-- **前端**: 單頁應用程式 (SPA)。
-- **引擎**: `services/pptGenerator.ts` 負責協調解析 (AST) 到 PPTX 物件的映射。
-- **註冊表**: `services/ppt/registry.ts` (待實作) 將 Markdown token 映射到 Slide Builders。
+### 3. 渲染與輸出層 (Rendering Layer)
+- **Web Preview**: 使用 React 與 Tailwind CSS 進行 1:1 的即時預覽渲染，支援動態縮放與過場動畫。
+- **PPTX Engine**: 基於 `pptxgenjs`，將 SOM 轉換為原生的 PowerPoint 檔案，確保佈局與預覽一致。
+
+## 關鍵功能模組 (v0.5.0)
+
+### 投影片管理 (Slide Management)
+- **分頁機制**: 採用 `===` 作為標準分頁符號。
+- **配置系統**: 採用 YAML Frontmatter (`---`) 進行單頁配置。
+
+### 豐富內容 (Rich Content)
+- **圖片**: 支援拖放 (Drag & drop) 自動轉 Base64。
+- **表格**: 支援 `::: table-modern` 指令，生成專業樣式的原生表格。
+- **程式碼**: 支援語法高亮。
+
+### 視覺效果 (Visuals)
+- **佈局系統**: 內建 Grid, Center, Quote, Alert 等多種響應式佈局。
+- **過場動畫**: 支援 Fade, Slide, Zoom 等切換效果。
+
+## 未來規劃 (Roadmap)
+- **v0.6.0**: 原生圖表 (Charts) 與演講者備忘錄 (Speaker Notes)。
+- **v0.7.0**: 全域主題管理器 (Theme Manager)。
