@@ -6,8 +6,17 @@
 
 import { ParsedBlock, BlockType } from "../types";
 
+export interface SlideConfig {
+  layout?: string;
+  background?: string;
+  transition?: string;
+  [key: string]: any;
+}
+
 export interface SlideData {
   blocks: ParsedBlock[];
+  config?: SlideConfig;
+  /** @deprecated Use config instead */
   metadata?: {
     bg?: string;
     bgImage?: string;
@@ -23,7 +32,7 @@ export interface SlideData {
 export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
   const slides: SlideData[] = [];
   let currentSlideBlocks: ParsedBlock[] = [];
-  let currentSlideMetadata: any = {};
+  let currentSlideConfig: SlideConfig = {};
 
   for (const block of blocks) {
     if (block.type === BlockType.HORIZONTAL_RULE) {
@@ -31,13 +40,14 @@ export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
       if (currentSlideBlocks.length > 0 || slides.length > 0) {
         slides.push({ 
           blocks: [...currentSlideBlocks],
-          metadata: { ...currentSlideMetadata }
+          config: { ...currentSlideConfig },
+          metadata: { ...currentSlideConfig } // For backward compatibility
         });
         currentSlideBlocks = [];
       }
       
-      // Set metadata for the upcoming slide
-      currentSlideMetadata = block.metadata || {};
+      // Set config for the upcoming slide
+      currentSlideConfig = block.metadata || {};
     } else {
       currentSlideBlocks.push(block);
     }
@@ -45,13 +55,14 @@ export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
 
   // Final slide flush: 
   // Push if we have blocks, or if it's the only slide (even if empty but has metadata)
-  if (currentSlideBlocks.length > 0 || slides.length > 0 || Object.keys(currentSlideMetadata).length > 0) {
+  if (currentSlideBlocks.length > 0 || slides.length > 0 || Object.keys(currentSlideConfig).length > 0) {
     slides.push({ 
       blocks: [...currentSlideBlocks],
-      metadata: { ...currentSlideMetadata }
+      config: { ...currentSlideConfig },
+      metadata: { ...currentSlideConfig } // For backward compatibility
     });
   }
 
   // Safety cleanup: Ensure we don't return an empty array
-  return slides.length > 0 ? slides : [{ blocks: [], metadata: {} }];
+  return slides.length > 0 ? slides : [{ blocks: [], config: {}, metadata: {} }];
 };
