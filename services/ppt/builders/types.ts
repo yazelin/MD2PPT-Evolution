@@ -24,5 +24,11 @@ export interface RenderContext {
 
 export interface BlockRenderer {
   type: BlockType;
+  /**
+   * Renders the block to the slide synchronously.
+   * @param block The block to render
+   * @param ctx The rendering context
+   * @returns The new Y position after rendering (ctx.y + height used)
+   */
   render(block: ParsedBlock, ctx: RenderContext): number;
 }
