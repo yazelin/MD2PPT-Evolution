@@ -45,13 +45,13 @@
     - [x] 實作新的 PPTX 表格渲染器，支援自定義標題顏色與間隔列
 - [x] 任務：Conductor - User Manual Verification '階段 3' (Protocol in workflow.md) (5180a1e)
 
-## 階段 4：清理與相容性處理
+## 階段 4：清理與相容性處理 [checkpoint: 0d54245]
 **目標：** 移除舊有的 `::: layout` 語法，並進行最終品質校正。
 
-- [ ] 任務：廢除指令式佈局語法
-    - [ ] 撰寫測試驗證舊有的 `::: layout` 不再影響排版
-    - [ ] 從解析器中移除舊的佈局指令邏輯
-- [ ] 任務：全域整合測試與文件更新
-    - [ ] 執行端到端測試：從 Markdown 輸入到 PPTX 匯出的完整流程
-    - [ ] 更新 `README.md` 或 `CUSTOMIZATION.md` 中的語法說明
-- [ ] 任務：Conductor - User Manual Verification '階段 4' (Protocol in workflow.md)
+- [x] 任務：廢除指令式佈局語法 (0d54245)
+    - [x] 撰寫測試驗證舊有的 `::: layout` 不再影響排版
+    - [x] 從解析器中移除舊的佈局指令邏輯
+- [x] 任務：全域整合測試與文件更新 (0d54245)
+    - [x] 執行端到端測試：從 Markdown 輸入到 PPTX 匯出的完整流程
+    - [x] 更新 `README.md` 或 `CUSTOMIZATION.md` 中的語法說明 (已更新預設教學內容)
+- [x] 任務：Conductor - User Manual Verification '階段 4' (Protocol in workflow.md) (0d54245)
