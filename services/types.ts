@@ -26,6 +26,20 @@ export enum BlockType {
   TOC = 'TOC'
 }
 
+export interface SlideMetadata {
+  bg?: string;
+  bgImage?: string;
+  layout?: 'impact' | 'full-bg' | 'two-column' | 'default' | string;
+  note?: string;
+  cols?: number[];
+  align?: 'left' | 'center' | 'right';
+  big?: boolean;
+  language?: string; // For code blocks
+  showLineNumbers?: boolean; // For code blocks
+  tokens?: any[][]; // For pre-highlighted code tokens (Shiki)
+  [key: string]: any; // Allow extensibility
+}
+
 export interface ParsedBlock {
   type: BlockType;
   content: string;
@@ -35,24 +49,16 @@ export interface ParsedBlock {
   sourceLine?: number;    // Starting line number in the original markdown
   startIndex?: number;    // Character index start
   endIndex?: number;      // Character index end
-  metadata?: {
-    showLineNumbers?: boolean;
-    language?: string;
-    bg?: string;
-    bgImage?: string;
-    layout?: string;
-    [key: string]: any;
-  };
+  metadata?: SlideMetadata;
 }
 
-export interface DocumentMeta {
+export interface DocumentMeta extends SlideMetadata {
   title?: string;
   author?: string;
   subject?: string;
   keywords?: string;
   header?: boolean; // Show header? Default true
   footer?: boolean; // Show page number footer? Default true
-  [key: string]: any;
 }
 
 export interface ParseResult {
