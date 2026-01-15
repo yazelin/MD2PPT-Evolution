@@ -1,11 +1,13 @@
 # MD2PPT-EVOLUTION
 
-![Version](https://img.shields.io/badge/version-0.4.0-orange.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Version](https://img.shields.io/badge/version-0.5.0-orange.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 **MD2PPT-EVOLUTION** 是一個基於 Web 的工具，專為將 **Markdown** 直接轉換為專業的 **PowerPoint (PPTX)** 簡報而設計。
 
 ## 🚀 核心功能
 
+- **快捷動作側欄**: 一鍵插入佈局與元件，提升寫作效率。
+- **拖放式資產管理**: 支援圖片拖放插入與背景設定。
 - **琥珀與石墨商務樣式**: 全新設計的 UI 系統，具備溫潤的視覺感與高度專業的商務調性。
 - **專業排版佈局**: 支援雙欄 (Two-column)、強調頁 (Impact) 與全螢幕背景 (Full-bg) 等佈局。
 - **分層配置系統**: 使用 `===` 分頁，並支援在每頁頂部透過 `---` YAML 區塊進行獨立視覺設定。

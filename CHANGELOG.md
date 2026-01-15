@@ -5,6 +5,17 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [0.5.0] - 2026-01-15
+
+### 新增 (Added)
+- **快捷動作側欄 (Quick Action Sidebar)**: 
+    - 新增左側可收合工具列，提供一鍵插入投影片、佈局 (Grid, Quote, Alert) 與元件 (Table, Image, Note) 的功能。
+    - 支援文字格式化快捷按鈕 (粗體、斜體、代碼)。
+- **拖放式資產管理 (Drag & Drop)**:
+    - **編輯器拖放**: 將圖片拖入編輯器區域，自動轉換為 Base64 並插入 Markdown 圖片語法。
+    - **預覽區拖放**: 將圖片拖至預覽區的特定投影片上，自動設定該頁的 `bgImage` (背景圖片)。
+- **YAML 智慧更新**: 實作了 Markdown YAML 解析與更新邏輯，確保拖放操作能精確修改對應投影片的配置。
+
 ## [0.4.0] - 2026-01-15
 
 ### 新增 (Added)
