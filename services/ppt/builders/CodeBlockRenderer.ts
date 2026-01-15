@@ -1,11 +1,10 @@
 import { BlockType } from "../../types";
 import { PPT_THEME } from "../../../constants/theme";
 import { BlockRenderer, RenderContext } from "./types";
-import { highlighterService } from "../HighlighterService";
 
 export const codeBlockRenderer: BlockRenderer = {
-  type: BlockType.CODE_BLOCK + "_DISABLED" as any, // FORCE DISABLE to fallback to legacy switch
-  render: async (block, ctx) => {
+  type: BlockType.CODE_BLOCK,
+  render: (block, ctx) => {
     const { slide, pptx, x, y, w, options } = ctx;
     const { isDark } = options;
 
@@ -20,17 +19,9 @@ export const codeBlockRenderer: BlockRenderer = {
         line: { color: "DDDDDD", width: 1 } 
     });
 
-    // Initialize Highlighter
-    let highlighter = null;
-    try {
-        await highlighterService.init();
-        highlighter = highlighterService.getHighlighter();
-    } catch (e) {
-        console.warn("Shiki highlighting failed, falling back to plain text.", e);
-        highlighter = null;
-    }
+    const tokens = block.metadata?.tokens;
 
-    if (!highlighter) {
+    if (!tokens) {
         // Fallback
         slide.addText(block.content, { 
             x: x + 0.1, y: y + 0.1, w: w - 0.2, h: codeHeight - 0.2, 
@@ -43,31 +34,27 @@ export const codeBlockRenderer: BlockRenderer = {
         return y + codeHeight + 0.3;
     }
 
-    // Tokenize
-    const lang = block.metadata?.language || 'text'; // Default to text if unknown
-    const theme = isDark ? 'github-dark' : 'github-light';
-    
-    let tokens;
-    try {
-        tokens = highlighter.codeToTokens(block.content, { lang, theme }).tokens;
-    } catch (e) {
-        // Fallback for unknown language
-        try {
-            tokens = highlighter.codeToTokens(block.content, { lang: 'markdown', theme }).tokens;
-        } catch (e2) {
-             tokens = highlighter.codeToTokens(block.content, { lang: 'text', theme }).tokens;
-        }
-    }
-
-    // Map to PptxGenJS text objects
+    // Map tokens to PptxGenJS text objects
     const textObjects: any[] = [];
     
     tokens.forEach((lineTokens: any[], lineIndex: number) => {
         lineTokens.forEach(token => {
+            if (!token.content) return;
+
+            let color = isDark ? "E0E0E0" : "333333";
+            if (token.color) {
+                const cleanHex = token.color.replace('#', '');
+                // PptxGenJS requires 6-digit hex. Shiki might return 8-digit (with alpha).
+                // We strip alpha.
+                if (cleanHex.length >= 6) {
+                    color = cleanHex.substring(0, 6);
+                }
+            }
+
             textObjects.push({
                 text: token.content,
                 options: {
-                    color: (token.color && token.color.length > 1) ? token.color.replace('#', '').substring(0, 6) : (isDark ? "E0E0E0" : "333333"),
+                    color: color,
                     fontFace: PPT_THEME.FONTS.CODE,
                     fontSize: PPT_THEME.FONT_SIZES.CODE
                 }
@@ -75,18 +62,30 @@ export const codeBlockRenderer: BlockRenderer = {
         });
         
         if (lineIndex < tokens.length - 1) {
-             textObjects.push({ 
+             textObjects.push({
                  text: "\n", 
-                 options: { fontFace: PPT_THEME.FONTS.CODE, fontSize: PPT_THEME.FONT_SIZES.CODE } 
+                 options: { fontFace: PPT_THEME.FONTS.CODE, fontSize: PPT_THEME.FONT_SIZES.CODE }
              });
         }
     });
 
-    slide.addText(textObjects, { 
-        x: x + 0.1, y: y + 0.1, w: w - 0.2, h: codeHeight - 0.2, 
-        valign: 'top', 
-        wrap: true, 
-    });
+    if (textObjects.length === 0) {
+         // Fallback if tokens didn't produce any text objects
+        slide.addText(block.content, { 
+            x: x + 0.1, y: y + 0.1, w: w - 0.2, h: codeHeight - 0.2, 
+            fontSize: PPT_THEME.FONT_SIZES.CODE, 
+            color: isDark ? "00FF99" : "D24726", 
+            fontFace: PPT_THEME.FONTS.CODE,
+            valign: 'top', 
+            wrap: true 
+        });
+    } else {
+        slide.addText(textObjects, { 
+            x: x + 0.1, y: y + 0.1, w: w - 0.2, h: codeHeight - 0.2, 
+            valign: 'top', 
+            wrap: true, 
+        });
+    }
 
     return y + codeHeight + 0.3;
   }
