@@ -35,7 +35,7 @@ export const EditorPane: React.FC<EditorPaneProps> = ({
   };
 
   return (
-    <div className="w-1/2 flex flex-col border-r border-[#E7E5E4] dark:border-[#44403C] bg-[#FDFCFB] dark:bg-[#1C1917] transition-colors duration-500">
+    <div className="flex-1 w-full flex flex-col border-r border-[#E7E5E4] dark:border-[#44403C] bg-[#FDFCFB] dark:bg-[#1C1917] transition-colors duration-500">
       <div className="bg-white dark:bg-[#292524] px-6 py-2.5 border-b border-[#E7E5E4] dark:border-[#44403C] flex justify-between items-center">
         <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Editor</span>
         <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">{wordCount} Words</span>

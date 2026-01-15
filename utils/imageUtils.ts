@@ -4,6 +4,18 @@
  */
 
 /**
+ * Converts a File object to a Base64 string.
+ */
+export const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+/**
  * Fetches an image from a URL and converts it to a Base64 string.
  * Returns null if the fetch fails (e.g., CORS issue).
  */

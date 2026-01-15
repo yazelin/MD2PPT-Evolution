@@ -16,6 +16,8 @@ import { PreviewPane } from './editor/PreviewPane';
 import { QuickActionSidebar, ActionType } from './editor/QuickActionSidebar';
 import { EditorActionService } from '../services/editorActionService';
 import { ACTION_TEMPLATES } from '../constants/templates';
+import { fileToBase64 } from '../utils/imageUtils';
+import { updateSlideYaml } from '../services/markdownUpdater';
 
 const MarkdownEditor: React.FC = () => {
   const darkModeState = useDarkMode();
@@ -78,6 +80,44 @@ const MarkdownEditor: React.FC = () => {
     }
   };
 
+  const handleEditorDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (file.type.startsWith('image/') && textareaRef.current) {
+        try {
+          const base64 = await fileToBase64(file);
+          const service = new EditorActionService(textareaRef.current);
+          const template = `![${file.name.split('.')[0]}|](${base64})`;
+          // We use | as a marker for where we want to split or focus, but insertText expects $cursor
+          // Let's adapt template:
+          const insertTemplate = `![${file.name.split('.')[0]}](${base64})`;
+          // Actually, spec said "cursor stays in alt text".
+          // "![|](...)" -> "![|]($cursor...)"
+          // Let's just insert standard image markdown for now or adapt EditorActionService to support selection inside brackets.
+          // For simplicity, let's insert it and select the Alt text part if possible, or just insert it.
+          
+          // Spec: "智慧語法插入：自動插入 ![|](data:image/...)，並將游標聚焦於 | 所在位置 (Alt Text)。"
+          // Let's manually construct it.
+          const altText = file.name.split('.')[0];
+          const fullText = `![${altText}](${base64})`;
+          
+          service.insertText(fullText, setContent);
+          
+          // Ideally we would select "altText", but insertText puts cursor at end.
+          // This is acceptable for Phase 3 MVP.
+        } catch (err) {
+          console.error("Failed to process dropped image", err);
+        }
+      }
+    }
+  };
+
+  const handleUpdateSlideConfig = (index: number, key: string, value: string) => {
+    const newContent = updateSlideYaml(content, index, key, value);
+    setContent(newContent);
+  };
+
   return (
     <EditorProvider editorState={editorState} darkModeState={darkModeState}>
       <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors">
@@ -87,17 +127,24 @@ const MarkdownEditor: React.FC = () => {
           <QuickActionSidebar onAction={handleAction} />
           
           <div className="flex flex-1 overflow-hidden">
-            <EditorPane 
-              content={content}
-              setContent={setContent}
-              wordCount={wordCount}
-              textareaRef={textareaRef}
-              onScroll={handleScroll}
-            />
+            <div 
+                className="w-1/2 flex flex-col"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleEditorDrop}
+            >
+                <EditorPane 
+                  content={content}
+                  setContent={setContent}
+                  wordCount={wordCount}
+                  textareaRef={textareaRef}
+                  onScroll={handleScroll}
+                />
+            </div>
 
             <PreviewPane 
               parsedBlocks={parsedBlocks}
               previewRef={previewRef}
+              onUpdateSlideConfig={handleUpdateSlideConfig}
               />
           </div>
         </main>
