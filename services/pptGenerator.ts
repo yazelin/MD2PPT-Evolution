@@ -22,10 +22,24 @@ const renderBlocksToArea = (slide: any, blocks: ParsedBlock[], x: number, y: num
   let currentY = y;
   const isDark = globalOptions.isDark || false;
   const textColor = isDark ? "FFFFFF" : (globalOptions.color || PPT_THEME.COLORS.TEXT_MAIN);
+  
+  let currentTableStyle: string | undefined = undefined;
 
   for (const block of blocks) {
     if (currentY > 5.2) break;
     const align = globalOptions.align || 'left';
+
+    // Handle table-modern directive
+    if (block.type === BlockType.PARAGRAPH) {
+      if (block.content.trim() === '::: table-modern') {
+        currentTableStyle = 'modern';
+        continue;
+      }
+      if (block.content.trim() === ':::') {
+        currentTableStyle = undefined;
+        continue;
+      }
+    }
 
     const renderer = rendererRegistry.getRenderer(block.type);
     if (renderer) {
@@ -35,7 +49,7 @@ const renderBlocksToArea = (slide: any, blocks: ParsedBlock[], x: number, y: num
         x,
         y: currentY,
         w,
-        options: { ...globalOptions, align }
+        options: { ...globalOptions, align, tableStyle: currentTableStyle }
       };
       currentY = renderer.render(block, context);
     } else {
@@ -49,17 +63,22 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
   try { await highlighterService.init(); } catch (e) { console.warn("Highlighter init failed", e); }
   const highlighter = highlighterService.getHighlighter();
 
-  // Pre-process images: Convert all URLs to Base64 (including bgImage in metadata)
+  // Pre-process images: Convert all URLs to Base64 (including bgImage in metadata/config)
   const processedBlocks = await Promise.all(blocks.map(async (block) => {
     let updatedBlock = { ...block };
     if (block.type === BlockType.IMAGE && block.content && !block.content.startsWith('data:image')) {
       const base64 = await imageUrlToBase64(block.content);
       if (base64) updatedBlock.content = base64;
     }
-    // Also process bgImage in HR metadata
-    if (block.type === BlockType.HORIZONTAL_RULE && block.metadata?.bgImage && !block.metadata.bgImage.startsWith('data:image')) {
-      const base64 = await imageUrlToBase64(block.metadata.bgImage);
-      if (base64) updatedBlock.metadata = { ...updatedBlock.metadata, bgImage: base64 };
+    
+    // Process bgImage in both metadata and new config
+    const bgImg = updatedBlock.config?.bgImage || updatedBlock.metadata?.bgImage;
+    if (block.type === BlockType.HORIZONTAL_RULE && bgImg && !bgImg.startsWith('data:image')) {
+      const base64 = await imageUrlToBase64(bgImg);
+      if (base64) {
+        if (updatedBlock.config) updatedBlock.config.bgImage = base64;
+        if (updatedBlock.metadata) updatedBlock.metadata.bgImage = base64;
+      }
     }
     return updatedBlock;
   }));
@@ -71,10 +90,13 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
   const slidesData = splitBlocksToSlides(processedBlocks);
   for (const slideData of slidesData) {
     const slide = pptx.addSlide();
-    const layout = slideData.metadata?.layout;
-    const rawBg = slideData.metadata?.bg || config.bg || PPT_THEME.COLORS.BG_SLIDE;
-    const bgImage = slideData.metadata?.bgImage;
+    const slideCfg = slideData.config || {};
+    const layout = slideCfg.layout || slideData.metadata?.layout;
+    const transition = slideCfg.transition;
     
+    // 1. Background Logic
+    const rawBg = slideCfg.background || slideCfg.bg || slideData.metadata?.bg || config.bg || PPT_THEME.COLORS.BG_SLIDE;
+    const bgImage = slideCfg.bgImage || slideData.metadata?.bgImage;
     const bgColor = rawBg.replace('#', '');
     const isDark = bgImage ? true : parseInt(bgColor, 16) < 0x888888;
 
@@ -84,11 +106,15 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
       slide.background = { fill: bgColor };
     }
 
-    if (slideData.metadata?.note) {
-        slide.addNotes(slideData.metadata.note);
+    // 2. Transition Logic (if supported by library version)
+    // pptxgenjs doesn't have a direct 'transition' property on Slide object in all versions, 
+    // but some versions support it via options. We will apply common ones if available.
+
+    if (slideCfg.note || slideData.metadata?.note) {
+        slide.addNotes(slideCfg.note || slideData.metadata?.note);
     }
 
-    // Pre-highlight code blocks
+    // 3. Pre-highlight code blocks
     if (highlighter) {
         slideData.blocks.forEach(b => {
             if (b.type === BlockType.CODE_BLOCK) {
@@ -105,13 +131,27 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
     const titleBlocks = slideData.blocks.filter(b => b.type === BlockType.HEADING_1 || b.type === BlockType.HEADING_2);
     const otherBlocks = slideData.blocks.filter(b => b.type !== BlockType.HEADING_1 && b.type !== BlockType.HEADING_2);
 
-    if (layout === 'impact' || layout === 'full-bg') {
-      renderBlocksToArea(slide, slideData.blocks, margin, 1.8, contentWidth, pptx, { align: 'center', big: true, isDark, color: bgImage ? "FFFFFF" : undefined });
-    } else if (layout === 'two-column') {
+    // 4. Enhanced Layout Engine
+    if (layout === 'impact' || layout === 'full-bg' || layout === 'center') {
+      const isImpact = layout !== 'center';
+      renderBlocksToArea(slide, slideData.blocks, margin, isImpact ? 1.8 : 1.2, contentWidth, pptx, { align: 'center', big: isImpact, isDark, color: bgImage ? "FFFFFF" : undefined });
+    } else if (layout === 'quote') {
+      renderBlocksToArea(slide, slideData.blocks, margin + 1, 1.5, contentWidth - 2, pptx, { align: 'center', italic: true, isDark, color: bgImage ? "FFFFFF" : undefined });
+    } else if (layout === 'alert') {
+      // Alert Box Simulation
+      slide.addShape(pptx.ShapeType.rect, { x: 1, y: 1.5, w: 8, h: 3, fill: { color: "FF5500", transparency: 90 }, line: { color: "FF5500", width: 2 } });
+      renderBlocksToArea(slide, slideData.blocks, 1.5, 2, 7, pptx, { align: 'center', isDark, color: "FF5500" });
+    } else if (layout === 'two-column' || layout === 'grid') {
       if (titleBlocks.length > 0) renderBlocksToArea(slide, titleBlocks, margin, 0.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
-      const mid = Math.ceil(otherBlocks.length / 2); const colWidth = (contentWidth - 0.5) / 2;
-      renderBlocksToArea(slide, otherBlocks.slice(0, mid), margin, 1.6, colWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
-      renderBlocksToArea(slide, otherBlocks.slice(mid), margin + colWidth + 0.5, 1.6, colWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
+      
+      const cols = layout === 'two-column' ? 2 : (slideCfg.columns || 2);
+      const gap = 0.4;
+      const colWidth = (contentWidth - (gap * (cols - 1))) / cols;
+      
+      for (let c = 0; c < cols; c++) {
+        const colBlocks = otherBlocks.filter((_, idx) => idx % cols === c);
+        renderBlocksToArea(slide, colBlocks, margin + (c * (colWidth + gap)), 1.6, colWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
+      }
     } else {
       if (titleBlocks.length > 0) renderBlocksToArea(slide, titleBlocks, margin, 0.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });
       renderBlocksToArea(slide, otherBlocks, margin, 1.6, contentWidth, pptx, { isDark, color: bgImage ? "FFFFFF" : undefined });

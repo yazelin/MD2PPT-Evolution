@@ -10,3 +10,4 @@ export * from './ListRenderer';
 export * from './ImageRenderer';
 export * from './CodeBlockRenderer';
 export * from './ChatCustomRenderer';
+export * from './TableRenderer';
