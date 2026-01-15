@@ -9,6 +9,7 @@
 ## 關鍵功能庫
 - **PowerPoint 生成**: `pptxgenjs` (核心引擎)
 - **Markdown 解析**: `marked` (AST 解析)
+- **配置驅動**: `js-yaml` (YAML Frontmatter 解析)
 - **圖表渲染**: `mermaid` (SVG 預覽與轉換)
 - **多國語言**: `i18next`
 - **UI 圖標**: `lucide-react`
