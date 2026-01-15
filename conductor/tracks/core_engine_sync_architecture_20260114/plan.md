@@ -23,7 +23,7 @@
 
 - [x] 任務 1: 在 `services/pptGenerator.ts` 的 `generatePpt` 中實作統一的非同步預處理器 (處理圖片與程式碼高亮)。(96a0ad0)
 - [x] 任務 2: 遷移並實作 `HeadingRenderer` 與 `ParagraphRenderer` (同步)。(b0fd07c)
-- [ ] 任務 3: 遷移並實作 `ListRenderer`, `ImageRenderer` 與 `CodeBlockRenderer` (同步，讀取預處理資料)。
+- [x] 任務 3: 遷移並實作 `ListRenderer`, `ImageRenderer` 與 `CodeBlockRenderer` (同步，讀取預處理資料)。(9790368)
 - [ ] 任務 4: 遷移並實作 `ChatCustomRenderer` (同步)。
 - [ ] Task: Conductor - User Manual Verification '階段 3: 同步 Renderer 遷移與預處理邏輯' (Protocol in workflow.md)
 
