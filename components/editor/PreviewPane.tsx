@@ -41,19 +41,31 @@ const SlideCard: React.FC<{ slide: SlideData; index: number; layout: { width: nu
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
   const isDark = bgImage ? true : brightness < 128;
   const designHeight = DESIGN_WIDTH * (layout.height / layout.width);
+  const transitionType = slide.config?.transition || 'none';
 
   return (
-    <div ref={containerRef} className="w-full shadow-[0_30px_60px_rgba(0,0,0,0.12)] relative overflow-hidden bg-[#E7E5E4] dark:bg-[#44403C] rounded-lg transition-all" style={{ aspectRatio: `${layout.width} / ${layout.height}` }}>
+    <div 
+      ref={containerRef} 
+      className={`w-full shadow-[0_30px_60px_rgba(0,0,0,0.12)] relative overflow-hidden bg-[#E7E5E4] dark:bg-[#44403C] rounded-lg transition-all duration-500 ${
+        transitionType === 'fade' ? 'animate-in fade-in' : 
+        transitionType === 'slide' ? 'animate-in slide-in-from-right' : 
+        transitionType === 'zoom' ? 'animate-in zoom-in' : ''
+      }`} 
+      style={{ aspectRatio: `${layout.width} / ${layout.height}` }}
+    >
       <div style={{ width: `${DESIGN_WIDTH}px`, height: `${designHeight}px`, transform: `scale(${scale})`, transformOrigin: 'top left', backgroundColor: bgImage ? 'transparent' : bgColor, color: isDark ? '#FFFFFF' : '#1C1917', position: 'absolute', top: 0, left: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {bgImage && <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${bgImage})` }}><div className="absolute inset-0 bg-black/40"></div></div>}
         <div className={`absolute top-6 right-10 text-xs font-black uppercase tracking-[0.3em] z-20 ${isDark ? 'text-white/20' : 'text-stone-400/20'}`}>Slide {index + 1}</div>
-        <div className="flex-1 relative z-10 flex flex-col p-[80px_100px]"><SlideContent blocks={slide.blocks} layout={slide.config?.layout || slide.metadata?.layout} isDark={isDark} /></div>
+        <div className="flex-1 relative z-10 flex flex-col p-[80px_100px]"><SlideContent slide={slide} isDark={isDark} /></div>
       </div>
     </div>
   );
 };
 
-const SlideContent: React.FC<{ blocks: ParsedBlock[], layout?: string, isDark?: boolean }> = ({ blocks, layout, isDark }) => {
+const SlideContent: React.FC<{ slide: SlideData, isDark?: boolean }> = ({ slide, isDark }) => {
+  const { blocks, config } = slide;
+  const layout = config?.layout;
+
   const renderBlocks = (contentBlocks: ParsedBlock[]) => {
     const elements: React.ReactNode[] = [];
     let i = 0;
@@ -74,20 +86,54 @@ const SlideContent: React.FC<{ blocks: ParsedBlock[], layout?: string, isDark?: 
   const titleBlocks = blocks.filter(b => b.type === BlockType.HEADING_1 || b.type === BlockType.HEADING_2);
   const otherBlocks = blocks.filter(b => b.type !== BlockType.HEADING_1 && b.type !== BlockType.HEADING_2);
 
-  if (layout === 'impact' || layout === 'full-bg' || layout === 'center') {
+  if (layout === 'impact' || layout === 'full-bg' || layout === 'center' || layout === 'quote') {
     const isImpact = layout === 'impact' || layout === 'full-bg';
+    const isQuote = layout === 'quote';
+    
     return (
       <div className={`flex flex-col h-full items-center justify-center text-center ${isImpact ? 'scale-125 origin-center' : ''}`}>
-        <div className={`w-full ${isDark && isImpact ? 'drop-shadow-[0_4px_15px_rgba(0,0,0,0.6)]' : ''}`}>
-          {renderBlocks(blocks)}
+        <div className={`w-full ${isDark && isImpact ? 'drop-shadow-[0_4px_15px_rgba(0,0,0,0.6)]' : ''} ${isQuote ? 'italic opacity-90 relative' : ''}`}>
+          {isQuote && <div className="absolute -top-20 left-1/2 -translate-x-1/2 text-[160px] leading-none text-orange-500/20 pointer-events-none font-serif">“</div>}
+          <div className={isQuote ? 'text-6xl md:text-7xl font-medium tracking-tight px-10' : ''}>
+            {renderBlocks(blocks)}
+          </div>
+          {isQuote && <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 text-[160px] leading-none text-orange-500/20 pointer-events-none font-serif mt-10">”</div>}
         </div>
       </div>
     );
   }
   
-  if (layout === 'two-column') {
-    const mid = Math.ceil(otherBlocks.length / 2);
-    return (<div className="flex flex-col h-full">{titleBlocks.length > 0 && <div className="mb-16">{renderBlocks(titleBlocks)}</div>}<div className="flex-1 grid grid-cols-2 gap-24 overflow-hidden text-left"><div>{renderBlocks(otherBlocks.slice(0, mid))}</div><div>{renderBlocks(otherBlocks.slice(mid))}</div></div></div>);
+  if (layout === 'alert') {
+    return (
+      <div className="flex flex-col h-full items-center justify-center p-10">
+        <div className="w-full bg-orange-500/10 border-4 border-orange-500 p-16 rounded-3xl text-center">
+          <div className="text-orange-500 mb-8 flex justify-center scale-[3]">
+            <Sparkles />
+          </div>
+          <div className="space-y-6">
+            {renderBlocks(blocks)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (layout === 'two-column' || layout === 'grid') {
+    const cols = layout === 'two-column' ? 2 : (config?.columns || 2);
+    return (
+      <div className="flex flex-col h-full">
+        {titleBlocks.length > 0 && <div className="mb-16">{renderBlocks(titleBlocks)}</div>}
+        <div 
+          className="flex-1 grid gap-16 overflow-hidden text-left" 
+          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+        >
+          {Array.from({ length: cols }).map((_, colIdx) => {
+            const colBlocks = otherBlocks.filter((_, idx) => idx % cols === colIdx);
+            return <div key={colIdx}>{renderBlocks(colBlocks)}</div>;
+          })}
+        </div>
+      </div>
+    );
   }
   return (<div className="flex flex-col h-full text-left">{titleBlocks.length > 0 && <div className="mb-14">{renderBlocks(titleBlocks)}</div>}<div className="flex-1">{renderBlocks(otherBlocks)}</div></div>);
 };
