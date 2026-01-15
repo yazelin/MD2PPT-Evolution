@@ -6,7 +6,7 @@
 目標：建立開發分支並定義基礎型別。
 
 - [x] 任務 1: 建立並切換至 `refactor/core-engine-sync-architecture` 分支。(20d67d0)
-- [ ] 任務 2: 更新 `services/types.ts`，定義 `SlideMetadata` 介面並強化 `ParsedBlock` 的型別。
+- [x] 任務 2: 更新 `services/types.ts`，定義 `SlideMetadata` 介面並強化 `ParsedBlock` 的型別。(4751e21)
 - [ ] 任務 3: 建立新的目錄結構 `services/ppt/builders/` 並定義同步介面 `BlockRenderer` 與 `RenderContext`。
 - [ ] Task: Conductor - User Manual Verification '階段 1: 環境準備與型別定義' (Protocol in workflow.md)
 
