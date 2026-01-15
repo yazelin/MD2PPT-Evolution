@@ -1,6 +1,6 @@
 # 執行計畫：核心佈局擴展與 YAML 配置化 (core_layout_directives_expansion)
 
-## 階段 1：基礎設施 - YAML 解析與狀態管理重構
+## 階段 1：基礎設施 - YAML 解析與狀態管理重構 [checkpoint: e3970fe]
 **目標：** 實作投影片層級的 YAML 解析器，並更新 Zustand Store 以支援新的配置結構。
 
 - [x] 任務：定義新的 Slide Object Model (SOM) 結構 (647bb76)
@@ -12,7 +12,7 @@
 - [x] 任務：更新 Zustand Editor Store (cae3543)
     - [x] 撰寫測試確保編輯內容變更時，SOM 的 config 能即時更新
     - [x] 調整 `hooks/useEditorState.ts` 以存取新的 SOM 結構 (實際上更新了 PreviewPane 及其整合測試)
-- [ ] 任務：Conductor - User Manual Verification '階段 1' (Protocol in workflow.md)
+- [x] 任務：Conductor - User Manual Verification '階段 1' (Protocol in workflow.md) (e3970fe)
 
 ## 階段 2：佈局渲染器實作 (Web 預覽)
 **目標：** 在網頁預覽端實作四種新佈局與背景渲染。
