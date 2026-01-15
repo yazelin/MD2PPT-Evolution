@@ -10,13 +10,13 @@
 - [x] 任務 3: 建立新的目錄結構 `services/ppt/builders/` 並定義同步介面 `BlockRenderer` 與 `RenderContext`。(b61478b)
 - [ ] Task: Conductor - User Manual Verification '階段 1: 環境準備與型別定義' (Protocol in workflow.md)
 
-## 階段 2: 註冊表與 Mock 測試基礎 (Registry & Testing)
+## 階段 2: 註冊表與 Mock 測試基礎 (Registry & Testing) [checkpoint: 7e22a09]
 目標：建立核心註冊機制並確保測試環境就緒。
 
 - [x] 任務 1: 實作 `RendererRegistry` (同步版本)。(8eff33d)
 - [x] 任務 2: 設置 Vitest Mock `pptxgenjs` 並編寫基礎生成引擎的測試腳本。(3dfa797)
 - [x] 任務 3: 實作 `services/ppt/builders/index.ts` 進行手動匯出管理。(2ded42a)
-- [ ] Task: Conductor - User Manual Verification '階段 2: 註冊表與 Mock 測試基礎' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification '階段 2: 註冊表與 Mock 測試基礎' (Protocol in workflow.md)
 
 ## 階段 3: 同步 Renderer 遷移與預處理邏輯 (Migration & Pre-processing)
 目標：遷移所有區塊並實作預處理。
