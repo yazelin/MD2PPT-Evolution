@@ -8,7 +8,7 @@ describe('RendererRegistry', () => {
     const registry = new RendererRegistry();
     const mockRenderer: BlockRenderer = {
       type: BlockType.TOC, // Use TOC as it might not be in default yet, or override
-      render: async (block, ctx) => ctx.y + 1
+      render: (block, ctx) => ctx.y + 1
     };
 
     registry.register(mockRenderer);
@@ -27,7 +27,7 @@ describe('BlockRenderer Interface', () => {
   it('should allow implementing a mock renderer', () => {
     const mockRenderer: BlockRenderer = {
       type: BlockType.PARAGRAPH,
-      render: async (block: any, ctx: RenderContext) => {
+      render: (block: any, ctx: RenderContext) => {
         return ctx.y + 0.5;
       }
     };

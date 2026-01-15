@@ -151,7 +151,7 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
                 const lang = b.metadata?.language || 'text';
                 const theme = isDark ? 'github-dark' : 'github-light';
                 try {
-                    b.metadata = { ...b.metadata, tokens: highlighter.codeToTokens(b.content, { lang, theme }).tokens };
+                    b.metadata = { ...b.metadata, tokens: highlighter.codeToTokens(b.content, { lang: lang as any, theme }).tokens };
                 } catch (e) {}
             }
         });

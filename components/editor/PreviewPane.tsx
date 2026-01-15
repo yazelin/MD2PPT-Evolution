@@ -55,7 +55,7 @@ const SlideCard: React.FC<{ slide: SlideData; index: number; layout: { width: nu
 
 const SlideContent: React.FC<{ blocks: ParsedBlock[], layout?: string, isDark?: boolean }> = ({ blocks, layout, isDark }) => {
   const renderBlocks = (contentBlocks: ParsedBlock[]) => {
-    const elements: JSX.Element[] = [];
+    const elements: React.ReactNode[] = [];
     let i = 0;
     while (i < contentBlocks.length) {
       const block = contentBlocks[i];
