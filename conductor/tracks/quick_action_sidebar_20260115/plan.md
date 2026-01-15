@@ -30,7 +30,7 @@ layout: grid
     - [ ] 實現樣式包裹邏輯 (Wrapping selected text)
 - [ ] 任務：Conductor - User Manual Verification '階段 2' (Protocol in workflow.md)
 
-## 階段 3：拖放式圖片管理 (Drag & Drop)
+## 階段 3：拖放式圖片管理 (Drag & Drop) [checkpoint: 45e0027]
 **目標：** 實現圖片拖放轉 Base64，以及預覽區背景圖拖放功能。
 
 - [ ] 任務：實作 Editor 圖片拖放
