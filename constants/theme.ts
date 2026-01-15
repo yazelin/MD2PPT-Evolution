@@ -6,9 +6,9 @@
 
 export const PPT_THEME = {
   FONTS: {
-    MAIN: '"Segoe UI", "Microsoft JhengHei", sans-serif',
-    CODE: '"JetBrains Mono", "Consolas", monospace',
-    HEADING: '"Segoe UI", "Microsoft JhengHei", sans-serif',
+    MAIN: "Microsoft JhengHei",
+    CODE: "Consolas",
+    HEADING: "Microsoft JhengHei",
   },
   
   COLORS: {
