@@ -18,11 +18,14 @@ export class RendererRegistry {
   }
 
   registerAllManual() {
+      // FORCE DISABLE ALL RENDERERS FOR DEBUGGING
+      /*
       Object.values(Renderers).forEach(renderer => {
           if (renderer && renderer.type && typeof renderer.render === 'function') {
               this.register(renderer);
           }
       });
+      */
   }
 }
 

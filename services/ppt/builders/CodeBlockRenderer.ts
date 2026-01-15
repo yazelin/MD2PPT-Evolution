@@ -4,7 +4,7 @@ import { BlockRenderer, RenderContext } from "./types";
 import { highlighterService } from "../HighlighterService";
 
 export const codeBlockRenderer: BlockRenderer = {
-  type: BlockType.CODE_BLOCK,
+  type: BlockType.CODE_BLOCK + "_DISABLED" as any, // FORCE DISABLE to fallback to legacy switch
   render: async (block, ctx) => {
     const { slide, pptx, x, y, w, options } = ctx;
     const { isDark } = options;
