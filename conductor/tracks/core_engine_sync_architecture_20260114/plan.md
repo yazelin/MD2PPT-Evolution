@@ -21,7 +21,7 @@
 ## 階段 3: 同步 Renderer 遷移與預處理邏輯 (Migration & Pre-processing)
 目標：遷移所有區塊並實作預處理。
 
-- [ ] 任務 1: 在 `services/pptGenerator.ts` 的 `generatePpt` 中實作統一的非同步預處理器 (處理圖片與程式碼高亮)。
+- [x] 任務 1: 在 `services/pptGenerator.ts` 的 `generatePpt` 中實作統一的非同步預處理器 (處理圖片與程式碼高亮)。(96a0ad0)
 - [ ] 任務 2: 遷移並實作 `HeadingRenderer` 與 `ParagraphRenderer` (同步)。
 - [ ] 任務 3: 遷移並實作 `ListRenderer`, `ImageRenderer` 與 `CodeBlockRenderer` (同步，讀取預處理資料)。
 - [ ] 任務 4: 遷移並實作 `ChatCustomRenderer` (同步)。
