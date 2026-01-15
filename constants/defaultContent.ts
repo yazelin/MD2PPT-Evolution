@@ -28,28 +28,72 @@ bg: "#D24726"
 
 ===
 ---
-layout: two-column
+layout: center
+background: "#1e293b"
 ---
 
-# 1. 雙欄排版功能
-
-### 內容優勢
-- 內容與背景圖片完全分離
-- 這是內容中的圖片：
-![內容圖](https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop)
+# 1. 居中佈局
+## 內容會垂直且水平居中，適合轉場頁。
 
 ===
 ---
-layout: full-bg
+layout: grid
+columns: 3
+---
+
+# 2. 網格佈局 (3 欄)
+
+### 左側欄位
+這是第一欄的內容。
+
+### 中間欄位
+這是第二欄的內容。
+
+### 右側欄位
+這是第三欄的內容。
+
+===
+---
+layout: quote
+---
+
+> "創造未來的最好方式就是去發明它。"
+- Alan Kay
+
+===
+---
+layout: alert
+---
+
+# 3. 告警佈局
+## 這是一個醒目的提示，適合強調核心結論。
+
+===
+---
+layout: two-column
+---
+
+# 4. 專業表格樣式
+
+::: table-modern
+| 功能 | 支援度 | 備註 |
+| :--- | :---: | :--- |
+| YAML 配置 | 高 | 支援背景、佈局 |
+| 多樣佈局 | 高 | Grid, Quote, Center |
+| 自動分頁 | 高 | 使用 === 語法 |
+:::
+
+===
+---
 bgImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
 ---
 
-# 2. 背景圖片演示
+# 5. 背景圖片演示
 ## 透過 YAML 設定背景，內容可自由疊加
 
 ===
 
-# 3. 程式碼高亮支援
+# 6. 程式碼高亮支援
 
 ${BT}${BT}${BT}typescript
 // 現在您可以使用 === 作為分頁符號
@@ -99,28 +143,72 @@ bg: "#D24726"
 
 ===
 ---
-layout: two-column
+layout: center
+background: "#1e293b"
 ---
 
-# 1. Two-Column Layout
-
-### Advantages
-- Backgrounds & content images are separated
-- Here is a content image:
-![Content](https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop)
+# 1. Center Layout
+## Content is vertically and horizontally centered.
 
 ===
 ---
-layout: full-bg
+layout: grid
+columns: 3
+---
+
+# 2. Grid Layout (3 Cols)
+
+### Left
+Column 1 content.
+
+### Middle
+Column 2 content.
+
+### Right
+Column 3 content.
+
+===
+---
+layout: quote
+---
+
+> "The best way to predict the future is to invent it."
+- Alan Kay
+
+===
+---
+layout: alert
+---
+
+# 3. Alert Layout
+## An eye-catching slide for important announcements.
+
+===
+---
+layout: two-column
+---
+
+# 4. Modern Table Styling
+
+::: table-modern
+| Feature | Support | Note |
+| :--- | :---: | :--- |
+| YAML Config | High | BG, Layout |
+| New Layouts | High | Grid, Quote, etc. |
+| Separator | High | Use === syntax |
+:::
+
+===
+---
 bgImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
 ---
 
-# 2. Background Image
+# 5. Background Image
 ## Set via YAML, text layers on top
 
 ===
 
-# 3. Syntax Highlighting
+# 6. Syntax Highlighting
 
 ${BT}${BT}${BT}typescript
 // You can now use === as slide separator
