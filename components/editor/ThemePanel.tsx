@@ -2,10 +2,11 @@
  * MD2PPT-Evolution
  * Color Picker Tool (Sidebar)
  * Copyright (c) 2026 EricHuang
+ * Licensed under the MIT License.
  */
 
 import React from 'react';
-import { X, Pipette, Palette, Hash } from 'lucide-react';
+import { X, Pipette, Palette, Hash, Copy, Check } from 'lucide-react';
 
 interface ColorPickerPanelProps {
   onClose: () => void;
@@ -23,6 +24,7 @@ const PRESET_BLOCKS = [
 
 export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertColor }) => {
   const [customHex, setCustomHex] = React.useState('#EA580C');
+  const [copySuccess, setCopySuccess] = React.useState(false);
 
   const handleCustomColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const hex = e.target.value;
@@ -33,6 +35,16 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
     onInsertColor(customHex.toUpperCase());
   };
 
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(customHex.toUpperCase());
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy color", err);
+    }
+  };
+
   return (
     <div className="absolute top-14 left-14 bottom-0 w-72 bg-white dark:bg-[#1C1917] border-r border-[#E7E5E4] dark:border-[#44403C] shadow-2xl z-30 flex flex-col animate-in slide-in-from-left duration-300">
       {/* Header */}
@@ -41,7 +53,7 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
           <Pipette size={14} className="text-[#EA580C]" />
           Color Picker Tool
         </div>
-        <button onClick={onClose} className="p-1 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-md text-stone-400">
+        <button onClick={onClose} className="p-1 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-md text-stone-400 transition-colors">
           <X size={16} />
         </button>
       </div>
@@ -77,7 +89,7 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
           </label>
           
           <div className="flex flex-col items-center gap-4 bg-stone-50 dark:bg-white/5 p-4 rounded-2xl border border-dashed border-stone-200 dark:border-white/10">
-            <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-inner border-4 border-white dark:border-stone-800 group">
+            <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-inner border-4 border-white dark:border-stone-800 group transition-transform hover:scale-105 active:scale-95">
               <input 
                 type="color"
                 value={customHex}
@@ -101,10 +113,22 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
                     placeholder="FFFFFF"
                   />
                 </div>
-                <div 
-                  className="w-10 h-10 rounded-lg shadow-sm border border-stone-200 dark:border-white/10" 
-                  style={{ backgroundColor: customHex }} 
-                />
+                
+                {/* Copy Button Container */}
+                <button
+                  onClick={handleCopyCode}
+                  title="Copy Hex Code"
+                  className="w-10 h-10 rounded-lg shadow-sm border border-stone-200 dark:border-white/10 relative overflow-hidden group transition-all hover:scale-110 active:scale-90 ring-offset-2 focus:ring-2 focus:ring-orange-500"
+                  style={{ backgroundColor: customHex }}
+                >
+                  <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copySuccess ? 'bg-green-500' : 'bg-black/0 group-hover:bg-black/20'}`}>
+                    {copySuccess ? (
+                      <Check size={16} className="text-white animate-in zoom-in duration-300" />
+                    ) : (
+                      <Copy size={14} className={`transition-opacity duration-200 ${customHex.toLowerCase() === '#ffffff' ? 'text-stone-400' : 'text-white'} opacity-0 group-hover:opacity-100`} />
+                    )}
+                  </div>
+                </button>
               </div>
               
               <button
@@ -118,8 +142,8 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
         </section>
       </div>
 
-      <div className="p-4 bg-stone-50 dark:bg-stone-900/50 text-[9px] text-stone-400 font-medium leading-relaxed">
-        提示：點擊色塊將自動插入 Hex 色碼至目前游標位置。
+      <div className="p-4 bg-stone-50 dark:bg-stone-900/50 text-[9px] text-stone-400 font-medium leading-relaxed border-t border-stone-100 dark:border-white/5">
+        提示：點擊色塊將自動插入 Hex 色碼。點擊色碼方塊可直接複製。
       </div>
     </div>
   );
