@@ -5,6 +5,18 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [0.6.1] - 2026-01-16
+
+### 優化 (Improved)
+- **語法簡化**: 移除 `::: table-modern` 強制指令，現在所有標準 Markdown 表格匯出時預設套用專業樣式 (交錯底色、主題標題)。
+- **快捷側欄擴充**: 補全 Two-Column, Center 佈局及 Line/Area 圖表、對話框的快捷插入按鈕。
+- **Grid 佈局邏輯**: 優化 Grid 佈局的自動分欄算法，改為「順序填充 (Sequential Filling)」，確保標題與內容區塊不會被拆散。
+
+### 修復 (Fixed)
+- **PPTX 清單渲染**: 修復了 PPTX 匯出時連續清單 (Numbered List) 被拆分為獨立段落導致編號重置的問題，並支援清單內的粗體/斜體渲染。
+- **預設內容修復**: 修正了 `defaultContent.ts` 中的 Template Literal 插值語法錯誤，解決了專案建置失敗的問題。
+- **引用區塊渲染**: 修復了 `layout: quote` 中引用內容可能消失的 Bug，現在能正確顯示引用文字與作者。
+
 ## [0.6.0] - 2026-01-16
 
 ### 新增 (Added)
