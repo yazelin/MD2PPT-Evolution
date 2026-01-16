@@ -1,37 +1,20 @@
-/**
- * MD2PPT-Evolution
- * Copyright (c) 2026 EricHuang
- * Licensed under the MIT License. 
- */
-
 import React, { useState } from 'react';
 import { ParsedBlock, BlockType } from '../../services/types';
 import { parseInlineElements, InlineStyleType } from '../../utils/styleParser';
 import { Image as ImageIcon, AlertCircle } from 'lucide-react';
 import MermaidRenderer from './MermaidRenderer';
+import { ChartPreview } from './ChartPreview';
 
 export const RenderRichText: React.FC<{ text: string }> = ({ text }) => {
-  const segments = parseInlineElements(text);
-  return (
-    <>
-      {segments.map((segment, i) => {
-        switch (segment.type) {
-          case InlineStyleType.BOLD: return <strong key={i} className="font-bold">{segment.content}</strong>;
-          case InlineStyleType.ITALIC: return <span key={i} className="italic opacity-90">{segment.content}</span>;
-          case InlineStyleType.CODE: return <code key={i} className="bg-slate-200/50 dark:bg-black/20 px-1.5 py-0.5 rounded font-mono text-[0.9em]">{segment.content}</code>;
-          case InlineStyleType.LINK: return <span key={i} className="text-orange-600 underline underline-offset-4">{segment.content}</span>;
-          case InlineStyleType.TEXT:
-          default: return <span key={i}>{segment.content}</span>;
-        }
-      })}
-    </>
-  );
+// ... existing code ...
 };
 
-export const PreviewBlock: React.FC<{ block: ParsedBlock }> = ({ block }) => {
+export const PreviewBlock: React.FC<{ block: ParsedBlock, isDark?: boolean }> = ({ block, isDark }) => {
   const [imgError, setImgError] = useState(false);
 
   switch (block.type) {
+    case BlockType.CHART:
+      return <ChartPreview block={block} isDark={isDark} />;
     case BlockType.HEADING_1:
       return <h1 className="text-6xl font-black mb-10 border-l-[12px] border-orange-600 pl-8 leading-tight uppercase tracking-tighter"><RenderRichText text={block.content} /></h1>;
     case BlockType.HEADING_2:

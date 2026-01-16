@@ -11,16 +11,16 @@
     - [x] 實作資料提取邏輯（第一列為類別，其餘為序列）
 - [x] 任務：Conductor - User Manual Verification '階段 1' (Protocol in workflow.md)
 
-## 階段 2：Web 預覽實作 (Recharts 整合)
+## 階段 2：Web 預覽實作 (Recharts 整合) [checkpoint: PHASE_2_SHA]
 **目標：** 在網頁預覽端渲染高品質的即時圖表。
 
-- [ ] 任務：引入 Recharts 與建立基礎渲染組件
-    - [ ] 安裝 `recharts` 依賴
-    - [ ] 實作 `ChartPreview` 組件，支援不同類型的圖表渲染
-- [ ] 任務：整合至 PreviewRenderers
-    - [ ] 更新 `components/editor/PreviewRenderers.tsx`，加入對 Chart Block 的渲染分支
-    - [ ] 確保圖表配色能響應當前 UI 主題 (Dark/Light)
-- [ ] 任務：Conductor - User Manual Verification '階段 2' (Protocol in workflow.md)
+- [x] 任務：引入 Recharts 與建立基礎渲染組件
+    - [x] 安裝 `recharts` 依賴
+    - [x] 實作 `ChartPreview` 組件，支援不同類型的圖表渲染
+- [x] 任務：整合至 PreviewRenderers
+    - [x] 更新 `components/editor/PreviewRenderers.tsx`，加入對 Chart Block 的渲染分支
+    - [x] 確保圖表配色能響應當前 UI 主題 (Dark/Light)
+- [x] 任務：Conductor - User Manual Verification '階段 2' (Protocol in workflow.md)
 
 ## 階段 3：PPTX 引擎導出同步
 **目標：** 調用 `pptxgenjs` API 生成原生圖表物件。

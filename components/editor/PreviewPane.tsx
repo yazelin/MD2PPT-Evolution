@@ -106,7 +106,7 @@ const SlideContent: React.FC<{ slide: SlideData, isDark?: boolean }> = ({ slide,
         while (i < contentBlocks.length && contentBlocks[i].type === type) { listItems.push(contentBlocks[i]); i++; }
         const ListTag = isOrdered ? 'ol' : 'ul';
         elements.push(<ListTag key={`list-${i}`} className={`ml-14 mb-8 ${isOrdered ? 'list-decimal' : ''}`}>{listItems.map((item, idx) => (<li key={idx} className={`mb-5 pl-4 leading-relaxed text-4xl ${!isOrdered ? "relative list-none before:content-[''] before:absolute before:left-[-1.5em] before:top-[0.6em] before:w-3.5 before:h-3.5 before:bg-[#EA580C] before:rounded-full" : ""}`}><RenderRichText text={item.content} /></li>))}</ListTag>);
-      } else { elements.push(<PreviewBlock key={i} block={block} />); i++; }
+      } else { elements.push(<PreviewBlock key={i} block={block} isDark={isDark} />); i++; }
     }
     return elements;
   };
