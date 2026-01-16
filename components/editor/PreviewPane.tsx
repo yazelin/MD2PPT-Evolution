@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useRef, useLayoutEffect } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, StickyNote } from 'lucide-react';
 import { ParsedBlock, BlockType } from '../../services/types';
 import { PreviewBlock, RenderRichText } from './PreviewRenderers';
 import { splitBlocksToSlides, SlideData } from '../../services/parser/slides';
@@ -26,7 +26,8 @@ const SlideCard: React.FC<{
   layout: { width: number; height: number }; 
   globalBg?: string;
   onUpdateConfig?: (index: number, key: string, value: string) => void;
-}> = ({ slide, index, layout, globalBg, onUpdateConfig }) => {
+  showNotes?: boolean;
+}> = ({ slide, index, layout, globalBg, onUpdateConfig, showNotes }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -68,24 +69,39 @@ const SlideCard: React.FC<{
   const designHeight = DESIGN_WIDTH * (layout.height / layout.width);
   const transitionType = slide.config?.transition || 'none';
 
+  const note = slide.config?.note || slide.metadata?.note;
+
   return (
-    <div 
-      ref={containerRef}
-      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-      onDragLeave={() => setIsDragging(false)}
-      onDrop={handleDrop}
-      className={`w-full shadow-[0_30px_60px_rgba(0,0,0,0.12)] relative overflow-hidden bg-[#E7E5E4] dark:bg-[#44403C] rounded-lg transition-all duration-500 ${
-        transitionType === 'fade' ? 'animate-in fade-in' : 
-        transitionType === 'slide' ? 'animate-in slide-in-from-right' : 
-        transitionType === 'zoom' ? 'animate-in zoom-in' : ''
-      } ${isDragging ? 'ring-4 ring-orange-500 scale-[1.02]' : ''}`} 
-      style={{ aspectRatio: `${layout.width} / ${layout.height}` }}
-    >
-      <div style={{ width: `${DESIGN_WIDTH}px`, height: `${designHeight}px`, transform: `scale(${scale})`, transformOrigin: 'top left', backgroundColor: bgImage ? 'transparent' : bgColor, color: isDark ? '#FFFFFF' : '#1C1917', position: 'absolute', top: 0, left: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {bgImage && <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${bgImage})` }}><div className="absolute inset-0 bg-black/40"></div></div>}
-        <div className={`absolute top-6 right-10 text-xs font-black uppercase tracking-[0.3em] z-20 ${isDark ? 'text-white/20' : 'text-stone-400/20'}`}>Slide {index + 1}</div>
-        <div className="flex-1 relative z-10 flex flex-col p-[80px_100px]"><SlideContent slide={slide} isDark={isDark} /></div>
+    <div className="flex flex-col gap-4">
+      <div 
+        ref={containerRef}
+        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={handleDrop}
+        className={`w-full shadow-[0_30px_60px_rgba(0,0,0,0.12)] relative overflow-hidden bg-[#E7E5E4] dark:bg-[#44403C] rounded-lg transition-all duration-500 ${
+          transitionType === 'fade' ? 'animate-in fade-in' : 
+          transitionType === 'slide' ? 'animate-in slide-in-from-right' : 
+          transitionType === 'zoom' ? 'animate-in zoom-in' : ''
+        } ${isDragging ? 'ring-4 ring-orange-500 scale-[1.02]' : ''}`} 
+        style={{ aspectRatio: `${layout.width} / ${layout.height}` }}
+      >
+        <div style={{ width: `${DESIGN_WIDTH}px`, height: `${designHeight}px`, transform: `scale(${scale})`, transformOrigin: 'top left', backgroundColor: bgImage ? 'transparent' : bgColor, color: isDark ? '#FFFFFF' : '#1C1917', position: 'absolute', top: 0, left: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {bgImage && <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${bgImage})` }}><div className="absolute inset-0 bg-black/40"></div></div>}
+          <div className={`absolute top-6 right-10 text-xs font-black uppercase tracking-[0.3em] z-20 ${isDark ? 'text-white/20' : 'text-stone-400/20'}`}>Slide {index + 1}</div>
+          <div className="flex-1 relative z-10 flex flex-col p-[80px_100px]"><SlideContent slide={slide} isDark={isDark} /></div>
+        </div>
       </div>
+
+      {showNotes && note && (
+        <div className="bg-amber-50 dark:bg-amber-900/10 border-l-4 border-amber-500 p-6 rounded-r-xl shadow-sm animate-in slide-in-from-top duration-300">
+          <div className="flex items-center gap-2 mb-2 text-amber-600 dark:text-amber-400 font-black text-[10px] uppercase tracking-wider">
+            <StickyNote size={14} /> Speaker Notes
+          </div>
+          <div className="text-stone-700 dark:text-stone-300 text-sm leading-relaxed whitespace-pre-wrap font-medium">
+            {note}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -170,7 +186,7 @@ const SlideContent: React.FC<{ slide: SlideData, isDark?: boolean }> = ({ slide,
 };
 
 export const PreviewPane: React.FC<PreviewPaneProps> = ({ parsedBlocks, previewRef, onUpdateSlideConfig }) => {
-  const { pageSizes, selectedSizeIndex, documentMeta } = useEditor();
+  const { pageSizes, selectedSizeIndex, documentMeta, showNotes } = useEditor();
   const selectedLayout = pageSizes[selectedSizeIndex];
   const slides = splitBlocksToSlides(parsedBlocks);
 
@@ -192,6 +208,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({ parsedBlocks, previewR
               layout={selectedLayout} 
               globalBg={documentMeta.bg}
               onUpdateConfig={onUpdateSlideConfig} 
+              showNotes={showNotes}
             />
           )) : (
             <div className="h-full flex flex-col items-center justify-center text-stone-300 dark:text-stone-700 mt-20 opacity-30"><Sparkles className="w-16 h-16 mb-6" /><p className="font-bold tracking-[0.5em] uppercase">Composition Canvas</p></div>

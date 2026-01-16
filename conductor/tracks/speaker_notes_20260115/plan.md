@@ -22,15 +22,15 @@
     - [x] 根據 `showNotes` 狀態實作按鈕的高亮效果
 - [x] 任務：Conductor - User Manual Verification '階段 2' (Protocol in workflow.md) (PHASE_2_SHA)
 
-## 階段 3：預覽介面渲染
+## 階段 3：預覽介面渲染 [checkpoint: PHASE_3_SHA]
 **目標：** 在網頁預覽中，當開關開啟時顯示每張投影片的備忘錄。
 
-- [ ] 任務：實作 SlideNotes 渲染組件
-    - [ ] 在 `components/editor/PreviewPane.tsx` 中，於 `SlideCard` 下方新增備忘錄顯示區域
-    - [ ] 使用琥珀色系樣式 (Amber Border/BG) 與 `StickyNote` 圖示裝飾
-- [ ] 任務：響應式佈局調整
-    - [ ] 確保備忘錄展開時，預覽區域的滾動與間距依然維持美觀
-- [ ] 任務：Conductor - User Manual Verification '階段 3' (Protocol in workflow.md)
+- [x] 任務：實作 SlideNotes 渲染組件 (PHASE_3_SHA)
+    - [x] 在 `components/editor/PreviewPane.tsx` 中，於 `SlideCard` 下方新增備忘錄顯示區域
+    - [x] 使用琥珀色系樣式 (Amber Border/BG) 與 `StickyNote` 圖示裝飾
+- [x] 任務：響應式佈局調整 (PHASE_3_SHA)
+    - [x] 確保備忘錄展開時，預覽區域的滾動與間距依然維持美觀
+- [x] 任務：Conductor - User Manual Verification '階段 3' (Protocol in workflow.md) (PHASE_3_SHA)
 
 ## 階段 4：PPTX 匯出與最終磨合
 **目標：** 確保匯出的 PPTX 檔案包含原生備忘錄，並更新快捷側欄。
