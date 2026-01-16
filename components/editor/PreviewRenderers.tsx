@@ -6,7 +6,21 @@ import MermaidRenderer from './MermaidRenderer';
 import { ChartPreview } from './ChartPreview';
 
 export const RenderRichText: React.FC<{ text: string }> = ({ text }) => {
-// ... existing code ...
+  const segments = parseInlineElements(text);
+  return (
+    <>
+      {segments.map((segment, i) => {
+        switch (segment.type) {
+          case InlineStyleType.BOLD: return <strong key={i} className="font-bold">{segment.content}</strong>;
+          case InlineStyleType.ITALIC: return <span key={i} className="italic opacity-90">{segment.content}</span>;
+          case InlineStyleType.CODE: return <code key={i} className="bg-slate-200/50 dark:bg-black/20 px-1.5 py-0.5 rounded font-mono text-[0.9em]">{segment.content}</code>;
+          case InlineStyleType.LINK: return <span key={i} className="text-orange-600 underline underline-offset-4">{segment.content}</span>;
+          case InlineStyleType.TEXT:
+          default: return <span key={i}>{segment.content}</span>;
+        }
+      })}
+    </>
+  );
 };
 
 export const PreviewBlock: React.FC<{ block: ParsedBlock, isDark?: boolean }> = ({ block, isDark }) => {
