@@ -7,7 +7,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Settings2, Download, Sun, Moon, RotateCcw, Languages, 
-  FileText, StickyNote, Palette, Check, ChevronDown 
+  FileText, StickyNote, Palette, Check, ChevronDown, Maximize 
 } from 'lucide-react';
 import { useEditor } from '../../contexts/EditorContext';
 import { Button } from '../ui/Button';
@@ -38,8 +38,11 @@ export const EditorHeader: React.FC = () => {
   } = useEditor() as any;
 
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
+  const [isSizeDropdownOpen, setIsSizeDropdownOpen] = useState(false);
   const [showThemeSaved, setShowThemeSaved] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const themeDropdownRef = useRef<HTMLDivElement>(null);
+  const sizeDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleThemeChange = (id: string) => {
     setActiveThemeId(id);
@@ -48,10 +51,18 @@ export const EditorHeader: React.FC = () => {
     setTimeout(() => setShowThemeSaved(false), 2000);
   };
 
+  const handleSizeChange = (index: number) => {
+    setSelectedSizeIndex(index);
+    setIsSizeDropdownOpen(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target as Node)) {
         setIsThemeDropdownOpen(false);
+      }
+      if (sizeDropdownRef.current && !sizeDropdownRef.current.contains(event.target as Node)) {
+        setIsSizeDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -61,6 +72,7 @@ export const EditorHeader: React.FC = () => {
   const logoPath = `${import.meta.env.BASE_URL}logo.svg`;
   const hasContent = parsedBlocks.length > 0;
   const headerBg = isDark ? 'bg-[#141414]/90' : 'bg-[#1C1917]/95';
+  const selectedSize = pageSizes[selectedSizeIndex];
 
   return (
     <header className={`${headerBg} backdrop-blur-xl px-4 lg:px-8 py-3 flex justify-between items-center z-40 shadow-2xl relative transition-all duration-500 border-b border-white/5`}>
@@ -85,7 +97,7 @@ export const EditorHeader: React.FC = () => {
       </div>
       
       {/* Right: Actions */}
-      <div className="flex items-center gap-2 lg:gap-4">
+      <div className="flex items-center gap-2 lg:gap-4 overflow-visible">
         
         {/* Color Tool Toggle */}
         <IconButton 
@@ -101,10 +113,10 @@ export const EditorHeader: React.FC = () => {
         <div className="w-[1px] h-6 bg-white/10 mx-0.5 lg:mx-1 shrink-0" />
 
         {/* Custom Theme Dropdown */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative shrink-0" ref={themeDropdownRef}>
           <button
-            onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
-            className="flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-[#EA580C]/50 transition-all text-white min-w-[140px] lg:min-w-[180px]"
+            onClick={() => { setIsThemeDropdownOpen(!isThemeDropdownOpen); setIsSizeDropdownOpen(false); }}
+            className="flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-[#EA580C]/50 transition-all text-white min-w-[120px] lg:min-w-[180px]"
           >
             <div className="flex gap-1 shrink-0">
               <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: `#${activeTheme.colors.primary}` }} />
@@ -147,33 +159,51 @@ export const EditorHeader: React.FC = () => {
           )}
         </div>
 
-        <div className="w-[1px] h-6 bg-white/10 mx-0.5 lg:mx-1 shrink-0 hidden md:block" />
+        <div className="w-[1px] h-6 bg-white/10 mx-0.5 lg:mx-1 shrink-0" />
 
-        {/* Paper Size Selector - Restored and Beautified */}
-        <div className="relative shrink-0">
-          <select 
-            value={selectedSizeIndex}
-            onChange={(e) => setSelectedSizeIndex(Number(e.target.value))}
-            className="h-10 pl-10 pr-8 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] lg:text-xs font-bold outline-none hover:border-[#EA580C]/50 transition-all appearance-none cursor-pointer min-w-[120px] lg:min-w-[150px]"
-            style={{ backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1em' }}
+        {/* Custom Paper Size Dropdown */}
+        <div className="relative shrink-0" ref={sizeDropdownRef}>
+          <button
+            onClick={() => { setIsSizeDropdownOpen(!isSizeDropdownOpen); setIsThemeDropdownOpen(false); }}
+            className="flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-[#EA580C]/50 transition-all text-white min-w-[100px] lg:min-w-[150px]"
           >
-              {pageSizes.map((size, index) => (
-                <option key={index} value={index} className="text-slate-900 bg-white">
-                  {t(`sizes.${size.name}`)}
-                </option>
+            <Settings2 size={14} className="text-[#FB923C] shrink-0" />
+            <span className="text-[10px] lg:text-xs font-black uppercase tracking-wider flex-1 text-left truncate">
+              {t(`sizes.${selectedSize.name}`)}
+            </span>
+            <ChevronDown size={14} className={`transition-transform duration-300 shrink-0 ${isSizeDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isSizeDropdownOpen && (
+            <div className="absolute top-full mt-2 right-0 w-56 lg:w-60 bg-[#1C1917] border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] py-2 z-[60] animate-in zoom-in-95 fade-in duration-200 origin-top-right">
+              <div className="px-4 py-2 mb-1 border-b border-white/5">
+                <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest">Page Layout</span>
+              </div>
+              {pageSizes.map((size: any, index: number) => (
+                <button
+                  key={index}
+                  onClick={() => handleSizeChange(index)}
+                  className={`w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors group ${selectedSizeIndex === index ? 'text-[#EA580C]' : 'text-stone-300'}`}
+                >
+                  <div className="flex items-center gap-3 text-left">
+                    <Maximize size={14} className={selectedSizeIndex === index ? 'text-[#EA580C]' : 'text-stone-500'} />
+                    <span className="text-sm font-bold">{t(`sizes.${size.name}`)}</span>
+                  </div>
+                  {selectedSizeIndex === index && <Check size={14} />}
+                </button>
               ))}
-          </select>
-          <Settings2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#FB923C] pointer-events-none" />
+            </div>
+          )}
         </div>
 
-        <div className="w-[1px] h-6 bg-white/10 mx-0.5 lg:mx-1 shrink-0 hidden lg:block" />
+        <div className="w-[1px] h-6 bg-white/10 mx-0.5 lg:mx-1 shrink-0 hidden md:block" />
 
         {/* Controls Group */}
         <div className="flex items-center bg-white/5 p-1 rounded-xl border border-white/10 backdrop-blur-md shrink-0">
-          <IconButton onClick={resetToDefault} title={t('reset')} onBrand className="hidden xl:flex">
+          <IconButton onClick={resetToDefault} title={t('reset')} onBrand className="flex">
             <RotateCcw className="w-4 h-4" />
           </IconButton>
-          <div className="w-[1px] h-4 bg-white/10 mx-1 hidden xl:block" />
+          <div className="w-[1px] h-4 bg-white/10 mx-1" />
           <IconButton onClick={toggleLanguage} className="gap-2 px-2 lg:px-3 w-auto" onBrand>
             <Languages className="w-4 h-4" />
             <span className="text-[10px] font-black uppercase">{language === 'zh' ? 'EN' : 'ZH'}</span>
