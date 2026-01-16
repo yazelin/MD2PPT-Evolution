@@ -1,6 +1,6 @@
 # 執行計畫：演講者備忘錄系統 (speaker_notes_20260115)
 
-## 階段 1：解析器強化 - 提取隱藏註解 [checkpoint: PHASE_1_SHA]
+## 階段 1：解析器強化 - 提取隱藏註解 [checkpoint: 40b2945]
 **目標：** 讓解析器能識別並提取 `<!-- note: ... -->` 語法，並將其存入 Slide Object Model。
 
 - [x] 任務：更新 AST 解析器識別註解 (fb9e858)
