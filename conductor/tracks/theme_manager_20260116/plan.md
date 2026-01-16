@@ -24,16 +24,16 @@
     - [x] 實作主題選擇器 (Dropdown) 與全域設定（字體、預設背景）的 UI
 - [x] 任務：Conductor - User Manual Verification '階段 2' (Protocol in workflow.md) (63759fe)
 
-## 階段 3：混合驅動邏輯與 PPTX 引擎同步
+## 階段 3：混合驅動邏輯與 PPTX 引擎同步 [checkpoint: 032a41a]
 **目標：** 實現 YAML 優先的主題讀取邏輯，並讓 PPT 導出引擎能動態套用樣式。
 
-- [ ] 任務：實作混合主題解析
-    - [ ] 更新 `services/markdownParser.ts`，從全域 YAML 提取 `theme` 欄位
-    - [ ] 實作計算邏輯：當 Markdown 未定義 theme 時，回退使用 UI 選擇的主題
-- [ ] 任務：動態化 PPTX 生成器樣式
-    - [ ] 修改 `services/pptGenerator.ts`，將原本寫死的 `PPT_THEME` 改為根據 activeTheme 動態注入
-    - [ ] 更新 `ChartRenderer` 與 `TableRenderer`，使其顏色序列能跟隨主題變動
-- [ ] 任務：Conductor - User Manual Verification '階段 3' (Protocol in workflow.md)
+- [x] 任務：實作混合主題解析 (032a41a)
+    - [x] 更新 `services/markdownParser.ts`，從全域 YAML 提取 `theme` 欄位
+    - [x] 實作計算邏輯：當 Markdown 未定義 theme 時，回退使用 UI 選擇的主題
+- [x] 任務：動態化 PPTX 生成器樣式 (032a41a)
+    - [x] 修改 `services/pptGenerator.ts`，將原本寫死的 `PPT_THEME` 改為根據 activeTheme 動態注入
+    - [x] 更新 `ChartRenderer` 與 `TableRenderer`，使其顏色序列能跟隨主題變動
+- [x] 任務：Conductor - User Manual Verification '階段 3' (Protocol in workflow.md) (032a41a)
 
 ## 階段 4：預設主題磨合與文檔更新
 **目標：** 完成 4 種預設主題的細節調校，並更新版本資訊與教學。
