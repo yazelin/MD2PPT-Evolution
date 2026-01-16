@@ -1,0 +1,8 @@
+{
+  "track_id": "native_charts_20260115",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-15T17:47:00Z",
+  "updated_at": "2026-01-15T17:47:00Z",
+  "description": "實作將 Markdown 表格數據轉換為 PPTX 的原生可編輯圖表（Native Editable Charts）。"
+}
