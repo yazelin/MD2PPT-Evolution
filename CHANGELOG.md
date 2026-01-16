@@ -5,6 +5,15 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [0.6.0] - 2026-01-16
+
+### 新增 (Added)
+- **原生圖表 (Native Charts)**: 
+    - 引入 `::: chart-*` 容器指令，支援 Bar, Line, Pie, Area 四種圖表類型。
+    - 網頁預覽整合 `Recharts`，提供互動式圖表預覽。
+    - PPTX 匯出引擎支援生成原生可編輯的 PowerPoint 圖表物件。
+- **圖表配置參數**: 支援 `title`, `showLegend`, `showValues` 等 JSON 參數配置。
+
 ## [0.5.0] - 2026-01-15
 
 ### 新增 (Added)

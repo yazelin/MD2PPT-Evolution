@@ -1,12 +1,12 @@
 # MD2PPT-EVOLUTION
 
-![Version](https://img.shields.io/badge/version-0.5.0-orange.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Version](https://img.shields.io/badge/version-0.6.0-orange.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 **MD2PPT-EVOLUTION** 是一個專為技術講者、開發者與教育工作者打造的現代化工具。它能將您的 **Markdown** 筆記瞬間轉換為專業級的 **PowerPoint (PPTX)** 簡報，讓您專注於內容創作，而非排版微調。
 
 ---
 
-## 🚀 核心功能 (v0.5.0)
+## 🚀 核心功能 (v0.6.0)
 
 ### ✍️ 極致寫作體驗
 - **快捷動作側欄 (Quick Actions)**: 左側懸浮工具列，一鍵插入投影片、佈局模版與常用元件，無需記憶語法。
@@ -16,6 +16,7 @@
 - **所見即所得 (WYSIWYG)**: 獨家的 1:1 動態縮放預覽系統，確保網頁看到的畫面與匯出的 PPTX 完全一致。
 
 ### 🎨 專業排版系統
+- **原生圖表 (Native Charts)**: 支援將 Markdown 表格數據轉為 PPTX 原生可編輯圖表（Bar, Line, Pie, Area）。
 - **分層配置架構**: 採用 `===` 作為分頁符號，並支援每頁獨立的 YAML 配置區塊 (`---`)。
 - **多樣化佈局支援**:
     - **Grid**: 網格佈局，支援自定義欄數。

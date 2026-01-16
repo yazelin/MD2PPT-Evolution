@@ -21,6 +21,7 @@ MD2PPT-Evolution 旨在將 Markdown 的寫作效率與 PowerPoint 的專業發�
 - **技術優先**：
     - **程式碼高亮**：匯出至 PPT 後仍保持語法顏色，且為可編輯文字。
     - **強化表格渲染**：支援 `::: table-modern` 指令，將 Markdown 表格轉換為專業設計的 PPT 原生表格物件。
+    - **原生圖表**：支援 `::: chart-*` 指令，將 Markdown 數據轉換為 PPTX 原生可編輯圖表（Bar, Line, Pie, Area）。
     - **Mermaid 支援**：支援流程圖與序列圖的即時預覽。
     - **圖片嵌入**：支援 Markdown 標準語法與 Base64 圖片嵌入。
 - **角色對話模式**：針對工程師與技術文件設計的特殊語法，模擬對話流。
