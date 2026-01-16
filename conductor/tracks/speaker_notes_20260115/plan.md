@@ -32,15 +32,15 @@
     - [x] 確保備忘錄展開時，預覽區域的滾動與間距依然維持美觀
 - [x] 任務：Conductor - User Manual Verification '階段 3' (Protocol in workflow.md) (PHASE_3_SHA)
 
-## 階段 4：PPTX 匯出與最終磨合
+## 階段 4：PPTX 匯出與最終磨合 [checkpoint: PHASE_4_SHA]
 **目標：** 確保匯出的 PPTX 檔案包含原生備忘錄，並更新快捷側欄。
 
-- [ ] 任務：同步 PPTX 匯出引擎
-    - [ ] 驗證 `services/pptGenerator.ts` 是否正確呼叫 `slide.addNotes()`
-    - [ ] 進行端到端測試，確認 PowerPoint 中的「備忘錄」欄位內容正確
-- [ ] 任務：更新快捷動作側欄與模板
-    - [ ] 在 `components/editor/QuickActionSidebar.tsx` 中連結備忘錄按鈕
-    - [ ] 確保模板插入語法為 `<!-- note: $cursor -->`
-- [ ] 任務：更新預設教學內容
-    - [ ] 修改 `constants/defaultContent.ts`，為關鍵分頁加上備忘錄範例
-- [ ] 任務：Conductor - User Manual Verification '階段 4' (Protocol in workflow.md)
+- [x] 任務：同步 PPTX 匯出引擎 (PHASE_4_SHA)
+    - [x] 驗證 `services/pptGenerator.ts` 是否正確呼叫 `slide.addNotes()`
+    - [x] 進行端到端測試，確認 PowerPoint 中的「備忘錄」欄位內容正確
+- [x] 任務：更新快捷動作側欄與模板 (PHASE_4_SHA)
+    - [x] 在 `components/editor/QuickActionSidebar.tsx` 中連結備忘錄按鈕
+    - [x] 確保模板插入語法為 `<!-- note: $cursor -->`
+- [x] 任務：更新預設教學內容 (PHASE_4_SHA)
+    - [x] 修改 `constants/defaultContent.ts`，為關鍵分頁加上備忘錄範例
+- [x] 任務：Conductor - User Manual Verification '階段 4' (Protocol in workflow.md) (PHASE_4_SHA)

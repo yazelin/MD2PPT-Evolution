@@ -28,6 +28,12 @@ transition: slide
 # 歡迎體驗 v0.6.0
 ## 原生圖表．拖放管理．極致排版
 
+<!-- note:
+歡迎使用 MD2PPT-Evolution！
+這一頁展示了我們的品牌色與轉場效果。
+您可以點擊頂部的「備忘錄圖示」來查看這段文字。
+-->
+
 ===
 ---
 layout: grid
@@ -186,6 +192,12 @@ transition: slide
 
 # Welcome to v0.6.0
 ## Native Charts . Drag & Drop . Pro Layouts
+
+<!-- note:
+Welcome to MD2PPT-Evolution!
+This page showcases our brand color and slide transitions.
+Try clicking the StickyNote icon in the header to see these notes!
+-->
 
 ===
 ---
