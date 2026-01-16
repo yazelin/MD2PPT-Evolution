@@ -15,7 +15,10 @@ import { RenderContext } from "./ppt/builders/types";
 import { highlighterService } from "./ppt/HighlighterService";
 
 export interface PptConfig {
-  layoutName?: string; title?: string; author?: string; bg?: string;
+  layoutName?: string; 
+  title?: string; 
+  author?: string; 
+  bg?: string;
   theme?: PptTheme;
 }
 
@@ -25,7 +28,7 @@ const renderBlocksToArea = (slide: any, blocks: ParsedBlock[], x: number, y: num
   const theme = globalOptions.theme as PptTheme;
   
   // Resolve colors from theme or fallback to defaults
-  const themeTextColor = theme ? theme.colors.text : PPT_THEHE.COLORS.TEXT_MAIN;
+  const themeTextColor = theme ? theme.colors.text : PPT_THEME.COLORS.TEXT_MAIN;
   const textColor = isDark ? "FFFFFF" : (globalOptions.color || themeTextColor);
   const themeFont = theme ? theme.fonts.main : PPT_THEME.FONTS.MAIN;
   
@@ -126,7 +129,6 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
     const slide = pptx.addSlide();
     const slideCfg = slideData.config || {};
     const layout = slideCfg.layout || slideData.metadata?.layout;
-    const transition = slideCfg.transition;
     
     // 1. Background Logic
     const themeBg = theme ? theme.colors.background : PPT_THEME.COLORS.BG_SLIDE;
@@ -141,10 +143,6 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
       slide.background = { fill: bgColor };
     }
 
-    // 2. Transition Logic (if supported by library version)
-    // pptxgenjs doesn't have a direct 'transition' property on Slide object in all versions, 
-    // but some versions support it via options. We will apply common ones if available.
-
     if (slideCfg.note || slideData.metadata?.note) {
         slide.addNotes(slideCfg.note || slideData.metadata?.note);
     }
@@ -154,9 +152,9 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
         slideData.blocks.forEach(b => {
             if (b.type === BlockType.CODE_BLOCK) {
                 const lang = b.metadata?.language || 'text';
-                const theme = isDark ? 'github-dark' : 'github-light';
+                const themeName = isDark ? 'github-dark' : 'github-light';
                 try {
-                    b.metadata = { ...b.metadata, tokens: highlighter.codeToTokens(b.content, { lang: lang as any, theme }).tokens };
+                    b.metadata = { ...b.metadata, tokens: highlighter.codeToTokens(b.content, { lang: lang as any, theme: themeName }).tokens };
                 } catch (e) {}
             }
         });
@@ -189,6 +187,7 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
       const itemsPerCol = Math.ceil(otherBlocks.length / cols);
       
       for (let c = 0; c < cols; c++) {
+        // Sequential distribution to match PreviewPane
         const colBlocks = otherBlocks.slice(c * itemsPerCol, (c + 1) * itemsPerCol);
         renderBlocksToArea(slide, colBlocks, margin + (c * (colWidth + gap)), 1.6, colWidth, pptx, renderOpts);
       }
@@ -197,7 +196,5 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
       renderBlocksToArea(slide, otherBlocks, margin, 1.6, contentWidth, pptx, renderOpts);
     }
   }
-  await pptx.writeFile({ fileName: config.title ? `${config.title}.pptx` : "Presentation.pptx" });
-};
   await pptx.writeFile({ fileName: config.title ? `${config.title}.pptx` : "Presentation.pptx" });
 };
