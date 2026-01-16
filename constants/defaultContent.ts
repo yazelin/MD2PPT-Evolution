@@ -8,7 +8,7 @@
 // Use a variable for backticks to avoid escaping hell in template literals
 const BT = "`";
 
-export const INITIAL_CONTENT_ZH = `---
+export const INITIAL_CONTENT_ZH = `--- 
 title: "MD2PPT 全功能展示"
 author: "EricHuang"
 bg: "#FFFFFF"
@@ -91,6 +91,29 @@ columns: 2
 
 ===
 ---
+layout: grid
+columns: 2
+---
+
+# 3. 進階內容支援
+
+### 程式碼高亮
+${BT}${BT}${BT}typescript
+// 支援多種語言高亮
+const hello = (name: string) => {
+  console.log(\`Hello, \${name}!\`);
+};
+${BT}${BT}${BT}
+
+### 角色對話模式
+User ":: 請問這個怎麼用？
+
+AI ::" 非常簡單，直接寫就對了！
+
+System :": 系統提示：已自動存檔
+
+===
+---
 layout: quote
 ---
 
@@ -102,15 +125,16 @@ layout: quote
 layout: alert
 ---
 
-# 3. 重點提示
+# 4. 重點提示
 ## 使用 Alert 佈局來強調您的核心結論或注意事項。
 
 ===
 ---
-layout: two-column
+layout: grid
+columns: 2
 ---
 
-# 4. 專業表格與互動
+# 5. 專業表格與互動
 
 ### 現代化表格
 ::: table-modern
@@ -137,7 +161,7 @@ background: "#1C1917"
 
 `;
 
-export const INITIAL_CONTENT_EN = `---
+export const INITIAL_CONTENT_EN = `--- 
 title: "MD2PPT Feature Showcase"
 author: "EricHuang"
 bg: "#FFFFFF"
@@ -220,6 +244,29 @@ columns: 2
 
 ===
 ---
+layout: grid
+columns: 2
+---
+
+# 3. Rich Content Support
+
+### Code Highlighting
+${BT}${BT}${BT}typescript
+// Multi-language support
+const hello = (name: string) => {
+  console.log(\`Hello, \${name}!\`);
+};
+${BT}${BT}${BT}
+
+### Character Dialogue
+User ":: How does this work?
+
+AI ::" It's simple, just write!
+
+System :": System: Auto-saved
+
+===
+---
 layout: quote
 ---
 
@@ -231,15 +278,16 @@ layout: quote
 layout: alert
 ---
 
-# 3. Important Note
+# 4. Important Note
 ## Use the Alert layout to highlight key takeaways or warnings.
 
 ===
 ---
-layout: two-column
+layout: grid
+columns: 2
 ---
 
-# 4. Tables & Interactions
+# 5. Tables & Interactions
 
 ### Modern Table
 ::: table-modern
@@ -263,5 +311,3 @@ background: "#1C1917"
 
 # Thank You
 ## MD2PPT-Evolution
-
-`;
