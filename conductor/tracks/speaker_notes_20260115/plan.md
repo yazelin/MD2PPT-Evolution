@@ -11,7 +11,7 @@
     - [x] 確保備忘錄內容從正文區塊中移除，避免出現在投影片畫面上
 - [x] 任務：Conductor - User Manual Verification '階段 1' (Protocol in workflow.md)
 
-## 階段 2：UI 狀態管理與工具列整合 [checkpoint: PHASE_2_SHA]
+## 階段 2：UI 狀態管理與工具列整合 [checkpoint: 1196e7a]
 **目標：** 在全域狀態中新增顯示開關，並在頂部工具列提供操作按鈕。
 
 - [x] 任務：擴充 Editor 狀態 (PHASE_2_SHA)
