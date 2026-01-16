@@ -148,5 +148,68 @@ export const parseMarkdownWithAST = (markdown: string, lineOffset: number = 0, c
      processToken(token, blockStartLine, blockStartIndex);
   });
 
-  return blocks;
+  // Post-processing: Merge Chart Containers
+  const mergedBlocks: ParsedBlock[] = [];
+  let i = 0;
+  // console.log("Blocks before merge:", JSON.stringify(blocks, null, 2));
+  // console.log("Blocks before merge:", JSON.stringify(blocks, null, 2));
+  while (i < blocks.length) {
+    const block = blocks[i];
+    
+    // Check for Chart start: Paragraph starting with "::: chart-"
+    if (block.type === BlockType.PARAGRAPH && block.content.trim().startsWith('::: chart-')) {
+      const match = block.content.trim().match(/^::: (chart-[\w-]+)(?:\s+(.*))?$/);
+      if (match) {
+        const chartType = match[1].replace('chart-', '');
+        let chartConfig = {};
+        try {
+          if (match[2]) {
+            // Attempt to parse JSON config. 
+            // Users might omit quotes for keys, which JSON.parse hates.
+            // For now, assume valid JSON or simple object string.
+            chartConfig = JSON.parse(match[2]);
+          }
+        } catch (e) {
+          console.warn("Invalid chart config JSON", match[2]);
+        }
+
+        // Look ahead for Table and End marker
+        let tableBlock: ParsedBlock | undefined;
+        let j = i + 1;
+        let foundEnd = false;
+
+        while (j < blocks.length) {
+          const nextBlock = blocks[j];
+          if (nextBlock.type === BlockType.TABLE) {
+            tableBlock = nextBlock;
+          } else if (nextBlock.type === BlockType.PARAGRAPH && nextBlock.content.trim() === ':::') {
+            foundEnd = true;
+            j++; // Consume the end marker
+            break;
+          }
+          j++;
+        }
+
+        if (foundEnd && tableBlock) {
+          mergedBlocks.push({
+            type: BlockType.CHART,
+            content: '',
+            tableRows: tableBlock.tableRows,
+            metadata: {
+              chartType,
+              ...chartConfig
+            },
+            sourceLine: block.sourceLine
+          });
+          i = j; // Skip consumed blocks
+          continue;
+        }
+      }
+    }
+    
+    mergedBlocks.push(block);
+    i++;
+  }
+
+  return mergedBlocks;
 };
