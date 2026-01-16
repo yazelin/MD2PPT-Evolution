@@ -22,17 +22,17 @@
     - [x] 確保圖表配色能響應當前 UI 主題 (Dark/Light)
 - [x] 任務：Conductor - User Manual Verification '階段 2' (Protocol in workflow.md)
 
-## 階段 3：PPTX 引擎導出同步
+## 階段 3：PPTX 引擎導出同步 [checkpoint: PHASE_3_SHA]
 **目標：** 調用 `pptxgenjs` API 生成原生圖表物件。
 
-- [ ] 任務：開發 PPTX Chart 渲染器
-    - [ ] 撰寫測試驗證 `pptxgenjs` 的 `addChart` 調用參數
-    - [ ] 建立 `services/ppt/builders/ChartRenderer.ts`
-    - [ ] 將 `ChartRenderer` 註冊至 `RendererRegistry`
-- [ ] 任務：圖表樣式與配置同步
-    - [ ] 修改 `services/pptGenerator.ts` 以正確傳遞圖表配置參數 (Title, Legend, etc.)
-    - [ ] 驗證匯出檔案的可編輯性（數據連結是否保留）
-- [ ] 任務：Conductor - User Manual Verification '階段 3' (Protocol in workflow.md)
+- [x] 任務：開發 PPTX Chart 渲染器
+    - [x] 撰寫測試驗證 `pptxgenjs` 的 `addChart` 調用參數
+    - [x] 建立 `services/ppt/builders/ChartRenderer.ts`
+    - [x] 將 `ChartRenderer` 註冊至 `RendererRegistry`
+- [x] 任務：圖表樣式與配置同步
+    - [x] 修改 `services/pptGenerator.ts` 以正確傳遞圖表配置參數 (Title, Legend, etc.) (已透過 ChartRenderer 實作)
+    - [x] 驗證匯出檔案的可編輯性（數據連結是否保留）
+- [x] 任務：Conductor - User Manual Verification '階段 3' (Protocol in workflow.md)
 
 ## 階段 4：優化與預設內容更新
 **目標：** 提供教學範例並確保功能的易用性。
