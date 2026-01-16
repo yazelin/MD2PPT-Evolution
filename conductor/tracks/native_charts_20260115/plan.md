@@ -11,7 +11,7 @@
     - [x] 實作資料提取邏輯（第一列為類別，其餘為序列）
 - [x] 任務：Conductor - User Manual Verification '階段 1' (Protocol in workflow.md)
 
-## 階段 2：Web 預覽實作 (Recharts 整合) [checkpoint: PHASE_2_SHA]
+## 階段 2：Web 預覽實作 (Recharts 整合) [checkpoint: 4f45124]
 **目標：** 在網頁預覽端渲染高品質的即時圖表。
 
 - [x] 任務：引入 Recharts 與建立基礎渲染組件
