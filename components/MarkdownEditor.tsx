@@ -35,15 +35,19 @@ const MarkdownEditor: React.FC = () => {
     handleScroll,
   } = editorState;
 
+  // Add the panel state to the context data so EditorHeader can use it
+  const extendedEditorState = {
+    ...editorState,
+    isThemePanelOpen,
+    toggleThemePanel: () => setIsThemePanelOpen(!isThemePanelOpen)
+  };
+
   const handleAction = (action: { type: ActionType }) => {
     if (!textareaRef.current) return;
     
     const service = new EditorActionService(textareaRef.current);
     
     switch (action.type) {
-        case 'TOGGLE_THEME_PANEL':
-            setIsThemePanelOpen(!isThemePanelOpen);
-            break;
         // Structure & Layouts
         case 'INSERT_SLIDE':
             service.insertText(ACTION_TEMPLATES.INSERT_SLIDE, setContent);
@@ -136,8 +140,8 @@ const MarkdownEditor: React.FC = () => {
   };
 
   return (
-    <EditorProvider editorState={editorState} darkModeState={darkModeState}>
-      <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors relative">
+    <EditorProvider editorState={extendedEditorState as any} darkModeState={darkModeState}>
+      <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors relative font-sans">
         <EditorHeader />
 
         <main className="flex flex-1 overflow-hidden relative">

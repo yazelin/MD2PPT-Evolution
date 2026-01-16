@@ -26,6 +26,18 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
   const [customHex, setCustomHex] = React.useState('#EA580C');
   const [copySuccess, setCopySuccess] = React.useState(false);
 
+  // Calculate brightness to determine icon color (Black vs White)
+  const getContrastColor = (hexColor: string) => {
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16) || 0;
+    const g = parseInt(hex.substring(2, 4), 16) || 0;
+    const b = parseInt(hex.substring(4, 6), 16) || 0;
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 180 ? 'text-stone-900' : 'text-white';
+  };
+
+  const iconColorClass = getContrastColor(customHex);
+
   const handleCustomColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const hex = e.target.value;
     setCustomHex(hex);
@@ -46,7 +58,7 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
   };
 
   return (
-    <div className="absolute top-14 left-14 bottom-0 w-72 bg-white dark:bg-[#1C1917] border-r border-[#E7E5E4] dark:border-[#44403C] shadow-2xl z-30 flex flex-col animate-in slide-in-from-left duration-300">
+    <div className="absolute top-0 right-0 bottom-0 w-72 bg-white dark:bg-[#1C1917] border-l border-[#E7E5E4] dark:border-[#44403C] shadow-[-20px_0_50px_rgba(0,0,0,0.15)] z-30 flex flex-col animate-in slide-in-from-right duration-300">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-[#E7E5E4] dark:border-[#44403C] bg-stone-50/50 dark:bg-stone-900/50">
         <div className="flex items-center gap-2 font-black text-[11px] uppercase tracking-[0.2em] text-stone-500">
@@ -73,8 +85,8 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
                   className="w-full aspect-square rounded-lg border border-stone-200 dark:border-white/5 shadow-sm hover:scale-110 hover:ring-2 hover:ring-orange-500/50 transition-all active:scale-95 group relative"
                   style={{ backgroundColor: hex }}
                 >
-                  <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Hash size={10} className={hex === '#FFFFFF' ? 'text-stone-400' : 'text-white/50'} />
+                  <span className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity`}>
+                    <Hash size={10} className={`${getContrastColor(hex)} opacity-60`} />
                   </span>
                 </button>
               ))}
@@ -114,18 +126,21 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
                   />
                 </div>
                 
-                {/* Copy Button Container */}
+                {/* Enhanced Copy Button */}
                 <button
                   onClick={handleCopyCode}
                   title="Copy Hex Code"
-                  className="w-10 h-10 rounded-lg shadow-sm border border-stone-200 dark:border-white/10 relative overflow-hidden group transition-all hover:scale-110 active:scale-90 ring-offset-2 focus:ring-2 focus:ring-orange-500"
+                  className="w-10 h-10 rounded-lg shadow-md border border-stone-200 dark:border-white/10 relative overflow-hidden group transition-all hover:scale-110 active:scale-90 ring-offset-2 focus:ring-2 focus:ring-orange-500"
                   style={{ backgroundColor: customHex }}
                 >
-                  <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copySuccess ? 'bg-green-500' : 'bg-black/0 group-hover:bg-black/20'}`}>
+                  <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copySuccess ? 'bg-green-500' : 'bg-black/0 group-hover:bg-black/10'}`}>
                     {copySuccess ? (
-                      <Check size={16} className="text-white animate-in zoom-in duration-300" />
+                      <Check size={18} className="text-white animate-in zoom-in duration-300" />
                     ) : (
-                      <Copy size={14} className={`transition-opacity duration-200 ${customHex.toLowerCase() === '#ffffff' ? 'text-stone-400' : 'text-white'} opacity-0 group-hover:opacity-100`} />
+                      <Copy 
+                        size={16} 
+                        className={`transition-all duration-200 ${iconColorClass} drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]`} 
+                      />
                     )}
                   </div>
                 </button>
@@ -143,7 +158,7 @@ export const ThemePanel: React.FC<ColorPickerPanelProps> = ({ onClose, onInsertC
       </div>
 
       <div className="p-4 bg-stone-50 dark:bg-stone-900/50 text-[9px] text-stone-400 font-medium leading-relaxed border-t border-stone-100 dark:border-white/5">
-        提示：點擊色塊將自動插入 Hex 色碼。點擊色碼方塊可直接複製。
+        提示：面板已移至右側，避免遮擋 Markdown 內容。
       </div>
     </div>
   );

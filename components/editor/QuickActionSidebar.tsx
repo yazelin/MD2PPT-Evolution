@@ -25,12 +25,10 @@ import {
   AreaChart,
   Columns,
   AlignCenter,
-  MessageSquare,
-  Palette
+  MessageSquare
 } from 'lucide-react';
 
 export type ActionType = 
-  | 'TOGGLE_THEME_PANEL'
   | 'INSERT_SLIDE'
   | 'LAYOUT_GRID'
   | 'LAYOUT_TWO_COLUMN'
@@ -115,27 +113,17 @@ export const QuickActionSidebar: React.FC<QuickActionSidebarProps> = ({ onAction
       `}
     >
       {/* Header / Toggle */}
-      <div className={`flex items-center border-b border-[#E7E5E4] dark:border-[#44403C] h-14 ${isExpanded ? 'justify-between p-3' : 'flex-col gap-1 py-2 justify-center'}`}>
+      <div className={`flex items-center border-b border-[#E7E5E4] dark:border-[#44403C] h-14 ${isExpanded ? 'justify-between p-3' : 'justify-center'}`}>
         {isExpanded && (
           <span className="font-bold text-sm uppercase tracking-wider text-stone-500">Quick Actions</span>
         )}
-        <div className={`flex ${isExpanded ? 'gap-1' : 'flex-col gap-1'}`}>
-          <button 
-            onClick={() => onAction({ type: 'TOGGLE_THEME_PANEL' })}
-            aria-label="Theme & Colors"
-            title="Theme & Colors"
-            className="p-1.5 rounded-md hover:bg-[#FFF7ED] dark:hover:bg-[#44403C] text-[#EA580C] transition-colors"
-          >
-            <Palette size={18} />
-          </button>
-          <button 
-            onClick={() => setIsExpanded(!isExpanded)}
-            aria-label="Toggle Sidebar"
-            className="p-1.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors"
-          >
-            {isExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-          </button>
-        </div>
+        <button 
+          onClick={() => setIsExpanded(!isExpanded)}
+          aria-label="Toggle Sidebar"
+          className="p-1.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors"
+        >
+          {isExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+        </button>
       </div>
 
       {/* Actions List */}
@@ -168,7 +156,6 @@ export const QuickActionSidebar: React.FC<QuickActionSidebarProps> = ({ onAction
                 </button>
               ))}
             </div>
-            {/* Divider if collapsed and not last */}
             {!isExpanded && idx < ACTION_GROUPS.length - 1 && (
               <div className="my-2 mx-3 border-b border-stone-200 dark:border-stone-800" />
             )}
