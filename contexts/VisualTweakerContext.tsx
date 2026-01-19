@@ -30,27 +30,53 @@ export const VisualTweakerProvider: React.FC<{ children: ReactNode }> = ({ child
     if (!state.selectedElement) return;
     
     const rect = state.selectedElement.getBoundingClientRect();
-    // Position to the right of the element, or below if space is tight
-    // For now, let's position it absolute to the viewport
+    const OVERLAY_WIDTH = 300; // Estimated width (w-64 + padding)
+    const VIEWPORT_MARGIN = 20;
+    
+    let left = rect.right + VIEWPORT_MARGIN;
+    
+    // Flip to left if not enough space on right
+    if (left + OVERLAY_WIDTH > window.innerWidth) {
+      left = rect.left - OVERLAY_WIDTH - VIEWPORT_MARGIN;
+      
+      // If left is also off-screen (e.g., huge element on small screen), 
+      // align to the right edge of the viewport
+      if (left < 0) {
+        left = window.innerWidth - OVERLAY_WIDTH - VIEWPORT_MARGIN;
+      }
+    }
+
     setState(prev => ({
       ...prev,
       position: {
-        top: rect.top + window.scrollY,
-        left: rect.right + window.scrollX + 20 // 20px padding
+        top: rect.top, // Use viewport coordinates for fixed positioning
+        left: left
       }
     }));
   }, [state.selectedElement]);
 
   const openTweaker = useCallback((element: HTMLElement, type: BlockType, sourceLine: number) => {
     const rect = element.getBoundingClientRect();
+    const OVERLAY_WIDTH = 300; 
+    const VIEWPORT_MARGIN = 20;
+    
+    let left = rect.right + VIEWPORT_MARGIN;
+    
+    if (left + OVERLAY_WIDTH > window.innerWidth) {
+      left = rect.left - OVERLAY_WIDTH - VIEWPORT_MARGIN;
+      if (left < 0) {
+        left = window.innerWidth - OVERLAY_WIDTH - VIEWPORT_MARGIN;
+      }
+    }
+
     setState({
       isVisible: true,
       selectedElement: element,
       blockType: type,
       sourceLine: sourceLine,
       position: {
-        top: rect.top + window.scrollY,
-        left: rect.right + window.scrollX + 20
+        top: rect.top,
+        left: left
       }
     });
   }, []);
