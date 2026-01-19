@@ -6,7 +6,7 @@
 - [x] Task: 建立 SlashMenu 基礎組件 (cf1f4cf)
     - [ ] 在 `components/editor/` 中建立 `SlashMenu.tsx`。
     - [ ] 使用 Tailwind 實作懸浮 Popover 樣式，確保與現有主題一致。
-- [ ] Task: 實作觸發偵測與座標計算
+- [x] Task: 實作觸發偵測與座標計算 (c92c030)
     - [ ] 在 `hooks/useMarkdownEditor.ts` 或相關 Context 中實作偵測 `/` 的邏輯。
     - [ ] 實作游標座標計算函數，確保選單能精確顯示在游標下方。
 - [ ] Task: Conductor - User Manual Verification '第一階段：基礎設施與 UI' (Protocol in workflow.md)
