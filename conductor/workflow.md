@@ -334,3 +334,19 @@ A task is complete when:
 - Document lessons learned
 - Optimize for user happiness
 - Keep things simple and maintainable
+
+## Documentation & Versioning Protocol
+
+### Version Update Protocol
+**Trigger:** Whenever a new feature (minor) or bug fix (patch) is completed and ready for release.
+
+1.  **Update `package.json`**: Bump the version number according to Semantic Versioning.
+2.  **Update `CHANGELOG.md`**: Add a new section for the version, listing Added, Changed, Deprecated, Removed, Fixed, or Security items.
+3.  **Update `README.md`**: Update the version badge URL (e.g., `version-0.9.0-orange`).
+
+### Documentation Maintenance
+**Trigger:** After completing any task that affects user-facing functionality or developer workflows.
+
+1.  **README First**: Always verify if `README.md` needs updates to reflect new features or usage instructions.
+2.  **Default Content**: If new syntax is introduced, update `constants/defaultContent.ts` to provide an immediate example for users.
+3.  **Project Docs**: Sync `conductor/product.md` and `conductor/tech-stack.md` as per the `SYNCHRONIZE PROJECT DOCUMENTATION` protocol.
