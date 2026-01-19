@@ -13,7 +13,7 @@ vi.mock('lucide-react', () => ({
 describe('TweakerOverlay', () => {
   it('should not render when isVisible is false', () => {
     render(
-      <VisualTweakerProvider onUpdateContent={() => {}}>
+      <VisualTweakerProvider onUpdateContent={() => {}} onGetLineContent={() => ""}>
         <TweakerOverlay />
       </VisualTweakerProvider>
     );
@@ -33,7 +33,7 @@ describe('TweakerOverlay', () => {
     };
 
     render(
-      <VisualTweakerProvider onUpdateContent={() => {}}>
+      <VisualTweakerProvider onUpdateContent={() => {}} onGetLineContent={() => "# Test Heading"}>
         <TestWrapper />
       </VisualTweakerProvider>
     );

@@ -147,9 +147,17 @@ const MarkdownEditor: React.FC = () => {
     setContent(updated);
   };
 
+  const handleGetLineContent = (line: number) => {
+    const lines = content.split(/\r?\n/);
+    return lines[line] || "";
+  };
+
   return (
     <EditorProvider editorState={extendedEditorState as any} darkModeState={darkModeState}>
-      <VisualTweakerProvider onUpdateContent={handleTweakerUpdate}>
+      <VisualTweakerProvider 
+        onUpdateContent={handleTweakerUpdate}
+        onGetLineContent={handleGetLineContent}
+      >
         <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors relative font-sans">
           <EditorHeader />
 

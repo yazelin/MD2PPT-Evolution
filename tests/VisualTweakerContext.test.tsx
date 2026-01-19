@@ -6,7 +6,10 @@ import React from 'react';
 
 describe('VisualTweakerContext', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <VisualTweakerProvider onUpdateContent={() => {}}>
+    <VisualTweakerProvider 
+      onUpdateContent={() => {}} 
+      onGetLineContent={(line) => `Line ${line}`}
+    >
       {children}
     </VisualTweakerProvider>
   );
@@ -51,7 +54,10 @@ describe('VisualTweakerContext', () => {
     const onUpdateContent = vi.fn();
     const { result } = renderHook(() => useVisualTweaker(), {
       wrapper: ({ children }) => (
-        <VisualTweakerProvider onUpdateContent={onUpdateContent}>
+        <VisualTweakerProvider 
+          onUpdateContent={onUpdateContent}
+          onGetLineContent={() => ""}
+        >
           {children}
         </VisualTweakerProvider>
       ),

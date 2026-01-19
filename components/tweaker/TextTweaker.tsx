@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useVisualTweaker } from '../../contexts/VisualTweakerContext';
 
 export const TextTweaker: React.FC = () => {
-  const { selectedElement, updateContent } = useVisualTweaker();
+  const { sourceLine, getLineContent, updateContent } = useVisualTweaker();
   const [text, setText] = useState('');
 
-  // Sync with element content when opened
+  // Sync with source content when opened
   useEffect(() => {
-    if (selectedElement) {
-      setText(selectedElement.innerText || '');
+    if (sourceLine !== null) {
+      const rawContent = getLineContent(sourceLine);
+      setText(rawContent);
     }
-  }, [selectedElement]);
+  }, [sourceLine, getLineContent]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
