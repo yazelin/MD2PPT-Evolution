@@ -11,15 +11,12 @@
     - [ ] 實作游標座標計算函數，確保選單能精確顯示在游標下方。
 - [x] Task: Conductor - User Manual Verification '第一階段：基礎設施與 UI' (Protocol in workflow.md)
 
-## 第二階段：互動邏輯與鍵盤導航 (Interaction & Navigation)
+## 第二階段：互動邏輯與鍵盤導航 (Interaction & Navigation) [checkpoint: 511ebae]
 本階段目標是讓選單具備搜尋過濾功能，並支援完全的鍵盤操作。
 
-- [ ] Task: 實作列表過濾邏輯
-    - [ ] 根據 `/` 之後輸入的文字，對指令列表進行即時 Fuzzy Search 篩選。
-- [ ] Task: 實作鍵盤導航
-    - [ ] 實作 `↑`/`↓` 鍵切換選取項目的邏輯。
-    - [ ] 實作 `Enter` 確認選取及 `Esc` 關閉選單的事件處理。
-- [ ] Task: Conductor - User Manual Verification '第二階段：互動邏輯' (Protocol in workflow.md)
+- [x] Task: 實作列表過濾邏輯 (c43a794)
+- [x] Task: 實作鍵盤導航 (c43a794)
+- [x] Task: Conductor - User Manual Verification '第二階段：互動邏輯' (Protocol in workflow.md)
 
 ## 第三階段：指令註冊表與插入功能 (Registry & Insertion)
 本階段目標是定義所有指令的範本內容，並實作內容插入編輯器的邏輯。
