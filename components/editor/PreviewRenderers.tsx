@@ -29,28 +29,32 @@ export const PreviewBlock: React.FC<{ block: ParsedBlock, isDark?: boolean, them
   const [imgError, setImgError] = useState(false);
   const primaryColor = `#${theme.colors.primary}`;
   const accentColor = `#${theme.colors.accent}`;
+  
+  const commonProps = {
+    'data-source-line': block.sourceLine
+  };
 
   switch (block.type) {
     case BlockType.CHART:
-      return <ChartPreview block={block} isDark={isDark} theme={theme} />;
+      return <div {...commonProps}><ChartPreview block={block} isDark={isDark} theme={theme} /></div>;
     case BlockType.HEADING_1:
-      return <h1 className="text-6xl font-black mb-10 border-l-[12px] pl-8 leading-tight uppercase tracking-tighter" style={{ borderColor: primaryColor }}><RenderRichText text={block.content} theme={theme} /></h1>;
+      return <h1 {...commonProps} className="text-6xl font-black mb-10 border-l-[12px] pl-8 leading-tight uppercase tracking-tighter" style={{ borderColor: primaryColor }}><RenderRichText text={block.content} theme={theme} /></h1>;
     case BlockType.HEADING_2:
-      return <h2 className="text-4xl font-bold mb-8 tracking-tight" style={{ color: isDark ? '#E2E8F0' : accentColor }}><RenderRichText text={block.content} theme={theme} /></h2>;
+      return <h2 {...commonProps} className="text-4xl font-bold mb-8 tracking-tight" style={{ color: isDark ? '#E2E8F0' : accentColor }}><RenderRichText text={block.content} theme={theme} /></h2>;
     case BlockType.HEADING_3:
-      return <h3 className="text-3xl font-semibold mb-6 opacity-80 underline underline-offset-8" style={{ textDecorationColor: `${primaryColor}40` }}><RenderRichText text={block.content} theme={theme} /></h3>;
+      return <h3 {...commonProps} className="text-3xl font-semibold mb-6 opacity-80 underline underline-offset-8" style={{ textDecorationColor: `${primaryColor}40` }}><RenderRichText text={block.content} theme={theme} /></h3>;
     case BlockType.CODE_BLOCK:
       return (
-        <div className="my-10 bg-slate-100 dark:bg-black/30 border border-slate-300 dark:border-slate-700 p-8 rounded-lg font-mono text-xl shadow-inner overflow-hidden">
+        <div {...commonProps} className="my-10 bg-slate-100 dark:bg-black/30 border border-slate-300 dark:border-slate-700 p-8 rounded-lg font-mono text-xl shadow-inner overflow-hidden">
           <pre className="whitespace-pre-wrap break-all">{block.content}</pre>
         </div>
       );
     case BlockType.MERMAID:
-      return <div className="my-10 scale-125 flex justify-center"><MermaidRenderer chart={block.content} /></div>;
+      return <div {...commonProps} className="my-10 scale-125 flex justify-center"><MermaidRenderer chart={block.content} /></div>;
     case BlockType.CHAT_CUSTOM:
       const align = block.alignment || 'left';
       return (
-        <div className={`flex ${align === 'right' ? 'justify-end pl-24' : align === 'center' ? 'justify-center px-12' : 'justify-start pr-24'} my-10`}>
+        <div {...commonProps} className={`flex ${align === 'right' ? 'justify-end pl-24' : align === 'center' ? 'justify-center px-12' : 'justify-start pr-24'} my-10`}>
           <div className={`p-8 relative rounded-3xl shadow-lg border-2`} style={{ 
             backgroundColor: align === 'right' ? `${primaryColor}10` : align === 'center' ? '#EEF2FF' : '#ECFDF5',
             borderColor: align === 'right' ? `${primaryColor}30` : align === 'center' ? '#E0E7FF' : '#D1FAE5'
@@ -66,7 +70,7 @@ export const PreviewBlock: React.FC<{ block: ParsedBlock, isDark?: boolean, them
       );
     case BlockType.IMAGE:
       return (
-        <div className="flex flex-col items-center justify-center my-12 w-full">
+        <div {...commonProps} className="flex flex-col items-center justify-center my-12 w-full">
           {imgError ? (
             <div className="w-full h-64 bg-slate-100 rounded-xl border-4 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 gap-4">
               <AlertCircle size={48} />
@@ -93,7 +97,7 @@ export const PreviewBlock: React.FC<{ block: ParsedBlock, isDark?: boolean, them
       );
     case BlockType.TABLE:
       return (
-        <div className="my-10 overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700 shadow-2xl">
+        <div {...commonProps} className="my-10 overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700 shadow-2xl">
           <table className="w-full border-collapse text-2xl">
             <thead>
               <tr className="text-white" style={{ backgroundColor: primaryColor }}>
@@ -119,15 +123,15 @@ export const PreviewBlock: React.FC<{ block: ParsedBlock, isDark?: boolean, them
     case BlockType.CALLOUT_WARNING:
       const isWarn = block.type === BlockType.CALLOUT_WARNING;
       return (
-        <div className={`my-12 p-10 border-l-[16px] rounded-r-2xl shadow-xl ${isWarn ? 'bg-red-50 border-red-500' : 'bg-blue-50 border-blue-500'}`}>
+        <div {...commonProps} className={`my-12 p-10 border-l-[16px] rounded-r-2xl shadow-xl ${isWarn ? 'bg-red-50 border-red-500' : 'bg-blue-50 border-blue-500'}`}>
           <div className={`text-xl font-black uppercase mb-4 tracking-tighter ${isWarn ? 'text-red-600' : 'text-blue-600'}`}>{block.type.split('_')[1]}</div>
           <div className="text-3xl italic leading-relaxed text-slate-800"><RenderRichText text={block.content} theme={theme} /></div>
         </div>
       );
     case BlockType.QUOTE_BLOCK:
       const cleanQuote = block.content.replace(/^>\s*/gm, '').trim();
-      return <p className="text-4xl leading-relaxed mb-10 text-center italic opacity-90" style={{ fontFamily: 'Georgia, serif' }}><RenderRichText text={cleanQuote} theme={theme} /></p>;
+      return <p {...commonProps} className="text-4xl leading-relaxed mb-10 text-center italic opacity-90" style={{ fontFamily: 'Georgia, serif' }}><RenderRichText text={cleanQuote} theme={theme} /></p>;
     default:
-      return <p className="text-3xl leading-relaxed mb-10 text-justify tracking-tight opacity-90"><RenderRichText text={block.content} theme={theme} /></p>;
+      return <p {...commonProps} className="text-3xl leading-relaxed mb-10 text-justify tracking-tight opacity-90"><RenderRichText text={block.content} theme={theme} /></p>;
   }
 };
