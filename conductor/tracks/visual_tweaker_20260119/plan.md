@@ -1,6 +1,6 @@
 # 實作計畫: Visual Tweaker (視覺化即時調整) - `visual_tweaker_20260119`
 
-## 第一階段：雙向綁定基礎設施 (Infrastructure)
+## 第一階段：雙向綁定基礎設施 (Infrastructure) [checkpoint: 9413c5f]
 本階段目標是建立預覽元素與 Markdown 原始碼之間的映射關係，並實作通用的彈窗控制器。
 
 - [x] Task: 實作 Markdown Source Mapping 81b62c9
@@ -9,7 +9,7 @@
 - [x] Task: 建立 VisualTweaker 容器與 Context 25d1de6
     - [x] 建立 `VisualTweakerContext` 來管理當前選中的元素與彈窗狀態。
     - [x] 實作全域 `TweakerOverlay` 組件，負責根據座標渲染隨選彈窗 (Popover)。
-- [ ] Task: Conductor - User Manual Verification '第一階段：基礎設施' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification '第一階段：基礎設施' (Protocol in workflow.md) 9413c5f
 
 ## 第二階段：混合模式回寫引擎 (Hybrid Updater Engine)
 本階段目標是實作核心的「Markdown 回寫」邏輯，區分即時與確認後更新的處理方式。
