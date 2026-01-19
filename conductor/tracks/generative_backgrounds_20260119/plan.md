@@ -11,16 +11,16 @@
     - [x] 修改 `PreviewPane.tsx` 的 `SlideCard` 元件，使其能動態注入生成的 SVG 背景層。
 - [x] Task: Conductor - User Manual Verification '第一階段：核心引擎與渲染' (Protocol in workflow.md) 8c9c485
 
-## 第二階段：視覺化編輯整合 (Tweaker)
+## 第二階段：視覺化編輯整合 (Tweaker) [checkpoint: 71626e1]
 本階段目標是讓使用者能直接在預覽區透過點擊來微調背景效果。
 
-- [ ] Task: 實作背景專用調整器 (`BackgroundTweaker.tsx`)
-    - [ ] 撰寫測試驗證 Tweaker 的顏色切換與「重新生成 (Re-roll)」功能。
-    - [ ] 建立具備顏色選擇器與隨機種子觸發按鈕的 Tweaker 介面。
-- [ ] Task: 整合 `VisualTweakerContext`
-    - [ ] 修改預覽點擊監聽邏輯，支援點擊投影片空白處（背景）觸發 Background Tweaker。
-    - [ ] 實作背景變更的即時回寫 (Real-time Sync) 到 Markdown YAML。
-- [ ] Task: Conductor - User Manual Verification '第二階段：視覺化編輯整合' (Protocol in workflow.md)
+- [x] Task: 實作背景專用調整器 (`BackgroundTweaker.tsx`) 8f93cd4
+    - [x] 撰寫測試驗證 Tweaker 的顏色切換與「重新生成 (Re-roll)」功能。
+    - [x] 建立具備顏色選擇器與隨機種子觸發按鈕的 Tweaker 介面。
+- [x] Task: 整合 `VisualTweakerContext` 8f93cd4
+    - [x] 修改預覽點擊監聽邏輯，支援點擊投影片空白處（背景）觸發 Background Tweaker。
+    - [x] 實作背景變更的即時回寫 (Real-time Sync) 到 Markdown YAML。
+- [x] Task: Conductor - User Manual Verification '第二階段：視覺化編輯整合' (Protocol in workflow.md) 71626e1
 
 ## 第三階段：完整工作流與匯出支援
 本階段目標是加入斜線指令模板，並確保 PPT 匯出時包含生成的背景。
