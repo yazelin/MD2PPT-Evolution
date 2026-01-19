@@ -14,9 +14,9 @@
 ## 第二階段：混合模式回寫引擎 (Hybrid Updater Engine)
 本階段目標是實作核心的「Markdown 回寫」邏輯，區分即時與確認後更新的處理方式。
 
-- [ ] Task: 實作智慧內容替換器 (Smart Content Replacer)
-    - [ ] 開發工具函式，根據行號與原始內容，精確替換 Markdown 中的特定區塊。
-    - [ ] 實作「即時同步 (Real-time)」與「確認後更新 (Commit)」兩種策略的 API 介面。
+- [x] Task: 實作智慧內容替換器 (Smart Content Replacer) 9dff127
+    - [x] 開發工具函式，根據行號與原始內容，精確替換 Markdown 中的特定區塊。
+    - [x] 實作「即時同步 (Real-time)」與「確認後更新 (Commit)」兩種策略的 API 介面。
 - [ ] Task: 實作文字快速編輯 (Text Tweaker)
     - [ ] 開發 `TextTweaker` 組件，支援 `contentEditable` 互動。
     - [ ] 整合即時回寫邏輯，驗證輸入時編輯器同步更新。
