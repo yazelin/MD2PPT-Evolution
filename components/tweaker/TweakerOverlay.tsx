@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { TextTweaker } from './TextTweaker';
 import { ImageTweaker } from './ImageTweaker';
 import { ChartTweaker } from './ChartTweaker';
+import { BackgroundTweaker } from './BackgroundTweaker';
 import { BlockType } from '../../services/types';
 
 export const TweakerOverlay: React.FC = () => {
@@ -90,6 +91,7 @@ export const TweakerOverlay: React.FC = () => {
 
   const isImageType = blockType === BlockType.IMAGE;
   const isChartType = blockType === BlockType.CHART;
+  const isBackgroundType = (blockType as string) === 'BACKGROUND';
 
   return (
     <div
@@ -112,7 +114,8 @@ export const TweakerOverlay: React.FC = () => {
       <div className="text-sm text-stone-600 dark:text-stone-300">
         {isTextType ? <TextTweaker /> : 
          isImageType ? <ImageTweaker /> : 
-         isChartType ? <ChartTweaker /> : (
+         isChartType ? <ChartTweaker /> : 
+         isBackgroundType ? <BackgroundTweaker /> : (
           <>
             <p>Source Line: {sourceLine}</p>
             <p className="mt-2 text-xs opacity-60">Specific controls for {blockType} will appear here.</p>

@@ -108,7 +108,11 @@ const SlideCard: React.FC<{
   const note = slide.config?.note || slide.metadata?.note;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div 
+      className="flex flex-col gap-4"
+      data-source-line={slide.startLine}
+      data-block-type="BACKGROUND"
+    >
       <div 
         ref={containerRef}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}

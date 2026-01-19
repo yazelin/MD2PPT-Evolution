@@ -16,6 +16,7 @@ export interface SlideConfig {
 export interface SlideData {
   blocks: ParsedBlock[];
   config?: SlideConfig;
+  startLine?: number;
   /** @deprecated Use config instead */
   metadata?: {
     bg?: string;
@@ -33,6 +34,7 @@ export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
   const slides: SlideData[] = [];
   let currentSlideBlocks: ParsedBlock[] = [];
   let currentSlideConfig: SlideConfig = {};
+  let currentStartLine = 0;
 
   for (const block of blocks) {
     if (block.type === BlockType.HORIZONTAL_RULE) {
@@ -41,6 +43,7 @@ export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
         slides.push({ 
           blocks: [...currentSlideBlocks],
           config: { ...currentSlideConfig },
+          startLine: currentStartLine,
           metadata: { ...currentSlideConfig } // For backward compatibility
         });
         currentSlideBlocks = [];
@@ -48,6 +51,7 @@ export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
       
       // Set config for the upcoming slide
       currentSlideConfig = block.metadata || {};
+      currentStartLine = block.sourceLine || 0;
     } else {
       currentSlideBlocks.push(block);
     }
@@ -59,6 +63,7 @@ export const splitBlocksToSlides = (blocks: ParsedBlock[]): SlideData[] => {
     slides.push({ 
       blocks: [...currentSlideBlocks],
       config: { ...currentSlideConfig },
+      startLine: currentStartLine,
       metadata: { ...currentSlideConfig } // For backward compatibility
     });
   }
