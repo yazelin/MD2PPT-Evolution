@@ -121,28 +121,61 @@ mesh:
 - **語法**：`![Alt Text](URL)`
 - **Placeholder 範例**：`https://placehold.co/600x400/2563eb/FFF?text=Image`
 
-## 4. 專業配色盤 (Pro Color Palettes)
+## 4. 設計系統 (Design System)
 
-請參考以下配色生成 `mesh.colors`，避免隨機生成導致的不協調。
+為了確保簡報的專業度與美感，請嚴格遵守以下視覺規範。
 
-### 科技/深色 (Cyber/Dark)
-- **Midnight Blue**: `["#0F172A", "#312E81", "#4338CA"]`
-- **Neon Cyber**: `["#111827", "#7C3AED", "#DB2777"]`
+### 4.1 背景使用規則 (Background Strategy)
+**嚴禁**每頁都使用 Mesh 背景。請依照頁面功能分配：
 
-### 溫暖/活力 (Warm/Vibrant)
-- **Sunset**: `["#FFF7ED", "#FB923C", "#EA580C"]`
-- **Amber Gold**: `["#FFFBEB", "#F59E0B", "#D97706"]`
+| 頁面類型 | Layout | 背景建議 |
+| :--- | :--- | :--- |
+| **封面/標題** | `default` (第一頁), `center` | ✅ **Mesh Gradient** (強烈視覺) |
+| **轉場/重點** | `impact`, `alert`, `quote` | ✅ **Mesh Gradient** (強烈視覺) |
+| **內容/圖表** | `two-column`, `grid`, `default` | ⬜ **純色背景** (確保閱讀性) |
 
-### 專業/穩重 (Professional/Clean)
-- **Ocean**: `["#F0F9FF", "#38BDF8", "#0284C7"]`
-- **Nature**: `["#F0FDF4", "#4ADE80", "#16A34A"]`
+### 4.2 嚴選配色盤 (Curated Palettes Library)
+**AI 請根據使用者內容的「關鍵字」或「情感」，從下方選擇最合適的一組。**
+
+#### 🟦 科技與信任 (Tech & Trust)
+| 名稱 | 關鍵字 | 建議 Theme | Mesh Colors |
+| :--- | :--- | :--- | :--- |
+| **Tech Blue** | 科技, 軟體, 雲端, 未來 | `midnight` | `["#0F172A", "#1E40AF", "#3B82F6"]` |
+| **Ocean Depth** | 專業, 穩重, 深度, 海洋 | `academic` | `["#F0F9FF", "#0EA5E9", "#0284C7"]` |
+| **FinTech Navy** | 金融, 銀行, 數據, 權威 | `academic` | `["#F1F5F9", "#334155", "#0F172A"]` |
+
+#### 🟧 活力與溫暖 (Energy & Warmth)
+| 名稱 | 關鍵字 | 建議 Theme | Mesh Colors |
+| :--- | :--- | :--- | :--- |
+| **Sunset Glow** | 溫暖, 活力, 希望, 夕陽 | `amber` | `["#FFF7ED", "#FB923C", "#EA580C"]` |
+| **Coral Vivid** | 活潑, 年輕, 電商, 創意 | `amber` | `["#FFF1F2", "#FB7185", "#E11D48"]` |
+| **Golden Hour** | 榮耀, 頒獎, 奢華, 冠軍 | `midnight` | `["#271A00", "#D97706", "#F59E0B"]` |
+
+#### 🟩 自然與健康 (Nature & Health)
+| 名稱 | 關鍵字 | 建議 Theme | Mesh Colors |
+| :--- | :--- | :--- | :--- |
+| **Fresh Mint** | 醫療, 健康, 環保, 清新 | `material` | `["#ECFDF5", "#10B981", "#047857"]` |
+| **Deep Forest** | 永續, 生態, 露營, 戶外 | `midnight` | `["#022C22", "#166534", "#22C55E"]` |
+
+#### 🟪 創意與神秘 (Creative & Mystery)
+| 名稱 | 關鍵字 | 建議 Theme | Mesh Colors |
+| :--- | :--- | :--- | :--- |
+| **Cyber Neon** | 遊戲, 電競, 潮流, 區塊鏈 | `midnight` | `["#111827", "#7C3AED", "#DB2777"]` |
+| **Lavender Dream** | 女性, 夢幻, 藝術, 柔和 | `academic` | `["#FAF5FF", "#C084FC", "#9333EA"]` |
+
+#### ⬜ 極簡與現代 (Minimal & Modern)
+| 名稱 | 關鍵字 | 建議 Theme | Mesh Colors |
+| :--- | :--- | :--- | :--- |
+| **Clean Slate** | 學術, 論文, 簡報, 純粹 | `academic` | `["#F8FAFC", "#94A3B8", "#475569"]` |
+| **Dark Matter** | 駭客, 底層, 硬體, 隱密 | `midnight` | `["#000000", "#1C1917", "#44403C"]` |
 
 ## 5. AI 自我檢核表 (Self-Correction Checklist)
 在輸出 Markdown 之前，請檢查：
-1. [ ] 第一個區塊是全域 `---` 設定嗎？
-2. [ ] 所有 `===` 分頁符號前後都有空行嗎？
-3. [ ] 每一頁 `===` 後面是否緊接 `---` 設定？
-4. [ ] 圖表 `:::` 區塊內部的 JSON 是否使用雙引號？表格前後是否有空行？
-5. [ ] 雙欄分隔符 `:: right ::` 前後是否有空行？
-6. [ ] YAML 中的字串值（如 title）是否已加雙引號？
-7. [ ] **代碼中是否包含「(在此需空行)」等不應出現的指示文字？（必須刪除所有指示文字）**
+1. [ ] 全域設定的 `theme` 是否為有效值 (`amber`, `midnight`, `academic`, `material`)？
+2. [ ] 是否**只在**標題頁或重點頁使用 `bg: mesh`？
+3. [ ] 內容頁 (`two-column`, `grid`) 是否保持乾淨背景？
+4. [ ] `mesh.colors` 是否直接複製自上述「嚴選配色盤」？(不要自己發明顏色)
+5. [ ] 圖表 `:::` 區塊與表格前後是否有空行？
+6. [ ] 雙欄 `:: right ::` 前後是否有空行？
+7. [ ] 雙欄內的標題是否已降級為 H3 (`###`)？
+8. [ ] **代碼中是否包含「(在此需空行)」等不應出現的指示文字？（必須刪除所有指示文字）**

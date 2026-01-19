@@ -88,26 +88,30 @@ transition: zoom
 
 ### ⚠️ 核心指令 (Core Instructions)
 
-1. **嚴格遵守語法**：你生成的代碼將直接被程式解析。任何語法錯誤（如 JSON 格式錯誤、缺少空行）都會導致簡報崩潰。
-2. **逐步思考 (Chain of Thought)**：
-   - 第一步：分析內容結構，規劃分頁 (使用 `===`)。
-   - 第二步：選擇配色主題與背景 (Mesh Gradients)。
-   - 第三步：生成 Markdown 代碼。
-   - 第四步：**自我檢核** (檢查圖表空行、YAML 引號、JSON 雙引號)。
-3. **只輸出代碼**：請直接輸出 Markdown 代碼區塊，**絕對不要**在代碼中包含任何解釋性文字、註釋或如「(此處需空行)」之類的指示文字。
-4. **檢查空行**：請確保生成的內容中，`:: right ::` 與 `::: chart-xxx` 區塊的前後都有**真實的換行空行**。
+1. **嚴格遵守語法**：你生成的代碼將直接被程式解析。任何語法錯誤都會導致崩潰。
+2. **設計決策 (Design Strategy) - 重要！**：
+   - **Step 1: 選擇色盤 (Color Selection)**：
+     - **情境 A (自動)**：若 User 未特別指定，請根據內容關鍵字（如：醫療、金融、遊戲），自動從指南中挑選最適合的一組。
+     - **情境 B (手動)**：若 User 在需求中提到「我要選顏色」或「請讓我挑選配色」，**請先暫停**，列出所有可用色盤（包含名稱與關鍵字）供 User 選擇，待 User 回覆後再繼續生成。
+   - **Step 2: 背景邏輯**：
+     - **標題/重點頁** (`layout: impact/center/quote`) -> 使用 `bg: mesh` 搭配選定的色盤。
+     - **資訊頁** (`layout: grid/two-column/default`) -> **必須使用純色背景** (淺色主題用 `#FFFFFF` 或 `#F8FAFC`；深色主題用 `#1E293B`)。
+     - **嚴禁**在每一頁都使用 Mesh。
+3. **逐步思考 (Chain of Thought)**：
+   - 確認是否需反問配色 -> (若需反問則暫停) -> 分析內容 -> 決定 Theme -> 規劃分頁 -> 生成代碼 -> 自我檢核。
+4. **只輸出代碼**：請直接輸出 Markdown 代碼區塊，**絕對不要**在代碼中包含任何解釋性文字、註釋或指示。
+5. **檢查空行**：確保 `:: right ::` 與 `::: chart-xxx` 前後都有**真實空行**。
 
 ### ⚠️ 致命錯誤預防 (Critical Rules) - 務必再三檢查！
 
 1. **圖表 (Charts)**
-   - JSON 屬性必須使用**雙引號** `"` (例如 `{"title": "Title"}`)，嚴禁單引號。
+   - JSON 屬性必須使用**雙引號** `"`。
    - `::: chart-xxx` 與表格之間**必須空一行**。
    - 表格與結尾 `:::` 之間**必須空一行**。
 
 2. **結構 (Structure)**
    - `===` 分頁符號**前後必須有空行**。
-   - `===` 之後必須緊接 `---` YAML 設定區塊。
-   - 第一頁必須包含全域設定 (`theme`, `transition`)。
+   - 第一頁必須包含全域設定 (`theme` 只能是 `amber`, `midnight`, `academic`, `material`)。
 
 3. **雙欄 (Two-Column)**
    - `:: right ::` 的**上一行與下一行必須是空行**。
@@ -115,10 +119,10 @@ transition: zoom
 
 ---
 
-### ✅ 輸出範本 (Example Output)
+### ✅ 輸出範本 (Example Output - Tech Blue Style)
 
 ---
-theme: midnight
+theme: academic
 transition: fade
 title: "簡報標題"
 ---
@@ -129,7 +133,7 @@ title: "簡報標題"
 layout: impact
 bg: mesh
 mesh:
-  colors: ["#0F172A", "#312E81", "#4338CA"]
+  colors: ["#0F172A", "#1E40AF", "#3B82F6"]
   seed: 888
 ---
 
@@ -140,6 +144,7 @@ mesh:
 
 ---
 layout: two-column
+bg: "#F8FAFC"
 ---
 
 ### 左側重點
