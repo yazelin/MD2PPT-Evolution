@@ -18,16 +18,12 @@
 - [x] Task: 實作鍵盤導航 (c43a794)
 - [x] Task: Conductor - User Manual Verification '第二階段：互動邏輯' (Protocol in workflow.md)
 
-## 第三階段：指令註冊表與插入功能 (Registry & Insertion)
+## 第三階段：指令註冊表與插入功能 (Registry & Insertion) [checkpoint: a3e9943]
 本階段目標是定義所有指令的範本內容，並實作內容插入編輯器的邏輯。
 
-- [ ] Task: 建立指令註冊表 (Command Registry)
-    - [ ] 定義包含「基礎排版」、「佈局」、「元件」、「多媒體」四大類別的指令集。
-    - [ ] 為每個指令編寫包含「範例數據」的 Markdown 模板。
-- [ ] Task: 實作編輯器內容更新
-    - [ ] 透過 `EditorContext` 實作選取指令後，將模板插入正確位置並移除 `/` 的功能。
-    - [ ] 實作插入後的游標智慧定位（自動移至範例內容中間）。
-- [ ] Task: Conductor - User Manual Verification '第三階段：指令插入' (Protocol in workflow.md)
+- [x] Task: 建立指令註冊表 (Command Registry) (9611dc1)
+- [x] Task: 實作編輯器內容更新 (9611dc1)
+- [x] Task: Conductor - User Manual Verification '第三階段：指令插入' (Protocol in workflow.md)
 
 ## 第四階段：細節優化與整合測試 (Refinement & Final Test)
 最後的拋光與確保邊緣案例（如靠近螢幕邊緣）的處理。
