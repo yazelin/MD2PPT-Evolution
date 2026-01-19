@@ -67,4 +67,65 @@ describe('useSlashCommand', () => {
     expect(onInsert).toHaveBeenCalled();
     expect(result.current.isOpen).toBe(false);
   });
+
+  it('should handle keyboard navigation', () => {
+    const { result } = renderHook(() => useSlashCommand({ current: textarea } as any, onInsert));
+    
+    act(() => {
+      textarea.value = '/';
+      textarea.selectionStart = 1;
+      result.current.handleInputChange('/', 1); // open
+    });
+
+    expect(result.current.selectedIndex).toBe(0);
+
+    act(() => {
+      result.current.handleKeyDown({ key: 'ArrowDown', preventDefault: vi.fn() } as any);
+    });
+    expect(result.current.selectedIndex).toBe(1);
+
+    act(() => {
+      result.current.handleKeyDown({ key: 'ArrowUp', preventDefault: vi.fn() } as any);
+    });
+    expect(result.current.selectedIndex).toBe(0);
+
+    act(() => {
+      result.current.handleKeyDown({ key: 'Enter', preventDefault: vi.fn() } as any);
+    });
+    expect(onInsert).toHaveBeenCalled();
+    expect(result.current.isOpen).toBe(false);
+  });
+
+  it('should close menu on Escape', () => {
+    const { result } = renderHook(() => useSlashCommand({ current: textarea } as any, onInsert));
+    
+    act(() => {
+      textarea.value = '/';
+      textarea.selectionStart = 1;
+      result.current.handleInputChange('/', 1); // open
+    });
+
+    act(() => {
+      result.current.handleKeyDown({ key: 'Escape', preventDefault: vi.fn() } as any);
+    });
+    expect(result.current.isOpen).toBe(false);
+  });
+
+  it('should return empty list when no commands match', () => {
+    const { result } = renderHook(() => useSlashCommand({ current: textarea } as any, onInsert));
+    
+    act(() => {
+      textarea.value = '/';
+      textarea.selectionStart = 1;
+      result.current.handleInputChange('/', 1); // open
+    });
+
+    act(() => {
+      textarea.value = '/xyznonexistent';
+      textarea.selectionStart = 15;
+      result.current.handleInputChange('/xyznonexistent', 15);
+    });
+
+    expect(result.current.filteredCommands.length).toBe(0);
+  });
 });
