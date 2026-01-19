@@ -77,42 +77,109 @@ transition: zoom
 
 ## 🤖 AI 輔助生成 (AI Assistant)
 
-想要快速將手邊的筆記轉為簡報嗎？您可以複製以下 Prompt 給 ChatGPT、Claude 或 Gemini，讓 AI 幫您自動排版：
+想要快速將手邊的筆記轉為簡報嗎？您可以複製以下 Prompt 給 ChatGPT、Claude 或 Gemini，讓 AI 幫您自動排版並套用設計風格：
 
 ```text
-你現在是一位專業的簡報設計師，精通「MD2PPT-Evolution」的專屬 Markdown 格式。
-專案網址：https://github.com/eric861129/MD2PPT-Evolution
+你現在是一位精通「MD2PPT-Evolution v0.10+」的專業簡報設計師。
+專案位置：https://github.com/eric861129/MD2PPT-Evolution
+詳細規範：https://github.com/eric861129/MD2PPT-Evolution/docs/AI_GENERATION_GUIDE.md
 
-請將我提供的內容轉換為符合以下規範的 Markdown 簡報代碼：
+請根據我提供的【內容】與【風格需求】，將其轉換為嚴格符合以下規範的 Markdown 代碼。
 
-### 1. 結構規範
-- 使用 `===` (三個等號) 作為投影片之間的分頁符號。
-- 第一頁必須包含 YAML Frontmatter，定義 `title` (標題)、`author` (作者)。
-- 每一頁的頂部（`===` 之後）可以包含 YAML 區塊 `--- ... ---` 來設定該頁屬性。
+### ⚠️ 致命錯誤預防 (Critical Rules)
 
-### 2. YAML 配置參數
-- **layout**: 支援 `default` (預設), `two-column` (雙欄), `center` (居中), `grid` (網格), `quote` (引用), `alert` (告警)。
-- **background**: 設定背景色 (如 `#1e293b`)。
-- **columns**: 當 `layout: grid` 時，指定欄數 (如 `2` 或 `3`)。
+1. **圖表空行 (Chart Newlines)**
+   - `::: chart-xxx {json}` 與表格之間**必須**有一個空行。
+   - 表格與結尾的 `:::` 之間**必須**有一個空行。
+   - **正確結構**：
+     ```
+     ::: chart-bar { ... }
+     (空行)
+     | 表格內容 |
+     (空行)
+     :::
+     ```
 
-### 3. 特殊元件語法
-- **圖表**: 使用 `::: chart-bar`, `::: chart-line`, `::: chart-pie` 包裹表格。
-  範例:
-  ::: chart-bar { "title": "標題", "showLegend": true }
-  | 類別 | 數值 |
-  | :--- | :--- |
-  | A | 10 |
-  :::
-- **表格**: 直接使用標準 Markdown 表格即可。
-- **圖片**: 使用 `![Alt Text](URL)`。
+2. **分頁 (Structure)**
+   - 使用 `===` 作為分頁符號，**前後必須有空行**。
+   - 第一頁必須是全域設定 (`theme`, `transition`)。
 
-### 4. 轉換要求
-- 自動為適合的內容選擇最佳 Layout（例如：對比內容用 `two-column`，數據用 `chart`，金句用 `quote`）。
-- 確保所有表格都有表頭分隔線 `|---|`。
-- 如果內容包含多個小點，嘗試使用 `grid` 佈局。
+3. **雙欄 (Two-Column)**
+   - 使用 `:: right ::` (前後有空格) 來分隔。
 
-請將我的內容轉換為上述格式：
-[在此貼上您的內容]
+### 🎨 配色與風格策略 (Design Strategy)
+
+**如果我指定了【風格需求】或【色系】，請嚴格遵守以下規則：**
+
+1. **全域主題 (theme)**:
+   - 商務/橘色系 -> `amber`
+   - 科技/深色系 -> `midnight`
+   - 簡約/灰色系 -> `academic`
+   - 現代/綠色系 -> `material`
+
+2. **動態背景 (Mesh Gradient)**:
+   - **預設開啟**：除非我特別說「不要背景」，否則請在標題頁 (`layout: impact`) 或重點頁 (`layout: quote/alert`) 加入 `bg: mesh`。
+   - **配色規範**：**嚴禁隨機亂配色！** 請從以下「專業配色盤」中選擇最接近我需求的一組填入 `colors`：
+     - **科技藍 (Cyber)**: `["#0F172A", "#312E81", "#4338CA"]`
+     - **霓虹紫 (Neon)**: `["#111827", "#7C3AED", "#DB2777"]`
+     - **暖陽橘 (Sunset)**: `["#FFF7ED", "#FB923C", "#EA580C"]`
+     - **清新綠 (Nature)**: `["#F0FDF4", "#4ADE80", "#16A34A"]`
+     - **專業藍 (Ocean)**: `["#F0F9FF", "#38BDF8", "#0284C7"]`
+
+---
+
+### ✅ 輸出範本 (Example Output)
+
+---
+theme: midnight
+transition: fade
+title: 簡報標題
+---
+
+===
+
+---
+layout: impact
+bg: mesh
+mesh:
+  colors: ["#0F172A", "#312E81", "#4338CA"]
+  seed: 888
+---
+
+# 標題
+## 副標題
+
+===
+
+---
+layout: two-column
+---
+
+## 左側重點
+- 重點 A
+
+:: right ::
+
+## 右側圖表
+
+::: chart-pie { "title": "分佈圖", "showLegend": true }
+
+| 項目 | 佔比 |
+| :--- | :--- |
+| A    | 60   |
+| B    | 40   |
+
+:::
+
+===
+
+---
+
+**現在，請將以下內容轉換為 MD2PPT 格式：**
+
+【風格需求】：[在此輸入風格，例如：科技藍色系、溫暖橘色系]
+【內容】：
+[在此貼上內容]
 ```
 
 ---

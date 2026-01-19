@@ -25,7 +25,8 @@ export enum BlockType {
   NOTE = 'NOTE',
   IMAGE = 'IMAGE',
   HORIZONTAL_RULE = 'HORIZONTAL_RULE',
-  TOC = 'TOC'
+  TOC = 'TOC',
+  COLUMN_BREAK = 'COLUMN_BREAK'
 }
 
 export interface SlideMetadata {

@@ -75,6 +75,12 @@ export const parseMarkdownWithAST = (markdown: string, lineOffset: number = 0, c
             break;
         }
 
+        // 4. Column Break
+        if (text.trim() === ':: right ::') {
+            addBlock({ type: BlockType.COLUMN_BREAK, content: '' });
+            break;
+        }
+
         addBlock({
           type: BlockType.PARAGRAPH,
           content: token.text

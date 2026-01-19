@@ -25,7 +25,8 @@ const mulberry32 = (a: number) => {
 export const generateMeshGradient = (options: MeshGradientOptions = {}): string => {
   const width = options.width || 1920;
   const height = options.height || 1080;
-  const seed = options.seed || Date.now();
+  // Use a fixed seed by default to ensure stability during re-renders
+  const seed = options.seed !== undefined ? options.seed : 12345;
   const colors = options.colors || ['#4158D0', '#C850C0', '#FFCC70', '#ffffff'];
   const blur = options.blur || 100;
 

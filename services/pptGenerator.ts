@@ -207,11 +207,32 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
       const gap = 0.4;
       const colWidth = (contentWidth - (gap * (cols - 1))) / cols;
       
-      const itemsPerCol = Math.ceil(otherBlocks.length / cols);
+      // Explicit column splitting logic
+      const columns: ParsedBlock[][] = [];
+      let currentColumn: ParsedBlock[] = [];
+      let hasColumnBreak = false;
       
+      for (const block of otherBlocks) {
+        if (block.type === BlockType.COLUMN_BREAK) {
+          columns.push(currentColumn);
+          currentColumn = [];
+          hasColumnBreak = true;
+        } else {
+          currentColumn.push(block);
+        }
+      }
+      columns.push(currentColumn);
+
       for (let c = 0; c < cols; c++) {
-        // Sequential distribution to match PreviewPane
-        const colBlocks = otherBlocks.slice(c * itemsPerCol, (c + 1) * itemsPerCol);
+        let colBlocks: ParsedBlock[] = [];
+        
+        if (hasColumnBreak) {
+          colBlocks = columns[c] || [];
+        } else {
+          const itemsPerCol = Math.ceil(otherBlocks.length / cols);
+          colBlocks = otherBlocks.slice(c * itemsPerCol, (c + 1) * itemsPerCol);
+        }
+        
         renderBlocksToArea(slide, colBlocks, margin + (c * (colWidth + gap)), 1.6, colWidth, pptx, renderOpts);
       }
     } else {

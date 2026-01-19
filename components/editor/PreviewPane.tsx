@@ -218,6 +218,25 @@ const SlideContent: React.FC<{ slide: SlideData, isDark?: boolean, theme: PptThe
 
   if (layout === 'two-column' || layout === 'grid') {
     const cols = layout === 'two-column' ? 2 : (config?.columns || 2);
+    
+    // Split otherBlocks based on COLUMN_BREAK
+    const columns: ParsedBlock[][] = [];
+    let currentColumn: ParsedBlock[] = [];
+    
+    for (const block of otherBlocks) {
+      if (block.type === BlockType.COLUMN_BREAK) {
+        columns.push(currentColumn);
+        currentColumn = [];
+      } else {
+        currentColumn.push(block);
+      }
+    }
+    columns.push(currentColumn); // Push the last column
+
+    // If explicit splitting was used (columns.length > 1), trust it.
+    // Otherwise fallback to automatic even distribution.
+    const isExplicitSplit = otherBlocks.some(b => b.type === BlockType.COLUMN_BREAK);
+    
     return (
       <div className="flex flex-col h-full">
         {titleBlocks.length > 0 && <div className="mb-16">{renderBlocks(titleBlocks)}</div>}
@@ -226,8 +245,15 @@ const SlideContent: React.FC<{ slide: SlideData, isDark?: boolean, theme: PptThe
           style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
         >
           {Array.from({ length: cols }).map((_, colIdx) => {
-            const itemsPerCol = Math.ceil(otherBlocks.length / cols);
-            const colBlocks = otherBlocks.slice(colIdx * itemsPerCol, (colIdx + 1) * itemsPerCol);
+            let colBlocks: ParsedBlock[] = [];
+            
+            if (isExplicitSplit) {
+              colBlocks = columns[colIdx] || [];
+            } else {
+              const itemsPerCol = Math.ceil(otherBlocks.length / cols);
+              colBlocks = otherBlocks.slice(colIdx * itemsPerCol, (colIdx + 1) * itemsPerCol);
+            }
+            
             return <div key={colIdx}>{renderBlocks(colBlocks)}</div>;
           })}
         </div>
