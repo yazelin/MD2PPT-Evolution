@@ -4,14 +4,12 @@ This file tracks all major development tracks for MD2PPT-Evolution. Completed tr
 
 ---
 
----
-
 ## 🚧 進行中 (Active)
 
 ## ✅ 已完成 (History)
 
 - [x] **Track: Slash Command (斜線指令)**
-    *Link: [./tracks/slash_command_20260119/](./tracks/slash_command_20260119/)*
+    *Link: [./archive/slash_command_20260119/](./archive/slash_command_20260119/)*
 
 - [x] **Track: 全域主題管理器 (Theme Manager v0.8.0)**
     *Link: [./archive/theme_manager_20260116/](./archive/theme_manager_20260116/)*

@@ -1,0 +1,8 @@
+{
+  "track_id": "slash_command_20260119",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-19T00:00:00Z",
+  "updated_at": "2026-01-19T00:00:00Z",
+  "description": "Slash Command (斜線指令) 功能：在編輯器輸入 / 即跳出選單，快速插入圖表、佈局或表格。"
+}
