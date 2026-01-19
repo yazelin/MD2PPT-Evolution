@@ -25,12 +25,9 @@
 - [x] Task: 實作編輯器內容更新 (9611dc1)
 - [x] Task: Conductor - User Manual Verification '第三階段：指令插入' (Protocol in workflow.md)
 
-## 第四階段：細節優化與整合測試 (Refinement & Final Test)
+## 第四階段：細節優化與整合測試 (Refinement & Final Test) [checkpoint: eb10bb9]
 最後的拋光與確保邊緣案例（如靠近螢幕邊緣）的處理。
 
-- [ ] Task: 邊界溢出處理與視覺拋光
-    - [ ] 確保選單在編輯器底部或右側時不會被切掉（Auto-flip 邏輯）。
-    - [ ] 加入選單開啟/關閉的微動畫。
-- [ ] Task: 完整整合測試
-    - [ ] 撰寫整合測試，驗證從輸入 `/` 到選取指令、內容渲染的完整流程。
-- [ ] Task: Conductor - User Manual Verification '第四階段：最終優化' (Protocol in workflow.md)
+- [x] Task: 邊界溢出處理與視覺拋光 (1291834)
+- [x] Task: 完整整合測試 (1291834)
+- [x] Task: Conductor - User Manual Verification '第四階段：最終優化' (Protocol in workflow.md)
