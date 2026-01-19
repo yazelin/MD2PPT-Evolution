@@ -53,7 +53,7 @@ export const useSlashCommand = (
 ) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState({ top: 0, left: 0, placement: 'bottom' as 'top' | 'bottom' });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const triggerIndexRef = useRef<number>(-1);
 
@@ -67,10 +67,18 @@ export const useSlashCommand = (
     const textarea = textareaRef.current;
     const coords = getCaretCoordinates(textarea, textarea.selectionStart);
     
-    // Position menu below the caret
-    setPosition({
-      top: coords.top + coords.lineHeight + 5, 
-      left: Math.min(coords.left, window.innerWidth - 300) // Basic edge safety
+    // Auto-flip logic
+    const MENU_HEIGHT = 320;
+    const spaceBelow = window.innerHeight - coords.top - coords.lineHeight;
+    const placement = spaceBelow < MENU_HEIGHT ? 'top' : 'bottom';
+
+    // Position menu
+    setPosition({ 
+      top: placement === 'bottom' 
+        ? coords.top + coords.lineHeight + 5 
+        : coords.top - 5, // Will need to transform -100% in CSS if top
+      left: Math.min(coords.left, window.innerWidth - 300), // Basic edge safety
+      placement
     });
     
     triggerIndexRef.current = textarea.selectionStart - 1;

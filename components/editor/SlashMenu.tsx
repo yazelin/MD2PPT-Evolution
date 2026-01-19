@@ -19,7 +19,7 @@ interface SlashMenuProps {
   isOpen: boolean;
   onSelect: (command: Command) => void;
   onClose: () => void;
-  position: { top: number; left: number };
+  position: { top: number; left: number; placement?: 'top' | 'bottom' };
   commands: Command[];
   selectedIndex: number;
 }
@@ -65,7 +65,11 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
     <div
       ref={menuRef}
       className="fixed z-[100] w-64 max-h-80 overflow-y-auto bg-white dark:bg-[#1C1917] border border-stone-200 dark:border-[#44403C] rounded-xl shadow-2xl animate-in fade-in zoom-in duration-150"
-      style={{ top: position.top, left: position.left }}
+      style={{ 
+        top: position.top, 
+        left: position.left,
+        transform: position.placement === 'top' ? 'translateY(-100%)' : 'none'
+      }}
       role="listbox"
     >
       <div className="p-2">

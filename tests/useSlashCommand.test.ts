@@ -1,6 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useSlashCommand } from '../hooks/useSlashCommand';
+
+// Mock the utility to control coordinates
+vi.mock('../utils/caretPosition', () => ({
+  getCaretCoordinates: vi.fn(() => ({ top: 100, left: 100, lineHeight: 20 }))
+}));
+
+import { getCaretCoordinates } from '../utils/caretPosition';
 
 describe('useSlashCommand', () => {
   let textarea: HTMLTextAreaElement;
@@ -10,11 +17,11 @@ describe('useSlashCommand', () => {
     textarea = document.createElement('textarea');
     document.body.appendChild(textarea);
     onInsert = vi.fn();
-    
-    // Mock getBoundingClientRect for coordinates calc
-    textarea.getBoundingClientRect = vi.fn(() => ({
-      top: 0, left: 0, bottom: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
-    }));
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    document.body.removeChild(textarea);
   });
 
   it('should trigger menu when / is typed at start', () => {
@@ -155,5 +162,45 @@ describe('useSlashCommand', () => {
     });
 
     expect(result.current.filteredCommands.length).toBe(0);
+  });
+
+  it('should flip to top placement when close to bottom edge', () => {
+    // Mock window height to 500px
+    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 500 });
+    
+    // Mock caret position near bottom (400px top + 20px line = 420px. Space below = 80px < 320px menu)
+    (getCaretCoordinates as any).mockReturnValue({ top: 400, left: 100, lineHeight: 20 });
+    
+    const { result } = renderHook(() => useSlashCommand({ current: textarea } as any, onInsert));
+    
+    act(() => {
+      textarea.value = '/';
+      textarea.selectionStart = 1;
+      result.current.handleInputChange('/', 1);
+    });
+
+    expect(result.current.position.placement).toBe('top');
+    // Expect top to be coords.top - 5
+    expect(result.current.position.top).toBe(395);
+  });
+
+  it('should stay at bottom placement when space is sufficient', () => {
+    // Mock window height to 1000px
+    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 1000 });
+    
+    // Mock caret position at top (100px)
+    (getCaretCoordinates as any).mockReturnValue({ top: 100, left: 100, lineHeight: 20 });
+    
+    const { result } = renderHook(() => useSlashCommand({ current: textarea } as any, onInsert));
+    
+    act(() => {
+      textarea.value = '/';
+      textarea.selectionStart = 1;
+      result.current.handleInputChange('/', 1);
+    });
+
+    expect(result.current.position.placement).toBe('bottom');
+    // Expect top to be coords.top + line + 5
+    expect(result.current.position.top).toBe(125);
   });
 });
