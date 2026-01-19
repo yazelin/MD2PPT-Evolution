@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useVisualTweaker } from '../../contexts/VisualTweakerContext';
 import { X } from 'lucide-react';
 import { TextTweaker } from './TextTweaker';
+import { ImageTweaker } from './ImageTweaker';
 import { BlockType } from '../../services/types';
 
 export const TweakerOverlay: React.FC = () => {
@@ -22,6 +23,8 @@ export const TweakerOverlay: React.FC = () => {
     BlockType.CALLOUT_TIP,
     BlockType.CALLOUT_WARNING
   ].includes(blockType);
+  
+  const isImageType = blockType === BlockType.IMAGE;
 
   return (
     <div
@@ -39,7 +42,7 @@ export const TweakerOverlay: React.FC = () => {
       </div>
       
       <div className="text-sm text-stone-600 dark:text-stone-300">
-        {isTextType ? <TextTweaker /> : (
+        {isTextType ? <TextTweaker /> : isImageType ? <ImageTweaker /> : (
           <>
             <p>Source Line: {sourceLine}</p>
             <p className="mt-2 text-xs opacity-60">Specific controls for {blockType} will appear here.</p>
