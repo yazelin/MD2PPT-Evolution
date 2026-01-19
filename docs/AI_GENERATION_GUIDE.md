@@ -43,16 +43,14 @@ columns: 2
 
 ## 2. 頁面設定 (Slide Configuration)
 
-每一頁的頂部（`===` 之後）可以包含 YAML 設定。
+每一頁的頂部（`===` 之後）**必須**包含 YAML 設定。即使沒有特殊設定，也請加上 `layout: default`。
 
 ### 支援參數
 | 參數 | 說明 | 選項 |
 | :--- | :--- | :--- |
-| `layout` | 版面配置 | `default`, `impact` (大標題), `center` (居中), `grid` (網格), `two-column` (雙欄), `quote` (引用), `alert` (告警) |
-| `bg` | 背景模式 | `#hexcode` (色碼), `mesh` (網格漸層), 或圖片 URL |
-| `bgImage`| 背景圖片 | URL 或 Base64 (會覆蓋 `bg`) |
+| `layout` | 版面配置 | `default`, `impact`, `center`, `grid`, `two-column`, `quote`, `alert` |
+| `bg` | 背景模式 | `mesh` (網格), `#HEX` (純色), 或圖片 URL |
 | `mesh` | Mesh 設定 | 當 `bg: mesh` 時使用。包含 `colors` (陣列) 與 `seed` (數字) |
-| `transition`| 轉場效果 | `none`, `fade`, `slide`, `convex`, `zoom` |
 
 ✅ **Mesh 背景範例：**
 ```yaml
@@ -62,6 +60,14 @@ bg: mesh
 mesh:
   colors: ["#FF5733", "#33FF57", "#3357FF"]
   seed: 12345
+---
+```
+
+✅ **純色背景範例 (簡約風格)：**
+```yaml
+---
+layout: center
+bg: "#1e293b" # 深藍灰色
 ---
 ```
 
@@ -99,12 +105,17 @@ mesh:
 ### 3.2 雙欄內容 (Two-Column)
 當 `layout: two-column` 時，使用 `:: right ::` 分隔左右欄。
 
+### ⚠️ 致命錯誤預防
+**`:: right ::` 前後必須有空行**，否則會被視為普通文字，導致分欄失敗。
+
 ✅ **正確範例：**
 ```markdown
 # 左側標題
 左側內容...
 
+(空行)
 :: right ::
+(空行)
 
 # 右側標題
 右側內容...
