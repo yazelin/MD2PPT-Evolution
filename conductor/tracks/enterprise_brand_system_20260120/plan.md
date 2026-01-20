@@ -6,9 +6,9 @@
 - [x] **Task: 定義品牌資料結構與類型 (Types)** 7ba2992
     - [ ] 在 `services/types.ts` 定義 `BrandConfig` 介面
     - [ ] 包含 primaryColor, secondaryColor, accentColor, font, logo (Base64), logoPosition 等欄位
-- [ ] **Task: 實作品牌狀態管理 (Zustand Store)**
+- [x] **Task: 實作品牌狀態管理 (Brand Settings Hook)** 508d8fb
     - [ ] 撰寫測試驗證狀態更新邏輯
-    - [ ] 在 `hooks/useEditorState.ts` 或新 Store 增加 `brandConfig` 狀態
+    - [ ] 建立 `hooks/useBrandSettings.ts`
     - [ ] 實作 `updateBrandConfig` 方法
 - [ ] **Task: 實作 JSON 匯入/匯出邏輯**
     - [ ] 撰寫測試驗證 JSON 解析與驗證邏輯
