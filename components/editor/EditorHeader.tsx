@@ -13,9 +13,13 @@ import { useEditor } from '../../contexts/EditorContext';
 import { Button } from '../ui/Button';
 import { IconButton } from '../ui/IconButton';
 import { PRESET_THEMES } from '../../constants/themes';
+import { CURATED_PALETTES } from '../../constants/palettes';
+import { updateGlobalTheme } from '../../services/markdownUpdater';
 
 export const EditorHeader: React.FC = () => {
   const {
+    content,
+    setContent,
     pageSizes,
     selectedSizeIndex,
     setSelectedSizeIndex,
@@ -33,8 +37,10 @@ export const EditorHeader: React.FC = () => {
     toggleDarkMode,
     activeTheme,
     setActiveThemeId,
+    resetCustomTheme,
     toggleThemePanel, 
-    isThemePanelOpen
+    isThemePanelOpen,
+    openBrandModal
   } = useEditor() as any;
 
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
@@ -45,7 +51,19 @@ export const EditorHeader: React.FC = () => {
   const sizeDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleThemeChange = (id: string) => {
-    setActiveThemeId(id);
+    const palette = CURATED_PALETTES.find(p => p.id === id);
+    if (palette) {
+      // 1. Clear any manual color overrides to let the palette take full effect
+      resetCustomTheme();
+
+      // 2. Update Markdown Content (for YAML persistence)
+      const newContent = updateGlobalTheme(content, palette.id, palette.meshColors);
+      setContent(newContent);
+      
+      // 3. Set the active theme ID
+      setActiveThemeId(palette.id);
+    }
+    
     setShowThemeSaved(true);
     setIsThemeDropdownOpen(false);
     setTimeout(() => setShowThemeSaved(false), 2000);
@@ -99,6 +117,16 @@ export const EditorHeader: React.FC = () => {
       {/* Right: Actions */}
       <div className="flex items-center gap-2 lg:gap-4 overflow-visible">
         
+        {/* Brand Settings Toggle */}
+        <IconButton 
+          onClick={openBrandModal} 
+          title="Brand Settings"
+          onBrand
+          className="bg-white/5 text-stone-400 hover:text-[#EA580C]"
+        >
+          <Settings2 size={18} />
+        </IconButton>
+
         {/* Color Tool Toggle */}
         <IconButton 
           onClick={toggleThemePanel} 
@@ -129,26 +157,44 @@ export const EditorHeader: React.FC = () => {
           </button>
 
           {isThemeDropdownOpen && (
-            <div className="absolute top-full mt-2 right-0 w-60 lg:w-64 bg-[#1C1917] border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] py-2 z-[60] animate-in zoom-in-95 fade-in duration-200 origin-top-right">
-              <div className="px-4 py-2 mb-1 border-b border-white/5">
-                <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest">Select PPT Theme</span>
+            <div className="absolute top-full mt-2 right-0 w-72 lg:w-80 bg-[#1C1917] border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] py-2 z-[60] animate-in zoom-in-95 fade-in duration-200 origin-top-right max-h-[80vh] overflow-y-auto custom-scrollbar">
+              
+              <div className="px-5 py-3 mb-1 border-b border-white/5 sticky top-0 bg-[#1C1917] z-10 flex items-center justify-between">
+                <span className="text-[11px] font-black text-[#EA580C] uppercase tracking-[0.2em] flex items-center gap-2">
+                  <Palette size={14} /> Design Systems
+                </span>
+                <span className="text-[9px] text-stone-500 font-bold">12 Styles</span>
               </div>
-              {Object.values(PRESET_THEMES).map((theme) => (
-                <button
-                  key={theme.name}
-                  onClick={() => handleThemeChange(theme.name)}
-                  className={`w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors group ${activeTheme.name === theme.name ? 'text-[#EA580C]' : 'text-stone-300'}`}
-                >
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="flex -space-x-1">
-                      <div className="w-3.5 h-3.5 rounded-full border border-[#1C1917] z-10" style={{ backgroundColor: `#${theme.colors.primary}` }} />
-                      <div className="w-3.5 h-3.5 rounded-full border border-[#1C1917] z-0" style={{ backgroundColor: `#${theme.colors.background}` }} />
-                    </div>
-                    <span className="text-sm font-bold">{theme.label}</span>
-                  </div>
-                  {activeTheme.name === theme.name && <Check size={14} />}
-                </button>
-              ))}
+              
+              <div className="grid grid-cols-1 gap-1 p-2">
+                {CURATED_PALETTES.map((palette) => (
+                  <button
+                    key={palette.id}
+                    onClick={() => handleThemeChange(palette.id)}
+                    className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-white/10 rounded-xl transition-all group text-left ${activeTheme.name === palette.id ? 'bg-white/5 ring-1 ring-[#EA580C]/30' : ''}`}
+                  >
+                     <div className="w-10 h-10 rounded-full shadow-lg relative overflow-hidden shrink-0 border-2 border-white/10 group-hover:scale-110 transition-transform">
+                        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${palette.meshColors[0]}, ${palette.meshColors[1]}, ${palette.meshColors[2]})` }} />
+                        {activeTheme.name === palette.id && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
+                            <Check size={18} className="text-white" />
+                          </div>
+                        )}
+                     </div>
+                     <div className="flex-1 min-w-0">
+                       <div className="flex items-center justify-between mb-0.5">
+                         <span className={`text-[13px] font-black tracking-tight ${activeTheme.name === palette.id ? 'text-[#EA580C]' : 'text-white'}`}>
+                           {palette.label}
+                         </span>
+                         <span className="text-[9px] font-bold text-stone-500 uppercase opacity-60">{palette.name}</span>
+                       </div>
+                       <div className="text-[10px] text-stone-400 font-medium leading-tight line-clamp-1 group-hover:text-stone-300">
+                         {palette.description}
+                       </div>
+                     </div>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 

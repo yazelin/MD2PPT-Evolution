@@ -1,11 +1,8 @@
 /**
  * MD2PPT-Evolution
- * Caret Position Utility
+ * Caret Position Utility (Optimized)
  * Copyright (c) 2026 EricHuang
  * Licensed under the MIT License.
- * 
- * Helper to get the (x, y) coordinates of the caret in a textarea.
- * Based on the mirror-div technique.
  */
 
 export interface CaretPosition {
@@ -15,15 +12,24 @@ export interface CaretPosition {
 }
 
 /**
- * Calculates the absolute coordinates of the caret in a textarea.
- * @param element The textarea element
- * @param position The character index of the caret
+ * Creates and returns a mirror div for measuring coordinates in a textarea.
+ * Reusing this div is much faster than creating it every time.
  */
-export function getCaretCoordinates(element: HTMLTextAreaElement, position: number): CaretPosition {
-  const div = document.createElement('div');
-  const style = window.getComputedStyle(element);
+let mirrorDiv: HTMLDivElement | null = null;
 
-  // Copy textarea styles to the ghost div
+function getMirrorDiv(element: HTMLTextAreaElement): HTMLDivElement {
+  if (!mirrorDiv) {
+    mirrorDiv = document.createElement('div');
+    mirrorDiv.style.position = 'absolute';
+    mirrorDiv.style.visibility = 'hidden';
+    mirrorDiv.style.whiteSpace = 'pre-wrap';
+    mirrorDiv.style.wordWrap = 'break-word';
+    mirrorDiv.style.top = '0';
+    mirrorDiv.style.left = '0';
+    document.body.appendChild(mirrorDiv);
+  }
+
+  const style = window.getComputedStyle(element);
   const properties = [
     'direction', 'boxSizing', 'width', 'height', 'overflowX', 'overflowY',
     'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderStyle',
@@ -32,41 +38,55 @@ export function getCaretCoordinates(element: HTMLTextAreaElement, position: numb
     'textAlign', 'textTransform', 'textIndent', 'textDecoration', 'letterSpacing', 'wordSpacing', 'tabSize', 'MozTabSize'
   ];
 
-  div.style.position = 'absolute';
-  div.style.visibility = 'hidden';
-  div.style.whiteSpace = 'pre-wrap';
-  div.style.wordWrap = 'break-word';
-  div.style.top = '0';
-  div.style.left = '0';
-
   properties.forEach(prop => {
     // @ts-ignore
-    div.style[prop] = style[prop];
+    mirrorDiv!.style[prop] = style[prop];
   });
 
-  // Ensure same content up to caret
-  div.textContent = element.value.substring(0, position);
-  
-  const span = document.createElement('span');
-  // Need some text content for the span to have dimensions
-  span.textContent = element.value.substring(position, position + 1) || '.';
-  div.appendChild(span);
+  return mirrorDiv!;
+}
 
-  document.body.appendChild(div);
+/**
+ * Calculates multiple caret positions in one go to minimize DOM thrashing.
+ */
+export function getBatchCaretCoordinates(element: HTMLTextAreaElement, positions: number[]): CaretPosition[] {
+  if (positions.length === 0) return [];
   
-  const { offsetTop: top, offsetLeft: left } = span;
-  const lineHeight = parseInt(style.lineHeight) || parseInt(style.fontSize) * 1.2;
-  
-  // Account for textarea position on page and its internal scroll
+  const div = getMirrorDiv(element);
   const elementRect = element.getBoundingClientRect();
-  const absoluteTop = elementRect.top + top - element.scrollTop;
-  const absoluteLeft = elementRect.left + left - element.scrollLeft;
+  const style = window.getComputedStyle(element);
+  const lineHeight = parseInt(style.lineHeight) || parseInt(style.fontSize) * 1.2;
+  const scrollTop = element.scrollTop;
+  const scrollLeft = element.scrollLeft;
 
-  document.body.removeChild(div);
+  const results: CaretPosition[] = [];
+  const text = element.value;
 
-  return { 
-    top: absoluteTop, 
-    left: absoluteLeft, 
-    lineHeight 
-  };
+  // We can't easily measure all at once by just appending spans because content 
+  // needs to be exact up to the point.
+  // But we can measure them sequentially without re-calculating styles or re-appending the div.
+  
+  for (const pos of positions) {
+    div.textContent = text.substring(0, pos);
+    const span = document.createElement('span');
+    span.textContent = text.substring(pos, pos + 1) || '.';
+    div.appendChild(span);
+    
+    results.push({
+      top: elementRect.top + span.offsetTop - scrollTop,
+      left: elementRect.left + span.offsetLeft - scrollLeft,
+      lineHeight
+    });
+    
+    div.removeChild(span);
+  }
+
+  return results;
+}
+
+/**
+ * Legacy single version (now uses the optimized pool)
+ */
+export function getCaretCoordinates(element: HTMLTextAreaElement, position: number): CaretPosition {
+  return getBatchCaretCoordinates(element, [position])[0];
 }

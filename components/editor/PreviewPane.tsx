@@ -36,6 +36,7 @@ const SlideCard: React.FC<{
   onUpdateConfig?: (index: number, key: string, value: string) => void;
   showNotes?: boolean;
 }> = ({ slide, index, layout, theme, globalBg, onUpdateConfig, showNotes }) => {
+  const { brandConfig } = useEditor() as any;
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -96,16 +97,50 @@ const SlideCard: React.FC<{
   }
   
   // Calculate brightness for auto-text-color if not on theme default
-  // For mesh, assume dark or light based on first color? Or just default to white/themeText?
-  // Let's stick to themeText for mesh unless overridden.
-  const isDark = bgImage ? true : (isMesh ? false : (parseInt(rawBg.replace('#', '').substring(0, 2), 16) * 299 + parseInt(rawBg.replace('#', '').substring(2, 4), 16) * 587 + parseInt(rawBg.replace('#', '').substring(4, 6), 16) * 114) / 1000 < 128);
+  // For mesh, use the first color to determine brightness
+  const getBrightness = (hex: string) => {
+    const cleanHex = hex.replace('#', '');
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000;
+  };
+
+  const meshColors = slide.config?.mesh?.colors || [];
   
-  const textColor = bgImage ? '#FFFFFF' : (isDark ? '#FFFFFF' : themeText);
+  // Refined isDark logic
+  let isDark = false;
+  if (bgImage) {
+    isDark = true;
+  } else if (isMesh && meshColors.length > 0) {
+    // Check brightness of the primary mesh color (index 0)
+    isDark = getBrightness(meshColors[0]) < 160; // Slightly higher threshold for mesh
+  } else {
+    // Check brightness of rawBg (solid color)
+    const bgColor = rawBg.startsWith('#') ? rawBg : `#${rawBg}`;
+    // Safety check for invalid hex
+    if (/^#[0-9a-fA-F]{6}$/.test(bgColor)) {
+      isDark = getBrightness(bgColor) < 128;
+    }
+  }
+  
+  const textColor = isDark ? '#FFFFFF' : themeText;
   
   const designHeight = DESIGN_WIDTH * (layout.height / layout.width);
   const transitionType = slide.config?.transition || 'none';
 
   const note = slide.config?.note || slide.metadata?.note;
+
+  // Logo Position Styles
+  const getLogoPositionStyles = (): React.CSSProperties => {
+    switch (brandConfig.logoPosition) {
+      case 'top-left': return { top: '40px', left: '40px' };
+      case 'top-right': return { top: '40px', right: '40px' };
+      case 'bottom-left': return { bottom: '40px', left: '40px' };
+      case 'bottom-right': return { bottom: '40px', right: '40px' };
+      default: return { top: '40px', right: '40px' };
+    }
+  };
 
   return (
     <div 
@@ -141,6 +176,14 @@ const SlideCard: React.FC<{
           overflow: 'hidden' 
         }}>
           {bgImage && <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${bgImage})` }}><div className="absolute inset-0 bg-black/40"></div></div>}
+          
+          {/* Brand Logo */}
+          {brandConfig.logo && (
+            <div className="absolute z-30" style={getLogoPositionStyles()}>
+              <img src={brandConfig.logo} alt="Brand Logo" className="max-h-16 max-w-[200px] object-contain opacity-80" />
+            </div>
+          )}
+
           <div className={`absolute top-6 right-10 text-xs font-black uppercase tracking-[0.3em] z-20 ${isDark ? 'text-white/20' : 'text-stone-400/20'}`}>Slide {index + 1}</div>
           <div className="flex-1 relative z-10 flex flex-col p-[80px_100px]"><SlideContent slide={slide} isDark={isDark} theme={theme} /></div>
         </div>
@@ -296,8 +339,8 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({ parsedBlocks, previewR
     <div className="w-1/2 flex flex-col bg-[#F5F5F4] dark:bg-[#0C0A09] transition-colors duration-500 border-l border-[#E7E5E4] dark:border-[#44403C]">
       <div className="bg-white dark:bg-[#1C1917] px-6 py-2.5 border-b border-[#E7E5E4] dark:border-[#44403C] flex justify-between items-center shrink-0">
         <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">Canvas Preview</span>
-        <div className="flex items-center gap-2 text-[#EA580C] font-black text-[10px] uppercase tracking-tighter">
-          <span className="w-2 h-2 rounded-full bg-[#EA580C] animate-pulse"></span> {activeTheme.label}
+        <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter" style={{ color: `#${activeTheme.colors.primary}` }}>
+          <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: `#${activeTheme.colors.primary}` }}></span> {activeTheme.label}
         </div>
       </div>
       <div 

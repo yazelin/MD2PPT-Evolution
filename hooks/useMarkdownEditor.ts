@@ -11,6 +11,7 @@ import { useEditorState } from './useEditorState';
 import { useWordCount } from './useWordCount';
 import { useSyncScroll } from './useSyncScroll';
 import { usePptExport } from './usePptExport';
+import { useBrandSettings } from './useBrandSettings';
 
 export const useMarkdownEditor = () => {
   // 1. Core State (Content, Parsing, Language)
@@ -24,6 +25,11 @@ export const useMarkdownEditor = () => {
     activeTheme,
     setActiveThemeId,
     updateCustomTheme,
+    resetCustomTheme,
+    brandConfig,
+    updateBrandConfig,
+    saveBrandConfigToFile,
+    loadBrandConfigFromFile,
     language, 
     toggleLanguage, 
     resetToDefault, 
@@ -73,6 +79,11 @@ export const useMarkdownEditor = () => {
     activeTheme,
     setActiveThemeId,
     updateCustomTheme,
+    resetCustomTheme,
+    brandConfig,
+    updateBrandConfig,
+    saveBrandConfigToFile,
+    loadBrandConfigFromFile,
     isGenerating: isExporting,
     
     // UI Config

@@ -5,6 +5,7 @@
 
 export * from './Heading1Renderer';
 export * from './Heading2Renderer';
+export * from './Heading3Renderer';
 export * from './ParagraphRenderer';
 export * from './ListRenderer';
 export * from './ImageRenderer';

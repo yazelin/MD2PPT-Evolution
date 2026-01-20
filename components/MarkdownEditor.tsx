@@ -18,14 +18,17 @@ import { QuickActionSidebar, ActionType } from './editor/QuickActionSidebar';
 import { EditorActionService } from '../services/editorActionService';
 import { ACTION_TEMPLATES } from '../constants/templates';
 import { fileToBase64 } from '../utils/imageUtils';
-import { updateSlideYaml, replaceContentByLine } from '../services/markdownUpdater';
+import { updateSlideYaml, replaceContentByLine, updateGlobalTheme } from '../services/markdownUpdater';
 import { ThemePanel } from './editor/ThemePanel';
+import { BrandSettingsModal } from './editor/BrandSettingsModal';
 import { TweakerOverlay } from './tweaker/TweakerOverlay';
+import { DesignPalette } from '../constants/palettes';
 
 const MarkdownEditor: React.FC = () => {
   const darkModeState = useDarkMode();
   const editorState = useMarkdownEditor();
   const [isThemePanelOpen, setIsThemePanelOpen] = React.useState(false);
+  const [isBrandModalOpen, setIsBrandModalOpen] = React.useState(false);
   
   const {
     content,
@@ -35,13 +38,20 @@ const MarkdownEditor: React.FC = () => {
     textareaRef,
     previewRef,
     handleScroll,
+    brandConfig,
+    updateBrandConfig,
+    saveBrandConfigToFile,
+    loadBrandConfigFromFile
   } = editorState;
 
   // Add the panel state to the context data so EditorHeader can use it
   const extendedEditorState = {
     ...editorState,
     isThemePanelOpen,
-    toggleThemePanel: () => setIsThemePanelOpen(!isThemePanelOpen)
+    toggleThemePanel: () => setIsThemePanelOpen(!isThemePanelOpen),
+    isBrandModalOpen,
+    openBrandModal: () => setIsBrandModalOpen(true),
+    closeBrandModal: () => setIsBrandModalOpen(false)
   };
 
   const handleAction = (action: { type: ActionType }) => {
@@ -141,6 +151,11 @@ const MarkdownEditor: React.FC = () => {
     service.insertText(hex, setContent);
   };
 
+  const handleApplyPalette = (palette: DesignPalette) => {
+    const newContent = updateGlobalTheme(content, palette.id);
+    setContent(newContent);
+  };
+
   // ... (inside the component)
   const handleTweakerUpdate = (line: number, newContent: string) => {
     const updated = replaceContentByLine(content, line, newContent);
@@ -169,8 +184,18 @@ const MarkdownEditor: React.FC = () => {
               <ThemePanel 
                 onClose={() => setIsThemePanelOpen(false)} 
                 onInsertColor={handleInsertColor}
+                onApplyPalette={handleApplyPalette}
               />
             )}
+
+            <BrandSettingsModal 
+              isOpen={isBrandModalOpen}
+              onClose={() => setIsBrandModalOpen(false)}
+              config={brandConfig}
+              onUpdate={updateBrandConfig}
+              onExport={saveBrandConfigToFile}
+              onImport={loadBrandConfigFromFile}
+            />
             
             <div className="flex flex-1 overflow-hidden">
               <div 

@@ -144,3 +144,41 @@ export const updateSlideYaml = (content: string, slideIndex: number, key: string
   // Join with standard separator, but trim ends to avoid accumulation
   return slidesContent.join('\n\n===\n'); 
 };
+
+/**
+ * Updates the Global Frontmatter (Slide 0) with a curated design palette.
+ * Sets the 'theme' only, following the "Professional Presentation" principle.
+ */
+export const updateGlobalTheme = (content: string, themeId: string, meshColors?: string[]): string => {
+  const slidesContent = content.split(/^===+$/m);
+  if (slidesContent.length === 0) return content;
+
+  let globalSlide = slidesContent[0].trim();
+  const yamlMatch = globalSlide.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+  
+  let existingYamlContent = '';
+  let restOfContent = globalSlide;
+
+  if (yamlMatch) {
+    existingYamlContent = yamlMatch[1];
+    restOfContent = globalSlide.replace(yamlMatch[0], '').trim();
+  }
+
+  // Filter out theme related keys
+  const filteredLines = existingYamlContent.split('\n').filter(line => {
+    const l = line.trim().toLowerCase();
+    return l && !l.startsWith('theme:');
+  });
+
+  const newYamlLines = [
+    ...filteredLines,
+    `theme: ${themeId}`
+  ];
+
+  const finalYaml = `---\n${newYamlLines.join('\n')}\n---`;
+  
+  // Reconstruct
+  slidesContent[0] = restOfContent ? `${finalYaml}\n\n${restOfContent}` : finalYaml;
+
+  return slidesContent.map(s => s.trim()).join('\n\n===\n\n');
+};

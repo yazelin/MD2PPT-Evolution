@@ -31,17 +31,19 @@
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
 
 ## Phase 3: 視覺整合與 CSS 變數 (Visual Integration)
-- [ ] **Task: 專業化主題預設值 (Professionalizing Theme Presets)**
-    - [ ] 修改 `constants/themes.ts` 與 `constants/palettes.ts`
-    - [ ] 將所有預設主題的背景改為純色（白色為主，深色主題為輔）
-    - [ ] 確保標題與內容顏色在純色背景下具備高對比度
-    - [ ] 將 Mesh 背景從「主題預設」中移除，改為使用者可自行開啟的視覺選項
-- [ ] **Task: 全域 CSS 變數注入**
-    - [ ] 撰寫測試驗證 CSS 變數是否正確插入 DOM
-    - [ ] 實作一個 Effect，根據品牌狀態更新 `:root` 的 CSS 變數 (如 `--brand-primary`)
-- [ ] **Task: 調整預覽區元件以套用品牌規範**
-    - [ ] 確保標題與圖表預設使用品牌色變數
-    - [ ] 在預覽區固定位置顯示品牌 Logo
+- [x] **Task: 專業化主題預設值 (Professionalizing Theme Presets)**
+    - [x] 修改 `constants/themes.ts` 與 `constants/palettes.ts`
+    - [x] 將所有預設主題的背景改為純色（白色為主，深色主題為輔）
+    - [x] 確保標題與內容顏色在純色背景下具備高對比度
+    - [x] 將 Mesh 背景從「主題預設」中移除，改為使用者可自行開啟的視覺選項
+- [x] **Task: 整合品牌設定至主 UI**
+    - [x] 在 `components/editor/EditorHeader.tsx` 加入「品牌設定」按鈕
+    - [x] 在 `components/MarkdownEditor.tsx` 建立 Modal 開關狀態與 Hook 整合
+- [x] **Task: 全域 CSS 變數注入**
+    - [x] 實作一個 Effect，根據品牌狀態更新 `:root` 的 CSS 變數 (如 `--brand-primary`)
+- [x] **Task: 調整預覽區元件以套用品牌規範**
+    - [x] 確保標題與圖表預設使用品牌色變數
+    - [x] 在預覽區固定位置顯示品牌 Logo
 - [ ] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
 
 ## Phase 4: PPTX 匯出增強 (PPTX Export Enhancement)
