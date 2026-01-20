@@ -17,7 +17,7 @@
 - [ ] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
 
 ## Phase 2: 品牌設定使用者介面 (Brand Settings UI)
-- [ ] **Task: 建立品牌設定對話視窗 (Brand Settings Modal)**
+- [x] **Task: 建立品牌設定對話視窗 (Brand Settings Modal)** cfd1e46
     - [ ] 撰寫測試驗證 Modal 的開啟與關閉
     - [ ] 使用現有 UI 元件建立 Modal 框架
 - [ ] **Task: 實作色票選擇器與字體選單**
@@ -31,6 +31,11 @@
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
 
 ## Phase 3: 視覺整合與 CSS 變數 (Visual Integration)
+- [ ] **Task: 專業化主題預設值 (Professionalizing Theme Presets)**
+    - [ ] 修改 `constants/themes.ts` 與 `constants/palettes.ts`
+    - [ ] 將所有預設主題的背景改為純色（白色為主，深色主題為輔）
+    - [ ] 確保標題與內容顏色在純色背景下具備高對比度
+    - [ ] 將 Mesh 背景從「主題預設」中移除，改為使用者可自行開啟的視覺選項
 - [ ] **Task: 全域 CSS 變數注入**
     - [ ] 撰寫測試驗證 CSS 變數是否正確插入 DOM
     - [ ] 實作一個 Effect，根據品牌狀態更新 `:root` 的 CSS 變數 (如 `--brand-primary`)
