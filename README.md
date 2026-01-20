@@ -1,6 +1,6 @@
 # MD2PPT-EVOLUTION 🚀
 
-![Version](https://img.shields.io/badge/version-0.10.0-orange.svg)
+![Version](https://img.shields.io/badge/version-0.11.0-orange.svg)
 ...
 ### 🎨 專業排版系統
 - **動態背景生成器 (Generative Backgrounds) (v0.10+)**: 引入輕量級生成藝術算法（如 Mesh Gradients），讓每頁背景都是獨一無二的，擺脫死板的 PPT 背景圖。
@@ -212,6 +212,8 @@ npm run build
 - [x] **v0.7.0**: 演講者備忘錄 (Speaker Notes)。
 - [x] **v0.8.0**: 全域主題管理器 (Theme Manager)。
 - [x] **v0.9.0**: 斜線指令系統 (Slash Commands)。
+- [x] **v0.10.0**: 生成式背景 (Generative Backgrounds)。
+- [x] **v0.11.0**: 企業級品牌系統 (Enterprise Brand System)。
 
 ## 🤝 貢獻 (Contributing)
 

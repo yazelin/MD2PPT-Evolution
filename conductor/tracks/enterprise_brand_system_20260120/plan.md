@@ -55,8 +55,8 @@
 - [ ] **Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)**
 
 ## Phase 5: 結案與版本更新 (Finalization)
-- [ ] **Task: 更新專案文件與版本**
-    - [ ] 更新 `package.json` 版本 (0.11.0)
-    - [ ] 更新 `CHANGELOG.md` 紀錄新功能
-    - [ ] 更新 `README.md` 版本標記
+- [x] **Task: 更新專案文件與版本**
+    - [x] 更新 `package.json` 版本 (0.11.0)
+    - [x] 更新 `CHANGELOG.md` 紀錄新功能
+    - [x] 更新 `README.md` 版本標記
 - [ ] **Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)**
