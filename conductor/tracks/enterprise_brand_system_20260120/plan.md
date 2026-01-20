@@ -10,7 +10,7 @@
     - [ ] 撰寫測試驗證狀態更新邏輯
     - [ ] 建立 `hooks/useBrandSettings.ts`
     - [ ] 實作 `updateBrandConfig` 方法
-- [ ] **Task: 實作 JSON 匯入/匯出邏輯**
+- [x] **Task: 實作 JSON 匯入/匯出邏輯** fa2b052
     - [ ] 撰寫測試驗證 JSON 解析與驗證邏輯
     - [ ] 實作匯出為 `brand.json` 的功能
     - [ ] 實作解析 `brand.json` 並更新狀態的功能
