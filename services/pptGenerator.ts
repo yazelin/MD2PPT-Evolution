@@ -6,7 +6,7 @@
  */
 
 import PptxGenJS from "pptxgenjs";
-import { ParsedBlock, BlockType, PptTheme } from "./types";
+import { ParsedBlock, BlockType, PptTheme, BrandConfig } from "./types";
 import { PPT_THEME } from "../constants/theme";
 import { splitBlocksToSlides } from "./parser/slides";
 import { imageUrlToBase64, svgToPngBase64 } from "../utils/imageUtils";
@@ -21,6 +21,7 @@ export interface PptConfig {
   author?: string; 
   bg?: string;
   theme?: PptTheme;
+  brandConfig?: BrandConfig;
 }
 
 const renderBlocksToArea = (slide: any, blocks: ParsedBlock[], x: number, y: number, w: number, pptx: PptxGenJS, globalOptions: any = {}) => {
@@ -168,6 +169,28 @@ export const generatePpt = async (blocks: ParsedBlock[], config: PptConfig = {})
 
     if (slideCfg.note || slideData.metadata?.note) {
         slide.addNotes(slideCfg.note || slideData.metadata?.note);
+    }
+
+    // 2. Add Brand Logo
+    if (config.brandConfig?.logo) {
+      const pos = config.brandConfig.logoPosition;
+      let logoX = 0.4;
+      let logoY = 0.4;
+      const logoW = 1.2;
+      const logoH = 0.6;
+
+      if (pos === 'top-right') { logoX = 10 - 0.4 - logoW; }
+      else if (pos === 'bottom-left') { logoY = 5.625 - 0.4 - logoH; }
+      else if (pos === 'bottom-right') { logoX = 10 - 0.4 - logoW; logoY = 5.625 - 0.4 - logoH; }
+
+      slide.addImage({
+        data: config.brandConfig.logo,
+        x: logoX,
+        y: logoY,
+        w: logoW,
+        h: logoH,
+        sizing: { type: 'contain' }
+      });
     }
 
     // 3. Pre-highlight code blocks

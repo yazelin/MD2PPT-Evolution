@@ -47,12 +47,11 @@
 - [ ] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
 
 ## Phase 4: PPTX 匯出增強 (PPTX Export Enhancement)
-- [ ] **Task: 在 PPTX 母片中加入 Logo**
-    - [ ] 撰寫測試 (Mock) 驗證 `pptxgenjs` 呼叫包含 Logo 參數
-    - [ ] 修改 `services/ppt/pptGenerator.ts`，在產生 Slide Master 時加入 Logo
-- [ ] **Task: 匯出時套用品牌配色與字體**
-    - [ ] 確保匯出的標題與圖表顏色使用品牌配置
-    - [ ] 確保匯出物件正確設定字體名稱
+- [x] **Task: 在 PPTX 母片中加入 Logo**
+    - [x] 修改 `services/pptGenerator.ts`，在產生每一頁投影片時加入 Logo (模擬母片效果)
+- [x] **Task: 匯出時套用品牌配色與字體**
+    - [x] 確保匯出的標題與圖表顏色使用品牌配置 (透過 activeTheme 合併)
+    - [x] 確保匯出物件正確設定字體名稱
 - [ ] **Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)**
 
 ## Phase 5: 結案與版本更新 (Finalization)

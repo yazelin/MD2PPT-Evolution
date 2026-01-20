@@ -59,7 +59,9 @@ export const useMarkdownEditor = () => {
       layoutName: layout.name,
       title: documentMeta.title,
       author: documentMeta.author,
-      bg: documentMeta.bg
+      bg: documentMeta.bg,
+      theme: activeTheme,
+      brandConfig
     });
   };
 
