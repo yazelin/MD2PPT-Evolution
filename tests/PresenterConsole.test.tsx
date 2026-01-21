@@ -5,6 +5,13 @@ import { PresenterConsole } from '../components/presenter/PresenterConsole';
 import { BlockType } from '../services/types';
 import { PresentationSyncService, SyncAction } from '../services/PresentationSyncService';
 
+// Mock useEditor
+vi.mock('../contexts/EditorContext', () => ({
+  useEditor: vi.fn().mockReturnValue({
+    brandConfig: { logo: null, logoPosition: 'top-right' }
+  })
+}));
+
 // Mock SlideContent to avoid complex rendering
 vi.mock('../components/editor/PreviewPane', () => ({
   SlideContent: ({ slide }: any) => <div data-testid="slide-content">Slide {slide.index}</div>

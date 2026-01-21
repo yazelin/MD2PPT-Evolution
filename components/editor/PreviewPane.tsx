@@ -13,6 +13,7 @@ import { useEditor } from '../../contexts/EditorContext';
 import { useVisualTweaker } from '../../contexts/VisualTweakerContext';
 import { fileToBase64 } from '../../utils/imageUtils';
 import { generateMeshGradient } from '../../services/ppt/GenerativeBgService';
+import { SlideRenderer } from '../common/SlideRenderer';
 
 interface PreviewPaneProps {
   parsedBlocks: ParsedBlock[];
@@ -67,81 +68,11 @@ const SlideCard: React.FC<{
   };
 
   const bgImage = slide.config?.bgImage || slide.metadata?.bgImage;
-  
-  // Theme Overrides
-  const themeBg = theme.colors.background.startsWith('#') ? theme.colors.background : `#${theme.colors.background}`;
-  const themeText = theme.colors.text.startsWith('#') ? theme.colors.text : `#${theme.colors.text}`;
-  
-  const rawBg = slide.config?.background || slide.config?.bg || slide.metadata?.bg || globalBg || themeBg;
-  
-  // Generative Background Logic
-  let finalBgStyle: React.CSSProperties = {};
-  let isMesh = false;
-
-  if (rawBg === 'mesh' || (typeof rawBg === 'string' && rawBg.startsWith('mesh'))) {
-    isMesh = true;
-    const meshConfig = slide.config?.mesh || {};
-    // Generate SVG data URI
-    const svgString = generateMeshGradient({
-      colors: meshConfig.colors,
-      seed: meshConfig.seed,
-      // Use design dimensions or slightly larger for better resolution
-      width: DESIGN_WIDTH,
-      height: DESIGN_WIDTH * (layout.height / layout.width)
-    });
-    const svgBase64 = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgString)))}`;
-    finalBgStyle = { backgroundImage: `url(${svgBase64})`, backgroundSize: 'cover' };
-  } else {
-    const bgColor = rawBg.startsWith('#') ? rawBg : `#${rawBg}`;
-    finalBgStyle = { backgroundColor: bgColor };
-  }
-  
-  // Calculate brightness for auto-text-color if not on theme default
-  // For mesh, use the first color to determine brightness
-  const getBrightness = (hex: string) => {
-    const cleanHex = hex.replace('#', '');
-    const r = parseInt(cleanHex.substring(0, 2), 16);
-    const g = parseInt(cleanHex.substring(2, 4), 16);
-    const b = parseInt(cleanHex.substring(4, 6), 16);
-    return (r * 299 + g * 587 + b * 114) / 1000;
-  };
-
-  const meshColors = slide.config?.mesh?.colors || [];
-  
-  // Refined isDark logic
-  let isDark = false;
-  if (bgImage) {
-    isDark = true;
-  } else if (isMesh && meshColors.length > 0) {
-    // Check brightness of the primary mesh color (index 0)
-    isDark = getBrightness(meshColors[0]) < 160; // Slightly higher threshold for mesh
-  } else {
-    // Check brightness of rawBg (solid color)
-    const bgColor = rawBg.startsWith('#') ? rawBg : `#${rawBg}`;
-    // Safety check for invalid hex
-    if (/^#[0-9a-fA-F]{6}$/.test(bgColor)) {
-      isDark = getBrightness(bgColor) < 128;
-    }
-  }
-  
-  const textColor = isDark ? '#FFFFFF' : themeText;
-  
   const designHeight = DESIGN_WIDTH * (layout.height / layout.width);
   const transitionType = slide.config?.transition || 'none';
-
   const note = slide.config?.note || slide.metadata?.note;
 
-  // Logo Position Styles
-  const getLogoPositionStyles = (): React.CSSProperties => {
-    switch (brandConfig.logoPosition) {
-      case 'top-left': return { top: '40px', left: '40px' };
-      case 'top-right': return { top: '40px', right: '40px' };
-      case 'bottom-left': return { bottom: '40px', left: '40px' };
-      case 'bottom-right': return { bottom: '40px', right: '40px' };
-      default: return { top: '40px', right: '40px' };
-    }
-  };
-
+  // Render using SlideRenderer but keeping the wrapper for DND and list layout
   return (
     <div 
       className="flex flex-col gap-4"
@@ -160,33 +91,14 @@ const SlideCard: React.FC<{
         } ${isDragging ? 'ring-4 ring-orange-500 scale-[1.02]' : ''}`} 
         style={{ aspectRatio: `${layout.width} / ${layout.height}` }}
       >
-        <div style={{ 
-          width: `${DESIGN_WIDTH}px`, 
-          height: `${designHeight}px`, 
-          transform: `scale(${scale})`, 
-          transformOrigin: 'top left', 
-          ...finalBgStyle,
-          color: textColor, 
-          fontFamily: theme.fonts.main,
-          position: 'absolute', 
-          top: 0, 
-          left: 0, 
-          display: 'flex', 
-          flexDirection: 'column', 
-          overflow: 'hidden' 
-        }}>
-          {bgImage && <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${bgImage})` }}><div className="absolute inset-0 bg-black/40"></div></div>}
-          
-          {/* Brand Logo */}
-          {brandConfig.logo && (
-            <div className="absolute z-30" style={getLogoPositionStyles()}>
-              <img src={brandConfig.logo} alt="Brand Logo" className="max-h-16 max-w-[200px] object-contain opacity-80" />
-            </div>
-          )}
-
-          <div className={`absolute top-6 right-10 text-xs font-black uppercase tracking-[0.3em] z-20 ${isDark ? 'text-white/20' : 'text-stone-400/20'}`}>Slide {index + 1}</div>
-          <div className="flex-1 relative z-10 flex flex-col p-[80px_100px]"><SlideContent slide={slide} isDark={isDark} theme={theme} /></div>
-        </div>
+        <SlideRenderer 
+          slide={slide} 
+          theme={theme} 
+          globalBg={globalBg}
+          width={DESIGN_WIDTH}
+          height={designHeight}
+          scale={scale}
+        />
       </div>
 
       {showNotes && note && (

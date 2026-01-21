@@ -14,8 +14,7 @@ import { PresentationSyncService, SyncAction } from '../../services/Presentation
 import { RemoteControlService } from '../../services/RemoteControlService';
 import { RemoteQRCodeModal } from './RemoteQRCodeModal';
 import { ScaledSlideContainer } from '../common/ScaledSlideContainer';
-
-import { PptTheme } from '../../services/types';
+import { SlideRenderer } from '../common/SlideRenderer';
 
 interface PresenterConsoleProps {
   slides: SlideData[];
@@ -167,9 +166,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
           <div className="flex-1 bg-black relative rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10" data-testid="current-slide-view">
             {currentSlide ? (
                <ScaledSlideContainer>
-                 <div className="w-full h-full bg-white relative">
-                    <SlideContent slide={currentSlide} theme={theme} />
-                 </div>
+                 <SlideRenderer slide={currentSlide} theme={theme} />
                </ScaledSlideContainer>
             ) : (
               <div className="flex items-center justify-center h-full">
@@ -209,9 +206,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
             <div className="flex-1 bg-black relative rounded-xl overflow-hidden border border-stone-700 shadow-lg" data-testid="next-slide-view">
               {nextSlide ? (
                  <ScaledSlideContainer>
-                   <div className="w-full h-full bg-white relative">
-                     <SlideContent slide={nextSlide} theme={theme} />
-                   </div>
+                   <SlideRenderer slide={nextSlide} theme={theme} />
                  </ScaledSlideContainer>
               ) : (
                 <div className="flex flex-col items-center justify-center text-stone-500 h-full w-full">

@@ -9,6 +9,13 @@ vi.mock('../components/editor/PreviewPane', () => ({
   SlideContent: ({ slide }: any) => <div data-testid="slide-content">Slide {slide.index} Content</div>
 }));
 
+// Mock useEditor
+vi.mock('../contexts/EditorContext', () => ({
+  useEditor: vi.fn().mockReturnValue({
+    brandConfig: { logo: null, logoPosition: 'top-right' }
+  })
+}));
+
 // Mock PresentationSyncService to avoid side effects during render
 const vi_mockData = {
   handler: null as any

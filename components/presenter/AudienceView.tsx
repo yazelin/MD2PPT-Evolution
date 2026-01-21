@@ -4,7 +4,8 @@ import { SlideData } from '../../services/parser/slides';
 import { PptTheme } from '../../services/types';
 import { PRESET_THEMES, DEFAULT_THEME_ID } from '../../constants/themes';
 import { PresentationSyncService, SyncAction } from '../../services/PresentationSyncService';
-import { generateMeshGradient } from '../../services/ppt/GenerativeBgService';
+import { ScaledSlideContainer } from '../common/ScaledSlideContainer';
+import { SlideRenderer } from '../common/SlideRenderer';
 
 interface AudienceViewProps {
   slides: SlideData[];
@@ -26,25 +27,9 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isBlackout, setIsBlackout] = useState(false);
   const [syncedTheme, setSyncedTheme] = useState<PptTheme | undefined>(theme);
-  const [scale, setScale] = useState(1);
-  const containerRef = useRef<HTMLDivElement>(null);
   const syncService = useRef<PresentationSyncService | null>(null);
 
   useEffect(() => {
-    // 1. Try to load initial state from localStorage
-    const savedState = localStorage.getItem('md2ppt_presenter_state');
-    if (savedState) {
-      try {
-        const state = JSON.parse(savedState);
-        if (state.slides) setSlides(state.slides);
-        if (state.index !== undefined) setCurrentIndex(state.index);
-        if (state.theme) setSyncedTheme(state.theme);
-        if (state.blackout !== undefined) setIsBlackout(state.blackout);
-      } catch (e) {
-        console.error("Failed to load presenter state", e);
-      }
-    }
-
     syncService.current = new PresentationSyncService();
 
     syncService.current.onMessage((msg) => {
@@ -82,28 +67,6 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
     setCurrentIndex(initialIndex);
   }, [initialIndex]);
 
-  // Handle responsive scaling
-  useLayoutEffect(() => {
-    const updateScale = () => {
-      if (containerRef.current) {
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        
-        // Calculate scale to fit within the window while maintaining aspect ratio
-        const scaleX = windowWidth / DESIGN_WIDTH;
-        const scaleY = windowHeight / DESIGN_HEIGHT;
-        
-        // Use the smaller scale factor to ensure it fits entirely
-        const newScale = Math.min(scaleX, scaleY);
-        setScale(newScale);
-      }
-    };
-
-    window.addEventListener('resize', updateScale);
-    updateScale();
-    return () => window.removeEventListener('resize', updateScale);
-  }, []);
-
   const currentSlide = slides[currentIndex];
   const activeTheme = syncedTheme || theme || PRESET_THEMES[DEFAULT_THEME_ID];
 
@@ -118,30 +81,8 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
     );
   }
 
-  // Calculate background styles
-  const rawBg = currentSlide?.config?.background || currentSlide?.config?.bg || currentSlide?.metadata?.bg || globalBg || activeTheme.colors.background;
-  let finalBgStyle: React.CSSProperties = {};
-  
-  if (rawBg === 'mesh' || (typeof rawBg === 'string' && rawBg.startsWith('mesh'))) {
-    const meshConfig = currentSlide?.config?.mesh || {};
-    const svgString = generateMeshGradient({
-      colors: meshConfig.colors,
-      seed: meshConfig.seed,
-      width: DESIGN_WIDTH,
-      height: DESIGN_HEIGHT
-    });
-    const svgBase64 = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgString)))}`;
-    finalBgStyle = { backgroundImage: `url(${svgBase64})`, backgroundSize: 'cover' };
-  } else {
-    const bgColor = rawBg.startsWith('#') ? rawBg : `#${rawBg}`;
-    finalBgStyle = { backgroundColor: bgColor };
-  }
-
   return (
-    <div 
-      ref={containerRef}
-      className="w-screen h-screen overflow-hidden bg-black flex items-center justify-center relative"
-    >
+    <div className="w-screen h-screen overflow-hidden bg-black flex items-center justify-center relative">
       {/* Blackout Overlay */}
       {isBlackout && (
         <div 
@@ -150,38 +91,15 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
         />
       )}
 
-      <div 
-        style={{
-          width: `${DESIGN_WIDTH}px`,
-          height: `${DESIGN_HEIGHT}px`,
-          transform: `scale(${scale})`,
-          transformOrigin: 'center center',
-          position: 'relative',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          ...finalBgStyle
-        }}
-      >
-         {/* Background Image Layer */}
-         {(currentSlide?.config?.bgImage || currentSlide?.metadata?.bgImage) && (
-           <div 
-             className="absolute inset-0 bg-cover bg-center z-0" 
-             style={{ backgroundImage: `url(${currentSlide.config?.bgImage || currentSlide.metadata?.bgImage})` }}
-           >
-             <div className="absolute inset-0 bg-black/40"></div>
-           </div>
-         )}
-
-         {currentSlide && (
-           <div className="flex-1 relative z-10 flex flex-col p-[80px_100px] text-left">
-             <SlideContent 
-                slide={currentSlide} 
-                theme={activeTheme} 
-             />
-           </div>
-         )}
-      </div>
+      {currentSlide && (
+        <ScaledSlideContainer>
+          <SlideRenderer 
+             slide={currentSlide} 
+             theme={activeTheme} 
+             globalBg={globalBg}
+          />
+        </ScaledSlideContainer>
+      )}
     </div>
   );
 };
