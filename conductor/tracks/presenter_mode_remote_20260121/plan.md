@@ -14,7 +14,7 @@
     - [x] 實作：在編輯器 Header 加入「開始演講」按鈕，實作開啟觀眾視窗邏輯。
 - [ ] Task: Conductor - User Manual Verification '階段一' (Protocol in workflow.md)
 
-## 階段二：演講者主控台 (Presenter Console) UI 實作
+## 階段二：演講者主控台 (Presenter Console) UI 實作 [checkpoint: efddbe3]
 本階段將打造演講者專屬的儀表板。
 
 - [x] Task: 實作主控台佈局與縮圖預覽 4846529
