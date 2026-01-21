@@ -22,9 +22,22 @@ vi.mock('../services/PresentationSyncService', () => ({
     };
   }),
   SyncAction: {
+    GOTO_SLIDE: 'GOTO_SLIDE',
     NEXT_SLIDE: 'NEXT_SLIDE',
     PREV_SLIDE: 'PREV_SLIDE'
   }
+}));
+
+// Mock peerjs
+vi.mock('peerjs', () => ({
+  default: vi.fn(),
+  Peer: vi.fn(function() {
+    return {
+      on: vi.fn(),
+      disconnect: vi.fn(),
+      destroy: vi.fn()
+    };
+  })
 }));
 
 const mockSlides: any[] = [
@@ -91,11 +104,11 @@ describe('PresenterConsole', () => {
     const nextBtn = screen.getByLabelText('Next Slide');
 
     fireEvent.click(nextBtn);
-    expect(mockSendMessage).toHaveBeenCalledWith({ type: SyncAction.NEXT_SLIDE, payload: { index: 1 } });
+    expect(mockSendMessage).toHaveBeenCalledWith({ type: SyncAction.GOTO_SLIDE, payload: { index: 1 } });
 
     fireEvent.click(prevBtn);
     // Note: click doesn't update prop currentIndex in test (unless rerendered), but internal state updates.
     // Initial index was 0. Next clicked -> index becomes 1. Prev clicked -> index becomes 0.
-    expect(mockSendMessage).toHaveBeenCalledWith({ type: SyncAction.PREV_SLIDE, payload: { index: 0 } });
+    expect(mockSendMessage).toHaveBeenCalledWith({ type: SyncAction.GOTO_SLIDE, payload: { index: 0 } });
   });
 });

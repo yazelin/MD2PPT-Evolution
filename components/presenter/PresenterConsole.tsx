@@ -9,8 +9,10 @@ import { SlideContent } from '../editor/PreviewPane';
 import { SlideData } from '../../services/parser/slides';
 import { PRESET_THEMES, DEFAULT_THEME_ID } from '../../constants/themes';
 import { PresenterTimer } from './PresenterTimer';
-import { ChevronLeft, ChevronRight, MonitorOff, Home } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MonitorOff, Home, Smartphone } from 'lucide-react';
 import { PresentationSyncService, SyncAction } from '../../services/PresentationSyncService';
+import { RemoteControlService } from '../../services/RemoteControlService';
+import { RemoteQRCodeModal } from './RemoteQRCodeModal';
 
 interface PresenterConsoleProps {
   slides: SlideData[];
@@ -19,29 +21,52 @@ interface PresenterConsoleProps {
 
 export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, currentIndex: initialIndex }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [peerId, setPeerId] = useState<string>('');
+  const [isRemoteModalOpen, setIsRemoteModalOpen] = useState(false);
+  
   const syncService = useRef<PresentationSyncService | null>(null);
+  const remoteService = useRef<RemoteControlService | null>(null);
 
   useEffect(() => {
     syncService.current = new PresentationSyncService();
+    remoteService.current = new RemoteControlService();
+
+    remoteService.current.onReady((id) => {
+      setPeerId(id);
+    });
+
+    remoteService.current.onCommand((cmd) => {
+      if (cmd.action === 'NEXT') handleNext();
+      if (cmd.action === 'PREV') handlePrev();
+      // Handle other commands like BLACK_SCREEN if needed
+    });
+
     return () => {
       syncService.current?.close();
+      remoteService.current?.close();
     };
   }, []);
 
   const handleNext = () => {
-    if (currentIndex < slides.length - 1) {
-      const newIndex = currentIndex + 1;
-      setCurrentIndex(newIndex);
-      syncService.current?.sendMessage({ type: SyncAction.NEXT_SLIDE, payload: { index: newIndex } });
-    }
+    setCurrentIndex(prev => {
+      if (prev < slides.length - 1) {
+        const next = prev + 1;
+        syncService.current?.sendMessage({ type: SyncAction.GOTO_SLIDE, payload: { index: next } });
+        return next;
+      }
+      return prev;
+    });
   };
 
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      const newIndex = currentIndex - 1;
-      setCurrentIndex(newIndex);
-      syncService.current?.sendMessage({ type: SyncAction.PREV_SLIDE, payload: { index: newIndex } });
-    }
+    setCurrentIndex(prev => {
+      if (prev > 0) {
+        const next = prev - 1;
+        syncService.current?.sendMessage({ type: SyncAction.GOTO_SLIDE, payload: { index: next } });
+        return next;
+      }
+      return prev;
+    });
   };
 
   const currentSlide = slides[currentIndex];
@@ -56,12 +81,26 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     <div className="flex flex-col h-screen w-screen bg-stone-900 text-white overflow-hidden">
       {/* Top Bar: Timer & Progress */}
       <div className="h-14 border-b border-stone-700 flex items-center justify-between px-6 bg-stone-950">
-        <div className="font-bold text-lg tracking-widest text-[#EA580C]">PRESENTER VIEW</div>
+        <div className="flex items-center gap-6">
+          <div className="font-bold text-lg tracking-widest text-[#EA580C]">PRESENTER VIEW</div>
+          <button 
+            onClick={() => setIsRemoteModalOpen(true)}
+            className="flex items-center gap-2 px-3 py-1 bg-white/5 hover:bg-orange-500/20 hover:text-[#EA580C] border border-white/10 rounded-lg text-xs font-bold transition-all uppercase tracking-wider"
+          >
+            <Smartphone size={14} /> Mobile Remote
+          </button>
+        </div>
         <PresenterTimer />
         <div className="font-mono text-xl font-bold text-stone-400">
           Slide <span className="text-white">{currentIndex + 1}</span> <span className="text-stone-600">/</span> {slides.length}
         </div>
       </div>
+
+      <RemoteQRCodeModal 
+        peerId={peerId} 
+        isOpen={isRemoteModalOpen} 
+        onClose={() => setIsRemoteModalOpen(false)} 
+      />
 
       <div className="flex flex-1 overflow-hidden">
         {/* Main View: Current Slide */}
