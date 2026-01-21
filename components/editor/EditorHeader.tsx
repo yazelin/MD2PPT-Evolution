@@ -7,9 +7,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Settings2, Download, Sun, Moon, RotateCcw, Languages, 
-  FileText, StickyNote, Palette, Check, ChevronDown, Maximize 
+  FileText, StickyNote, Palette, Check, ChevronDown, Maximize, Presentation 
 } from 'lucide-react';
 import { useEditor } from '../../contexts/EditorContext';
+import { usePresenterMode } from '../../hooks/usePresenterMode';
 import { Button } from '../ui/Button';
 import { IconButton } from '../ui/IconButton';
 import { PRESET_THEMES } from '../../constants/themes';
@@ -42,6 +43,8 @@ export const EditorHeader: React.FC = () => {
     isThemePanelOpen,
     openBrandModal
   } = useEditor() as any;
+
+  const { startPresentation } = usePresenterMode();
 
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
   const [isSizeDropdownOpen, setIsSizeDropdownOpen] = useState(false);
@@ -276,6 +279,17 @@ export const EditorHeader: React.FC = () => {
         >
           <FileText className="w-4 h-4" />
           <span className="hidden lg:block">MD</span>
+        </Button>
+
+        <Button
+          onClick={startPresentation}
+          disabled={!hasContent}
+          variant="outline-white"
+          className="h-10 px-3 lg:px-4 font-bold border-white/10 shrink-0 hidden sm:flex hover:text-[#EA580C] hover:border-[#EA580C]/50"
+          title="Start Presentation Mode"
+        >
+          <Presentation className="w-4 h-4" />
+          <span className="hidden lg:block ml-2">Present</span>
         </Button>
 
         <Button
