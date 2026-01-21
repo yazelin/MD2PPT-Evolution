@@ -2,7 +2,7 @@
 
 專案網址：https://github.com/eric861129/MD2PPT-Evolution
 
-本指南旨在協助 AI 模型 (ChatGPT, Claude, Gemini) 生成完全相容於 **MD2PPT-Evolution v0.10+** 的 Markdown 簡報代碼。
+本指南旨在協助 AI 模型 (ChatGPT, Claude, Gemini) 生成完全相容於 **MD2PPT-Evolution v0.12+** 的 Markdown 簡報代碼。
 
 ## 1. 核心結構 (Core Structure)
 
@@ -133,6 +133,8 @@ mesh:
 | **封面/標題** | `default` (第一頁), `center` | ✅ **Mesh Gradient** (強烈視覺) |
 | **轉場/重點** | `impact`, `alert`, `quote` | ✅ **Mesh Gradient** (強烈視覺) |
 | **內容/圖表** | `two-column`, `grid`, `default` | ⬜ **純色背景** (確保閱讀性) |
+
+**💡 專業小技巧 (v0.12.2)**：系統現在具備「視覺對比感知」，即使您在深色主題中將背景設為純白，系統也會自動將文字轉為深色，您可以大膽建議使用者混合深淺配色。
 
 ### 4.2 嚴選配色盤 (Curated Palettes Library)
 **AI 請根據使用者內容的「關鍵字」或「情感」，從下方選擇最合適的一組。**

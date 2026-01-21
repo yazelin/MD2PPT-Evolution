@@ -6,13 +6,11 @@
 
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { Sparkles, StickyNote } from 'lucide-react';
-import { ParsedBlock, BlockType, PptTheme } from '../../services/types';
-import { PreviewBlock, RenderRichText } from './PreviewRenderers';
+import { ParsedBlock, PptTheme } from '../../services/types';
 import { splitBlocksToSlides, SlideData } from '../../services/parser/slides';
 import { useEditor } from '../../contexts/EditorContext';
 import { useVisualTweaker } from '../../contexts/VisualTweakerContext';
 import { fileToBase64 } from '../../utils/imageUtils';
-import { generateMeshGradient } from '../../services/ppt/GenerativeBgService';
 import { SlideRenderer } from '../common/SlideRenderer';
 
 interface PreviewPaneProps {
@@ -20,11 +18,6 @@ interface PreviewPaneProps {
   previewRef: React.RefObject<HTMLDivElement>;
   onUpdateSlideConfig?: (index: number, key: string, value: string) => void;
 }
-
-// ... existing SlideCard and SlideContent components ... (no change needed here, just imports)
-
-// I need to skip changing SlideCard and SlideContent code, targeting PreviewPane at the bottom.
-// But replace tool requires context. I will try to match the PreviewPane definition.
 
 const DESIGN_WIDTH = 1200;
 
@@ -37,7 +30,6 @@ const SlideCard: React.FC<{
   onUpdateConfig?: (index: number, key: string, value: string) => void;
   showNotes?: boolean;
 }> = ({ slide, index, layout, theme, globalBg, onUpdateConfig, showNotes }) => {
-  const { brandConfig } = useEditor() as any;
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -67,12 +59,10 @@ const SlideCard: React.FC<{
     }
   };
 
-  const bgImage = slide.config?.bgImage || slide.metadata?.bgImage;
   const designHeight = DESIGN_WIDTH * (layout.height / layout.width);
   const transitionType = slide.config?.transition || 'none';
   const note = slide.config?.note || slide.metadata?.note;
 
-  // Render using SlideRenderer but keeping the wrapper for DND and list layout
   return (
     <div 
       className="flex flex-col gap-4"
@@ -115,109 +105,6 @@ const SlideCard: React.FC<{
   );
 };
 
-export const SlideContent: React.FC<{ slide: SlideData, isDark?: boolean, theme: PptTheme }> = ({ slide, isDark, theme }) => {
-  const { blocks, config } = slide;
-  const layout = config?.layout;
-
-  const renderBlocks = (contentBlocks: ParsedBlock[]) => {
-    const elements: React.ReactNode[] = [];
-    let i = 0;
-    while (i < contentBlocks.length) {
-      const block = contentBlocks[i];
-      if (block.type === BlockType.BULLET_LIST || block.type === BlockType.NUMBERED_LIST) {
-        const isOrdered = block.type === BlockType.NUMBERED_LIST;
-        const listItems: ParsedBlock[] = [];
-        const type = block.type;
-        while (i < contentBlocks.length && contentBlocks[i].type === type) { listItems.push(contentBlocks[i]); i++; }
-        const ListTag = isOrdered ? 'ol' : 'ul';
-        elements.push(<ListTag key={`list-${i}`} className={`ml-14 mb-8 ${isOrdered ? 'list-decimal' : ''}`}>{listItems.map((item, idx) => (<li key={idx} className={`mb-5 pl-4 leading-relaxed text-4xl ${!isOrdered ? "relative list-none before:content-[''] before:absolute before:left-[-1.5em] before:top-[0.6em] before:w-3.5 before:h-3.5 before:rounded-full" : ""}`} style={{ '--tw-before-bg': `#${theme.colors.primary}` } as any}><span className="before:bg-[var(--tw-before-bg)] absolute left-[-1.5em] top-[0.6em] w-3.5 h-3.5 rounded-full" style={{ backgroundColor: `#${theme.colors.primary}` }}></span><RenderRichText text={item.content} /></li>))}</ListTag>);
-      } else { elements.push(<PreviewBlock key={i} block={block} isDark={isDark} theme={theme} />); i++; }
-    }
-    return elements;
-  };
-
-  const titleBlocks = blocks.filter(b => b.type === BlockType.HEADING_1 || b.type === BlockType.HEADING_2);
-  const otherBlocks = blocks.filter(b => b.type !== BlockType.HEADING_1 && b.type !== BlockType.HEADING_2);
-
-  if (layout === 'impact' || layout === 'full-bg' || layout === 'center' || layout === 'quote') {
-    const isImpact = layout === 'impact' || layout === 'full-bg';
-    const isQuote = layout === 'quote';
-    
-    return (
-      <div className={`flex flex-col h-full items-center justify-center text-center ${isImpact ? 'scale-125 origin-center' : ''}`}>
-        <div className={`w-full ${isDark && isImpact ? 'drop-shadow-[0_4px_15px_rgba(0,0,0,0.6)]' : ''} ${isQuote ? 'italic opacity-90 relative' : ''}`}>
-          {isQuote && <div className="absolute -top-20 left-1/2 -translate-x-1/2 text-[160px] leading-none opacity-20 pointer-events-none font-serif" style={{ color: `#${theme.colors.primary}` }}>“</div>}
-          <div className={isQuote ? 'text-6xl md:text-7xl font-medium tracking-tight px-10' : ''}>
-            {renderBlocks(blocks)}
-          </div>
-          {isQuote && <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 text-[160px] leading-none opacity-20 pointer-events-none font-serif mt-10" style={{ color: `#${theme.colors.primary}` }}>”</div>}
-        </div>
-      </div>
-    );
-  }
-  
-  if (layout === 'alert') {
-    return (
-      <div className="flex flex-col h-full items-center justify-center p-10">
-        <div className="w-full p-16 rounded-3xl text-center border-4" style={{ backgroundColor: `#${theme.colors.primary}15`, borderColor: `#${theme.colors.primary}` }}>
-          <div className="mb-8 flex justify-center scale-[3]" style={{ color: `#${theme.colors.primary}` }}>
-            <Sparkles />
-          </div>
-          <div className="space-y-6">
-            {renderBlocks(blocks)}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (layout === 'two-column' || layout === 'grid') {
-    const cols = layout === 'two-column' ? 2 : (config?.columns || 2);
-    
-    // Split otherBlocks based on COLUMN_BREAK
-    const columns: ParsedBlock[][] = [];
-    let currentColumn: ParsedBlock[] = [];
-    
-    for (const block of otherBlocks) {
-      if (block.type === BlockType.COLUMN_BREAK) {
-        columns.push(currentColumn);
-        currentColumn = [];
-      } else {
-        currentColumn.push(block);
-      }
-    }
-    columns.push(currentColumn); // Push the last column
-
-    // If explicit splitting was used (columns.length > 1), trust it.
-    // Otherwise fallback to automatic even distribution.
-    const isExplicitSplit = otherBlocks.some(b => b.type === BlockType.COLUMN_BREAK);
-    
-    return (
-      <div className="flex flex-col h-full">
-        {titleBlocks.length > 0 && <div className="mb-16">{renderBlocks(titleBlocks)}</div>}
-        <div 
-          className="flex-1 grid gap-16 overflow-hidden text-left" 
-          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
-        >
-          {Array.from({ length: cols }).map((_, colIdx) => {
-            let colBlocks: ParsedBlock[] = [];
-            
-            if (isExplicitSplit) {
-              colBlocks = columns[colIdx] || [];
-            } else {
-              const itemsPerCol = Math.ceil(otherBlocks.length / cols);
-              colBlocks = otherBlocks.slice(colIdx * itemsPerCol, (colIdx + 1) * itemsPerCol);
-            }
-            
-            return <div key={colIdx}>{renderBlocks(colBlocks)}</div>;
-          })}
-        </div>
-      </div>
-    );
-  }
-  return (<div className="flex flex-col h-full text-left">{titleBlocks.length > 0 && <div className="mb-14">{renderBlocks(titleBlocks)}</div>}<div className="flex-1">{renderBlocks(otherBlocks)}</div></div>);
-};
-
 export const PreviewPane: React.FC<PreviewPaneProps> = ({ parsedBlocks, previewRef, onUpdateSlideConfig }) => {
   const { pageSizes, selectedSizeIndex, documentMeta, showNotes, activeTheme } = useEditor();
   const { openTweaker } = useVisualTweaker();
@@ -227,7 +114,6 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({ parsedBlocks, previewR
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     let target = e.target as HTMLElement;
-    // Limit traversal depth to avoid performance issues
     let depth = 0;
     const maxDepth = 5;
 

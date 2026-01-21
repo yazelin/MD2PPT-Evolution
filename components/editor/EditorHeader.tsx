@@ -118,14 +118,14 @@ export const EditorHeader: React.FC = () => {
       </div>
       
       {/* Right: Actions */}
-      <div className="flex items-center gap-2 lg:gap-4 overflow-visible">
+      <div className="flex items-center gap-1.5 lg:gap-2.5 overflow-visible shrink-0">
         
         {/* Brand Settings Toggle */}
         <IconButton 
           onClick={openBrandModal} 
           title="Brand Settings"
           onBrand
-          className="bg-white/5 text-stone-400 hover:text-[#EA580C]"
+          className="bg-white/5 text-stone-400 hover:text-[#EA580C] w-9 h-9 lg:w-10 lg:h-10"
         >
           <Settings2 size={18} />
         </IconButton>
@@ -135,23 +135,22 @@ export const EditorHeader: React.FC = () => {
           onClick={toggleThemePanel} 
           title="Color Picker Tool"
           onBrand
-          className={`relative shrink-0 ${isThemePanelOpen ? 'bg-[#EA580C] text-white shadow-[0_0_15px_rgba(234,88,12,0.4)]' : 'bg-white/5 text-stone-400 hover:text-[#EA580C]'}`}
+          className={`relative shrink-0 w-9 h-9 lg:w-10 lg:h-10 ${isThemePanelOpen ? 'bg-[#EA580C] text-white shadow-[0_0_15px_rgba(234,88,12,0.4)]' : 'bg-white/5 text-stone-400 hover:text-[#EA580C]'}`}
         >
           <Palette size={18} />
           {isThemePanelOpen && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full" />}
         </IconButton>
 
-        <div className="w-[1px] h-6 bg-white/10 mx-0.5 lg:mx-1 shrink-0" />
+        <div className="w-[1px] h-6 bg-white/10 mx-0.5 shrink-0" />
 
         {/* Custom Theme Dropdown */}
         <div className="relative shrink-0" ref={themeDropdownRef}>
           <button
             onClick={() => { setIsThemeDropdownOpen(!isThemeDropdownOpen); setIsSizeDropdownOpen(false); }}
-            className="flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-[#EA580C]/50 transition-all text-white min-w-[120px] lg:min-w-[180px]"
+            className="flex items-center gap-2 px-2.5 lg:px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-[#EA580C]/50 transition-all text-white min-w-[100px] lg:min-w-[160px]"
           >
             <div className="flex gap-1 shrink-0">
               <div className="w-2.5 h-2.5 rounded-full transition-colors duration-500" style={{ backgroundColor: activeTheme.colors.primary.startsWith('#') ? activeTheme.colors.primary : `#${activeTheme.colors.primary}` }} />
-              <div className="w-2.5 h-2.5 rounded-full hidden sm:block opacity-50" style={{ backgroundColor: activeTheme.colors.background.startsWith('#') ? activeTheme.colors.background : `#${activeTheme.colors.background}` }} />
             </div>
             <span className="text-[10px] lg:text-xs font-black uppercase tracking-wider flex-1 text-left truncate">
               {activeTheme.label}
@@ -208,13 +207,11 @@ export const EditorHeader: React.FC = () => {
           )}
         </div>
 
-        <div className="w-[1px] h-6 bg-white/10 mx-0.5 lg:mx-1 shrink-0" />
-
         {/* Custom Paper Size Dropdown */}
         <div className="relative shrink-0" ref={sizeDropdownRef}>
           <button
             onClick={() => { setIsSizeDropdownOpen(!isSizeDropdownOpen); setIsThemeDropdownOpen(false); }}
-            className="flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-[#EA580C]/50 transition-all text-white min-w-[100px] lg:min-w-[150px]"
+            className="flex items-center gap-2 px-2.5 lg:px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-[#EA580C]/50 transition-all text-white min-w-[90px] lg:min-w-[140px]"
           >
             <Settings2 size={14} className="text-[#FB923C] shrink-0" />
             <span className="text-[10px] lg:text-xs font-black uppercase tracking-wider flex-1 text-left truncate">
@@ -245,22 +242,22 @@ export const EditorHeader: React.FC = () => {
           )}
         </div>
 
-        <div className="w-[1px] h-6 bg-white/10 mx-0.5 lg:mx-1 shrink-0 hidden md:block" />
+        <div className="w-[1px] h-6 bg-white/10 mx-0.5 shrink-0 hidden lg:block" />
 
         {/* Controls Group */}
-        <div className="flex items-center bg-white/5 p-1 rounded-xl border border-white/10 backdrop-blur-md shrink-0">
+        <div className="flex items-center bg-white/5 p-0.5 lg:p-1 rounded-xl border border-white/10 backdrop-blur-md shrink-0 scale-90 lg:scale-100 origin-right">
           <IconButton onClick={resetToDefault} title={t('reset')} onBrand className="flex">
             <RotateCcw className="w-4 h-4" />
           </IconButton>
-          <div className="w-[1px] h-4 bg-white/10 mx-1" />
-          <IconButton onClick={toggleLanguage} className="gap-2 px-2 lg:px-3 w-auto" onBrand>
+          <div className="w-[1px] h-4 bg-white/10 mx-0.5" />
+          <IconButton onClick={toggleLanguage} className="gap-1.5 px-1.5 lg:px-3 w-auto" onBrand>
             <Languages className="w-4 h-4" />
             <span className="text-[10px] font-black uppercase">{language === 'zh' ? 'EN' : 'ZH'}</span>
           </IconButton>
           <IconButton onClick={toggleDarkMode} title={isDark ? t('theme.light') : t('theme.dark')} onBrand>
             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </IconButton>
-          <div className="w-[1px] h-4 bg-white/10 mx-1" />
+          <div className="w-[1px] h-4 bg-white/10 mx-0.5" />
           <IconButton 
             onClick={toggleNotes} 
             title={showNotes ? t('hideNotes') : t('showNotes')} 
@@ -271,39 +268,42 @@ export const EditorHeader: React.FC = () => {
           </IconButton>
         </div>
 
-        <Button
-          onClick={handleExportMarkdown}
-          disabled={!hasContent}
-          variant="outline-white"
-          className="h-10 px-3 lg:px-4 font-bold border-white/10 shrink-0 hidden sm:flex"
-        >
-          <FileText className="w-4 h-4" />
-          <span className="hidden lg:block">MD</span>
-        </Button>
+        <div className="flex items-center gap-1 lg:gap-2">
+          <Button
+            onClick={handleExportMarkdown}
+            disabled={!hasContent}
+            variant="outline-white"
+            className="h-9 lg:h-10 px-2.5 lg:px-4 font-bold border-white/10 shrink-0 flex"
+            title="Export Markdown"
+          >
+            <FileText className="w-4 h-4" />
+            <span className="hidden xl:block ml-2">MD</span>
+          </Button>
 
-        <Button
-          onClick={startPresentation}
-          disabled={!hasContent}
-          variant="outline-white"
-          className="h-10 px-3 lg:px-4 font-bold border-white/10 shrink-0 flex hover:text-[#EA580C] hover:border-[#EA580C]/50"
-          title="Start Presentation Mode"
-        >
-          <Presentation className="w-4 h-4" />
-          <span className="hidden lg:block ml-2">Present</span>
-        </Button>
+          <Button
+            onClick={startPresentation}
+            disabled={!hasContent}
+            variant="outline-white"
+            className="h-9 lg:h-10 px-2.5 lg:px-4 font-bold border-white/10 shrink-0 flex hover:text-[#EA580C] hover:border-[#EA580C]/50"
+            title="Start Presentation Mode"
+          >
+            <Presentation className="w-4 h-4" />
+            <span className="hidden xl:block ml-2">Present</span>
+          </Button>
 
-        <Button
-          onClick={handleDownload}
-          disabled={!hasContent}
-          isLoading={isGenerating}
-          variant="brand"
-          className="h-10 px-4 lg:px-8 shadow-[0_10px_30px_rgba(234,88,12,0.3)] border-none ring-1 ring-white/10 active:translate-y-0.5 transition-all shrink-0"
-        >
-          <Download className="w-5 h-5 stroke-[2.5px]" />
-          <span className="font-black text-sm uppercase tracking-widest hidden md:block">
-            {isGenerating ? t('exporting') : t('export')}
-          </span>
-        </Button>
+          <Button
+            onClick={handleDownload}
+            disabled={!hasContent}
+            isLoading={isGenerating}
+            variant="brand"
+            className="h-9 lg:h-10 px-3 lg:px-8 shadow-[0_10px_30px_rgba(234,88,12,0.3)] border-none ring-1 ring-white/10 active:translate-y-0.5 transition-all shrink-0"
+          >
+            <Download className="w-4 h-4 lg:w-5 lg:h-5 stroke-[2.5px]" />
+            <span className="font-black text-xs lg:text-sm uppercase tracking-widest hidden md:block lg:ml-2">
+              {isGenerating ? t('exporting') : t('export')}
+            </span>
+          </Button>
+        </div>
       </div>
     </header>
   );

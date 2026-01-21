@@ -10,7 +10,7 @@ import { useDarkMode } from '../hooks/useDarkMode';
 
 type EditorContextType = ReturnType<typeof useMarkdownEditor> & ReturnType<typeof useDarkMode>;
 
-const EditorContext = createContext<EditorContextType | undefined>(undefined);
+export const EditorContext = createContext<EditorContextType | undefined>(undefined);
 
 interface EditorProviderProps {
   children: ReactNode;

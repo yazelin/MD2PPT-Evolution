@@ -56,12 +56,12 @@ export const ChartPreview: React.FC<ChartPreviewProps> = ({ block, isDark, theme
     switch (chartType) {
       case 'line':
         return (
-          <LineChart data={data}>
+          <LineChart data={data} margin={{ bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey="name" stroke={axisColor} />
-            <YAxis stroke={axisColor} />
+            <XAxis dataKey="name" stroke={axisColor} tick={{ fontSize: 12 }} />
+            <YAxis stroke={axisColor} tick={{ fontSize: 12 }} />
             <Tooltip contentStyle={tooltipStyle} />
-            {showLegend !== false && <Legend />}
+            {showLegend !== false && <Legend verticalAlign="top" height={36}/>}
             {seriesNames.map((name, i) => (
               <Line 
                 key={name} 
@@ -77,12 +77,12 @@ export const ChartPreview: React.FC<ChartPreviewProps> = ({ block, isDark, theme
         
       case 'area':
         return (
-          <AreaChart data={data}>
+          <AreaChart data={data} margin={{ bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey="name" stroke={axisColor} />
-            <YAxis stroke={axisColor} />
+            <XAxis dataKey="name" stroke={axisColor} tick={{ fontSize: 12 }} />
+            <YAxis stroke={axisColor} tick={{ fontSize: 12 }} />
             <Tooltip contentStyle={tooltipStyle} />
-            {showLegend !== false && <Legend />}
+            {showLegend !== false && <Legend verticalAlign="top" height={36}/>}
             {seriesNames.map((name, i) => (
               <Area 
                 key={name} 
@@ -106,7 +106,7 @@ export const ChartPreview: React.FC<ChartPreviewProps> = ({ block, isDark, theme
               nameKey="name"
               cx="50%"
               cy="50%"
-              outerRadius={100}
+              outerRadius={80}
               fill="#8884d8"
               label={showValues}
             >
@@ -122,12 +122,12 @@ export const ChartPreview: React.FC<ChartPreviewProps> = ({ block, isDark, theme
       case 'bar':
       default:
         return (
-          <BarChart data={data}>
+          <BarChart data={data} margin={{ bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey="name" stroke={axisColor} />
-            <YAxis stroke={axisColor} />
+            <XAxis dataKey="name" stroke={axisColor} tick={{ fontSize: 12 }} />
+            <YAxis stroke={axisColor} tick={{ fontSize: 12 }} />
             <Tooltip contentStyle={tooltipStyle} />
-            {showLegend !== false && <Legend />}
+            {showLegend !== false && <Legend verticalAlign="top" height={36}/>}
             {seriesNames.map((name, i) => (
               <Bar key={name} dataKey={name} fill={chartColors[i % chartColors.length]} radius={[4, 4, 0, 0]} />
             ))}
@@ -137,13 +137,13 @@ export const ChartPreview: React.FC<ChartPreviewProps> = ({ block, isDark, theme
   };
 
   return (
-    <div className="w-full my-8">
+    <div className="w-full my-4">
       {title && (
-        <div className="text-center mb-4 font-bold text-lg text-stone-600 dark:text-stone-300">
+        <div className="text-center mb-2 font-bold text-lg text-stone-600 dark:text-stone-300">
           {title}
         </div>
       )}
-      <div className="w-full h-[400px]">
+      <div className="w-full h-[340px]">
         <ResponsiveContainer width="100%" height="100%">
           {renderChart()}
         </ResponsiveContainer>

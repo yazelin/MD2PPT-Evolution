@@ -1,8 +1,9 @@
 # MD2PPT-EVOLUTION 🚀
 
-![Version](https://img.shields.io/badge/version-0.12.0-orange.svg)
+![Version](https://img.shields.io/badge/version-0.12.2-orange.svg)
 ...
 ### 🎨 專業排版系統
+- **視覺對比感知系統 (v0.12.2)**: 自動檢測投影片背景亮度，即時切換文字與標題顏色，確保在任何主題或自定義背景下都具備極高可讀性。
 - **動態背景生成器 (Generative Backgrounds) (v0.10+)**: 引入輕量級生成藝術算法（如 Mesh Gradients），讓每頁背景都是獨一無二的，擺脫死板的 PPT 背景圖。
 - **視覺化即時調整 (Visual Tweaker)**: 點擊預覽區元素即可喚起調整視窗，即時修改文字、圖片與圖表數據，並同步回寫至 Markdown。
 - **斜線指令 (Slash Commands)**: 輸入 `/` 喚起懸浮選單，快速插入圖表、佈局與元件，支援鍵盤導航與智慧游標定位。
@@ -15,6 +16,20 @@
 ### 4. 隱私優先 (Privacy First)
 - **100% 用戶端運算**: 所有解析與生成皆在您的瀏覽器中完成。
 - **資料不落地**: 您的筆記與圖片**絕不會**上傳至任何伺服器。
+
+---
+
+## 📽️ Web 演講模式 (Presenter Mode)
+
+本專案內建專業的演講者工具，無需安裝任何軟體即可進行展示：
+
+1. **啟動演講**：點擊 Header 的 **「Present」** 按鈕。
+2. **雙螢幕配置**：
+   - 系統會開啟一個新的 **「觀眾視窗 (Audience View)」**，請將其拖曳至投影大螢幕並切換至全螢幕。
+   - 原本的視窗會自動轉為 **「演講者主控台 (Presenter Console)」**，提供下一頁預覽與備忘錄。
+3. **手機遙控**：
+   - 在主控台點擊 **「Mobile Remote」**。
+   - 使用手機掃描 QR Code，即可透過手機瀏覽器控制翻頁、黑屏並閱讀備忘錄。
 
 ---
 
@@ -214,7 +229,7 @@ npm run build
 - [x] **v0.9.0**: 斜線指令系統 (Slash Commands)。
 - [x] **v0.10.0**: 生成式背景 (Generative Backgrounds)。
 - [x] **v0.11.0**: 企業級品牌系統 (Enterprise Brand System)。
-- [x] **v0.12.0**: Web 演講模式與遙控 (Presenter Mode & Remote)。
+- [x] **v0.12.2**: Web 演講模式與遙控 (Presenter Mode & Remote)。
 
 ## 🤝 貢獻 (Contributing)
 

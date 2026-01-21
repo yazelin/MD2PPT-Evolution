@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import MarkdownEditor from './components/MarkdownEditor';
-import { AudienceView } from './components/presenter/AudienceView';
+import { AudiencePage } from './components/presenter/AudiencePage';
 import { PresenterPage } from './components/presenter/PresenterPage';
 import { MobileRemote } from './components/presenter/MobileRemote';
 
@@ -24,7 +24,7 @@ const App: React.FC = () => {
   const currentPath = route.split('?')[0];
 
   if (currentPath === '#/audience') {
-    return <AudienceView slides={[]} currentIndex={0} />;
+    return <AudiencePage />;
   }
 
   if (currentPath === '#/presenter') {

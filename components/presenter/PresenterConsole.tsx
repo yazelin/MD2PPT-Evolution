@@ -5,16 +5,16 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { SlideContent } from '../editor/PreviewPane';
 import { SlideData } from '../../services/parser/slides';
 import { PRESET_THEMES, DEFAULT_THEME_ID } from '../../constants/themes';
 import { PresenterTimer } from './PresenterTimer';
-import { ChevronLeft, ChevronRight, MonitorOff, Home, Smartphone } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MonitorOff, Home, Smartphone, ExternalLink, LogOut } from 'lucide-react';
 import { PresentationSyncService, SyncAction } from '../../services/PresentationSyncService';
 import { RemoteControlService } from '../../services/RemoteControlService';
 import { RemoteQRCodeModal } from './RemoteQRCodeModal';
 import { ScaledSlideContainer } from '../common/ScaledSlideContainer';
 import { SlideRenderer } from '../common/SlideRenderer';
+import { PptTheme } from '../../services/types';
 
 interface PresenterConsoleProps {
   slides: SlideData[];
@@ -31,11 +31,36 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
   const syncService = useRef<PresentationSyncService | null>(null);
   const remoteService = useRef<RemoteControlService | null>(null);
 
+  // Use a default theme for preview if none specified
+  const activeTheme = propTheme || PRESET_THEMES[DEFAULT_THEME_ID];
+
+  // Helper to open/re-open the audience window
+  const openAudienceWindow = () => {
+    const baseUrl = window.location.href.split('#')[0];
+    const audienceUrl = `${baseUrl}#/audience`;
+    window.open(audienceUrl, 'AudienceWindow', 'width=1280,height=720,menubar=no,toolbar=no');
+  };
+
+  const handleExit = () => {
+    if (confirm('確定要結束演講模式並回到編輯器嗎？')) {
+      window.location.hash = '';
+    }
+  };
+
+  // Refs for accessing latest state in event handlers to avoid stale closures
+  const stateRef = useRef({ currentIndex, isBlackout, slides });
+  useEffect(() => {
+    stateRef.current = { currentIndex, isBlackout, slides };
+  }, [currentIndex, isBlackout, slides]);
+
   // Helper to send sync state to all windows
   const broadcastState = (index: number, blackout: boolean) => {
-    const currentNote = slides[index]?.config?.note || slides[index]?.metadata?.note || '';
+    const currentSlides = stateRef.current.slides;
+    if (currentSlides.length === 0) return;
+
+    const currentNote = currentSlides[index]?.config?.note || currentSlides[index]?.metadata?.note || '';
     
-    const statePayload = { index, blackout, slides, total: slides.length, theme: propTheme };
+    const statePayload = { index, blackout, slides: currentSlides, total: currentSlides.length, theme: propTheme };
 
     // Save to localStorage for initial load of new windows
     localStorage.setItem('md2ppt_presenter_state', JSON.stringify(statePayload));
@@ -49,7 +74,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     // Also send to mobile remote via P2P
     remoteService.current?.broadcast({ 
       type: 'SYNC_STATE', 
-      payload: { index, total: slides.length, note: currentNote, blackout } 
+      payload: { index, total: currentSlides.length, note: currentNote, blackout } 
     });
   };
 
@@ -60,6 +85,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     // Listen for local sync requests (e.g. when Audience View opens)
     syncService.current.onMessage((msg) => {
       if (msg.type === SyncAction.REQUEST_SYNC) {
+        const { currentIndex, isBlackout } = stateRef.current;
         broadcastState(currentIndex, isBlackout);
       }
     });
@@ -69,13 +95,14 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     });
 
     remoteService.current.onCommand((cmd) => {
-      if (cmd.action === 'NEXT') handleNext();
-      if (cmd.action === 'PREV') handlePrev();
-      if (cmd.action === 'BLACKOUT') toggleBlackout();
+      // Use ref-based logic to avoid stale closures
+      if (cmd.action === 'NEXT') handleNextInternal();
+      if (cmd.action === 'PREV') handlePrevInternal();
+      if (cmd.action === 'BLACKOUT') toggleBlackoutInternal();
     });
 
     // Initial broadcast
-    broadcastState(currentIndex, isBlackout);
+    broadcastState(initialIndex, false);
 
     return () => {
       syncService.current?.close();
@@ -83,68 +110,84 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     };
   }, []);
 
-  // Broadcast state whenever slides change (e.g. initial load) to ensure AudienceView is in sync
+  // Update effect for prop changes (e.g. content updated in editor)
   useEffect(() => {
     broadcastState(currentIndex, isBlackout);
-  }, [slides, currentIndex, isBlackout]);
+  }, [slides]);
 
-  const handleNext = () => {
-    setCurrentIndex(prev => {
-      if (prev < slides.length - 1) {
-        const next = prev + 1;
-        broadcastState(next, isBlackout);
-        return next;
-      }
-      return prev;
-    });
+  // Internal Logic using latest state
+  const handleNextInternal = () => {
+    const { currentIndex, slides, isBlackout } = stateRef.current;
+    if (currentIndex < slides.length - 1) {
+      const next = currentIndex + 1;
+      setCurrentIndex(next);
+      broadcastState(next, isBlackout);
+    }
   };
 
-  const handlePrev = () => {
-    setCurrentIndex(prev => {
-      if (prev > 0) {
-        const next = prev - 1;
-        broadcastState(next, isBlackout);
-        return next;
-      }
-      return prev;
-    });
+  const handlePrevInternal = () => {
+    const { currentIndex, isBlackout } = stateRef.current;
+    if (currentIndex > 0) {
+      const next = currentIndex - 1;
+      setCurrentIndex(next);
+      broadcastState(next, isBlackout);
+    }
   };
 
-  const toggleBlackout = () => {
-    setIsBlackout(prev => {
-      const newState = !prev;
-      syncService.current?.sendMessage({ type: SyncAction.BLACK_SCREEN, payload: { enabled: newState } });
-      broadcastState(currentIndex, newState);
-      return newState;
-    });
+  const toggleBlackoutInternal = () => {
+    const { currentIndex, isBlackout } = stateRef.current;
+    const newState = !isBlackout;
+    setIsBlackout(newState);
+    syncService.current?.sendMessage({ type: SyncAction.BLACK_SCREEN, payload: { enabled: newState } });
+    broadcastState(currentIndex, newState);
   };
 
   const currentSlide = slides[currentIndex];
   const nextSlide = slides[currentIndex + 1];
-  
-  // Use passed theme or default
-  const theme = propTheme || PRESET_THEMES[DEFAULT_THEME_ID];
-
   const note = currentSlide?.config?.note || currentSlide?.metadata?.note;
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-stone-900 text-white overflow-hidden">
+    <div className="flex flex-col h-screen w-screen bg-stone-900 text-white overflow-hidden font-sans">
       {/* Top Bar: Timer & Progress */}
-      <div className="h-14 border-b border-stone-700 flex items-center justify-between px-6 bg-stone-950">
-        <div className="flex items-center gap-6">
-          <div className="font-bold text-lg tracking-widest text-[#EA580C]">PRESENTER VIEW</div>
-          <button 
-            onClick={() => setIsRemoteModalOpen(true)}
-            className="flex items-center gap-2 px-3 py-1 bg-white/5 hover:bg-orange-500/20 hover:text-[#EA580C] border border-white/10 rounded-lg text-xs font-bold transition-all uppercase tracking-wider"
-          >
-            <Smartphone size={14} /> Mobile Remote
-          </button>
+      <div className="h-14 border-b border-stone-700 flex items-center justify-between px-6 bg-stone-950 shrink-0">
+        <div className="flex items-center gap-4 lg:gap-6">
+          <div className="font-bold text-lg tracking-widest text-[#EA580C] hidden sm:block">PRESENTER VIEW</div>
           
+          <div className="flex items-center bg-white/5 rounded-xl p-1 border border-white/10">
+            <button 
+              onClick={openAudienceWindow}
+              title="重新開啟投影片視窗 (Audience View)"
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/5 text-stone-400 hover:text-white rounded-lg transition-all"
+            >
+              <ExternalLink size={14} />
+              <span className="text-[10px] font-bold uppercase tracking-wider hidden lg:block">Project</span>
+            </button>
+            <div className="w-[1px] h-4 bg-white/10 mx-1" />
+            <button 
+              onClick={() => setIsRemoteModalOpen(true)}
+              title="手機遙控設定"
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-orange-500/20 text-stone-400 hover:text-[#EA580C] rounded-lg transition-all"
+            >
+              <Smartphone size={14} />
+              <span className="text-[10px] font-bold uppercase tracking-wider hidden lg:block">Remote</span>
+            </button>
+            <div className="w-[1px] h-4 bg-white/10 mx-1" />
+            <button 
+              onClick={toggleBlackoutInternal}
+              title="切換觀眾視窗黑屏"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all ${isBlackout ? 'bg-red-600 text-white' : 'text-stone-400 hover:text-white'}`}
+            >
+              <MonitorOff size={14} />
+              <span className="text-[10px] font-bold uppercase tracking-wider hidden lg:block">Blackout</span>
+            </button>
+          </div>
+
           <button 
-            onClick={toggleBlackout}
-            className={`flex items-center gap-2 px-3 py-1 border rounded-lg text-xs font-bold transition-all uppercase tracking-wider ${isBlackout ? 'bg-red-600 border-red-500 text-white shadow-[0_0_15px_rgba(220,38,38,0.4)]' : 'bg-white/5 border-white/10 text-stone-400 hover:text-white'}`}
+            onClick={handleExit}
+            className="flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-red-500/20 text-stone-500 hover:text-red-400 border border-white/10 rounded-xl transition-all"
           >
-            <MonitorOff size={14} /> Blackout {isBlackout ? 'ON' : 'OFF'}
+            <LogOut size={14} />
+            <span className="text-[10px] font-black uppercase tracking-[0.1em]">Exit</span>
           </button>
         </div>
         <PresenterTimer />
@@ -166,7 +209,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
           <div className="flex-1 bg-black relative rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10" data-testid="current-slide-view">
             {currentSlide ? (
                <ScaledSlideContainer>
-                 <SlideRenderer slide={currentSlide} theme={theme} />
+                 <SlideRenderer slide={currentSlide} theme={activeTheme} />
                </ScaledSlideContainer>
             ) : (
               <div className="flex items-center justify-center h-full">
@@ -178,7 +221,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
           {/* Navigation Overlays */}
           <div className="absolute inset-y-0 left-0 w-24 flex items-center justify-start pl-4 opacity-0 group-hover:opacity-100 transition-opacity">
              <button 
-               onClick={handlePrev}
+               onClick={handlePrevInternal}
                disabled={currentIndex === 0}
                aria-label="Previous Slide"
                className="p-4 bg-stone-800/80 rounded-full hover:bg-[#EA580C] hover:text-white disabled:opacity-30 disabled:hover:bg-stone-800/80 transition-all"
@@ -188,7 +231,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
           </div>
           <div className="absolute inset-y-0 right-0 w-24 flex items-center justify-end pr-4 opacity-0 group-hover:opacity-100 transition-opacity">
              <button 
-               onClick={handleNext}
+               onClick={handleNextInternal}
                disabled={currentIndex === slides.length - 1}
                aria-label="Next Slide"
                className="p-4 bg-stone-800/80 rounded-full hover:bg-[#EA580C] hover:text-white disabled:opacity-30 disabled:hover:bg-stone-800/80 transition-all"
@@ -199,14 +242,14 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
         </div>
 
         {/* Sidebar: Next Slide & Notes */}
-        <div className="w-80 lg:w-96 flex flex-col p-4 lg:p-6 bg-stone-900 gap-4 lg:gap-6 border-l border-stone-700">
+        <div className="w-80 lg:w-96 flex flex-col p-4 lg:p-6 bg-stone-900 gap-4 lg:gap-6 border-l border-stone-700 shrink-0">
           {/* Next Slide Preview */}
           <div className="flex-none aspect-video flex flex-col">
             <h2 className="text-xs font-black text-stone-500 mb-3 uppercase tracking-[0.2em]">Next Slide</h2>
             <div className="flex-1 bg-black relative rounded-xl overflow-hidden border border-stone-700 shadow-lg" data-testid="next-slide-view">
               {nextSlide ? (
                  <ScaledSlideContainer>
-                   <SlideRenderer slide={nextSlide} theme={theme} />
+                   <SlideRenderer slide={nextSlide} theme={activeTheme} />
                  </ScaledSlideContainer>
               ) : (
                 <div className="flex flex-col items-center justify-center text-stone-500 h-full w-full">
