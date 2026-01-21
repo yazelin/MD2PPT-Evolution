@@ -64,8 +64,8 @@ export const ScaledSlideContainer: React.FC<ScaledSlideContainerProps> = ({
   return (
     <div 
       ref={containerRef}
-      className={`relative flex items-center justify-center ${className}`}
-      style={{ width: '100%', height: '100%', overflow: 'hidden', ...style }}
+      className={`relative w-full h-full overflow-hidden ${className}`}
+      style={style}
     >
       <div 
         style={{
@@ -73,12 +73,18 @@ export const ScaledSlideContainer: React.FC<ScaledSlideContainerProps> = ({
           height: designHeight,
           // If scale is 0, we hide it to avoid glitches
           opacity: scale === 0 ? 0 : 1,
-          transform: `scale(${scale})`,
-          transformOrigin: 'center center',
+          
+          // Use absolute positioning + translate to center and isolate from flow
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          transformOrigin: 'center center', // Actually translate handles centering, origin can be center
+          
           display: 'flex',
           flexDirection: 'column',
-          position: 'relative', 
-          overflow: 'hidden' 
+          overflow: 'hidden',
+          boxShadow: '0 0 20px rgba(0,0,0,0.1)' // Optional: adds depth
         }}
       >
         {children}

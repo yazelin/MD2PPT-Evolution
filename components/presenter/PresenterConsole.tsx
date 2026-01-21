@@ -202,7 +202,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
         </div>
 
         {/* Sidebar: Next Slide & Notes */}
-        <div className="w-[400px] flex flex-col p-6 bg-stone-900 gap-6">
+        <div className="w-80 lg:w-96 flex flex-col p-4 lg:p-6 bg-stone-900 gap-4 lg:gap-6 border-l border-stone-700">
           {/* Next Slide Preview */}
           <div className="flex-none aspect-video flex flex-col">
             <h2 className="text-xs font-black text-stone-500 mb-3 uppercase tracking-[0.2em]">Next Slide</h2>
