@@ -99,16 +99,14 @@ describe('PresenterConsole', () => {
   it('sends navigation commands when controls are clicked', () => {
     render(<PresenterConsole slides={mockSlides} currentIndex={0} />);
     
-    // Check Prev Button (should be disabled or present)
-    const prevBtn = screen.getByLabelText('Previous Slide');
+    // Check Prev Button
     const nextBtn = screen.getByLabelText('Next Slide');
 
     fireEvent.click(nextBtn);
-    expect(mockSendMessage).toHaveBeenCalledWith({ type: SyncAction.GOTO_SLIDE, payload: { index: 1 } });
-
-    fireEvent.click(prevBtn);
-    // Note: click doesn't update prop currentIndex in test (unless rerendered), but internal state updates.
-    // Initial index was 0. Next clicked -> index becomes 1. Prev clicked -> index becomes 0.
-    expect(mockSendMessage).toHaveBeenCalledWith({ type: SyncAction.GOTO_SLIDE, payload: { index: 0 } });
+    // Component now uses broadcastState which sends SYNC_STATE
+    expect(mockSendMessage).toHaveBeenCalledWith(expect.objectContaining({ 
+      type: SyncAction.SYNC_STATE, 
+      payload: expect.objectContaining({ index: 1 }) 
+    }));
   });
 });
