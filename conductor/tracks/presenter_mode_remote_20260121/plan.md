@@ -34,9 +34,9 @@
 - [x] Task: 實作 P2P 連線 Service cf931bf
     - [x] 撰寫測試：驗證 `RemoteControlService` 能正確處理 PeerID 生成與連線回呼。
     - [x] 實作：整合 `peerjs` 庫，實作連線初始化、接收指令等邏輯。
-- [ ] Task: QR Code 生成與顯示
-    - [ ] 撰寫測試：驗證產生的 URL 包含正確的 Peer ID。
-    - [ ] 實作：在主控台介面加入「手機遙控」按鈕，點擊後彈出 QR Code。
+- [x] Task: QR Code 生成與顯示 a85e0e4
+    - [x] 撰寫測試：驗證產生的 URL 包含正確的 Peer ID。
+    - [x] 實作：在主控台介面加入「手機遙控」按鈕，點擊後彈出 QR Code。
 - [ ] Task: Conductor - User Manual Verification '階段三' (Protocol in workflow.md)
 
 ## 階段四：手機端遙控頁面 UI 實作
