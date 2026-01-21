@@ -20,7 +20,7 @@ export const PresenterPage: React.FC = () => {
 
   return (
     <EditorProvider editorState={editorState} darkModeState={darkModeState}>
-      <PresenterConsole slides={slides} currentIndex={0} />
+      <PresenterConsole slides={slides} currentIndex={0} theme={editorState.activeTheme} />
     </EditorProvider>
   );
 };

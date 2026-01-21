@@ -25,6 +25,7 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
   const [slides, setSlides] = useState(initialSlides);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isBlackout, setIsBlackout] = useState(false);
+  const [syncedTheme, setSyncedTheme] = useState<PptTheme | undefined>(theme);
   const [scale, setScale] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const syncService = useRef<PresentationSyncService | null>(null);
@@ -45,6 +46,7 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
         case SyncAction.SYNC_STATE:
           if (msg.payload?.slides) setSlides(msg.payload.slides);
           if (msg.payload?.index !== undefined) setCurrentIndex(msg.payload.index);
+          if (msg.payload?.theme) setSyncedTheme(msg.payload.theme);
           break;
       }
     });
@@ -89,7 +91,7 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
   }, []);
 
   const currentSlide = slides[currentIndex];
-  const activeTheme = theme || PRESET_THEMES[DEFAULT_THEME_ID];
+  const activeTheme = syncedTheme || theme || PRESET_THEMES[DEFAULT_THEME_ID];
 
   if (!currentSlide && slides.length === 0) {
     return (

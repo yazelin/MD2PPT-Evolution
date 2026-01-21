@@ -15,12 +15,15 @@ import { RemoteControlService } from '../../services/RemoteControlService';
 import { RemoteQRCodeModal } from './RemoteQRCodeModal';
 import { ScaledSlideContainer } from '../common/ScaledSlideContainer';
 
+import { PptTheme } from '../../services/types';
+
 interface PresenterConsoleProps {
   slides: SlideData[];
   currentIndex: number;
+  theme?: PptTheme;
 }
 
-export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, currentIndex: initialIndex }) => {
+export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, currentIndex: initialIndex, theme: propTheme }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [peerId, setPeerId] = useState<string>('');
   const [isRemoteModalOpen, setIsRemoteModalOpen] = useState(false);
@@ -36,7 +39,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     // Broadcast to other local windows (Audience View)
     syncService.current?.sendMessage({ 
       type: SyncAction.SYNC_STATE, 
-      payload: { index, blackout, slides, total: slides.length } 
+      payload: { index, blackout, slides, total: slides.length, theme: propTheme } 
     });
 
     // Also send to mobile remote via P2P
@@ -76,6 +79,11 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     };
   }, []);
 
+  // Broadcast state whenever slides change (e.g. initial load) to ensure AudienceView is in sync
+  useEffect(() => {
+    broadcastState(currentIndex, isBlackout);
+  }, [slides, currentIndex, isBlackout]);
+
   const handleNext = () => {
     setCurrentIndex(prev => {
       if (prev < slides.length - 1) {
@@ -110,8 +118,8 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
   const currentSlide = slides[currentIndex];
   const nextSlide = slides[currentIndex + 1];
   
-  // Use a default theme for preview if none specified in slide
-  const theme = PRESET_THEMES[DEFAULT_THEME_ID];
+  // Use passed theme or default
+  const theme = propTheme || PRESET_THEMES[DEFAULT_THEME_ID];
 
   const note = currentSlide?.config?.note || currentSlide?.metadata?.note;
 
