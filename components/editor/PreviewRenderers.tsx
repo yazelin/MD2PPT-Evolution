@@ -4,12 +4,13 @@
  * Licensed under the MIT License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ParsedBlock, BlockType, PptTheme } from '../../services/types';
 import { parseInlineElements, InlineStyleType } from '../../utils/styleParser';
 import { Image as ImageIcon, AlertCircle } from 'lucide-react';
 import MermaidRenderer from './MermaidRenderer';
 import { ChartPreview } from './ChartPreview';
+import { highlighterService } from '../../services/ppt/HighlighterService';
 
 export const RenderRichText: React.FC<{ text: string, theme?: PptTheme }> = ({ text, theme }) => {
   const segments = parseInlineElements(text);
@@ -28,6 +29,56 @@ export const RenderRichText: React.FC<{ text: string, theme?: PptTheme }> = ({ t
         }
       })}
     </>
+  );
+};
+
+const CodeBlockPreview: React.FC<{ content: string, metadata?: any, isDark?: boolean }> = ({ content, metadata, isDark }) => {
+  const [html, setHtml] = useState<string | null>(null);
+  const language = metadata?.language || 'text';
+
+  useEffect(() => {
+    let isMounted = true;
+    const highlight = async () => {
+      try {
+        await highlighterService.init();
+        const highlighter = highlighterService.getHighlighter();
+        if (highlighter && isMounted) {
+          const theme = isDark ? 'github-dark' : 'github-light';
+          
+          // Use a simple fallback if language is not supported
+          let lang = language;
+          const supportedLangs = ['javascript', 'typescript', 'html', 'css', 'json', 'markdown', 'python', 'java', 'bash', 'sql'];
+          if (!supportedLangs.includes(lang.toLowerCase())) {
+            lang = 'text';
+          }
+
+          const highlighted = highlighter.codeToHtml(content, {
+            lang,
+            theme
+          });
+          setHtml(highlighted);
+        }
+      } catch (e) {
+        console.warn("Highlighting failed in preview", e);
+      }
+    };
+    highlight();
+    return () => { isMounted = false; };
+  }, [content, language, isDark]);
+
+  if (!html) {
+    return (
+      <div className="p-6 rounded-lg bg-slate-100 dark:bg-black/30 border border-slate-300 dark:border-slate-700 font-mono text-lg shadow-inner overflow-hidden">
+        <pre className="whitespace-pre-wrap break-all">{content}</pre>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className="shiki-preview my-6 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shadow-inner text-lg"
+      dangerouslySetInnerHTML={{ __html: html }} 
+    />
   );
 };
 
@@ -56,11 +107,7 @@ export const PreviewBlock: React.FC<{ block: ParsedBlock, isDark?: boolean, them
     case BlockType.HEADING_3:
       return <h3 {...commonProps} className="text-2xl font-semibold mb-3 opacity-80 underline underline-offset-4" style={{ textDecorationColor: `${primaryColor}40`, color: 'inherit' }}><RenderRichText text={block.content} theme={theme} /></h3>;
     case BlockType.CODE_BLOCK:
-      return (
-        <div {...commonProps} className="my-6 bg-slate-100 dark:bg-black/30 border border-slate-300 dark:border-slate-700 p-6 rounded-lg font-mono text-lg shadow-inner overflow-hidden">
-          <pre className="whitespace-pre-wrap break-all">{block.content}</pre>
-        </div>
-      );
+      return <CodeBlockPreview content={block.content} metadata={block.metadata} isDark={isDark} />;
     case BlockType.MERMAID:
       return <div {...commonProps} className="my-6 scale-110 flex justify-center"><MermaidRenderer chart={block.content} /></div>;
     case BlockType.CHAT_CUSTOM:

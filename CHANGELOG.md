@@ -5,6 +5,14 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [0.12.4] - 2026-01-21
+
+### 新增 (Added)
+- **預覽語法高亮 (Preview Syntax Highlighting)**:
+    - **全平台同步高亮**: 在編輯器預覽區、觀眾視圖 (Audience View) 及演講者主控台導入 `shiki` 渲染引擎。
+    - **動態主題切換**: 程式碼區塊會根據投影片背景亮度自動切換至 `github-dark` 或 `github-light` 主題，確保最佳可讀性。
+    - **視覺樣式優化**: 針對 Web 預覽環境優化了代碼區塊的內距、字體大小及圓角設計，使其與 PPT 匯出效果高度一致。
+
 ## [0.12.3] - 2026-01-21
 
 ### 新增 (Added)
