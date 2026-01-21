@@ -39,7 +39,7 @@
     - [x] 實作：在主控台介面加入「手機遙控」按鈕，點擊後彈出 QR Code。
 - [ ] Task: Conductor - User Manual Verification '階段三' (Protocol in workflow.md)
 
-## 階段四：手機端遙控頁面 UI 實作
+## 階段四：手機端遙控頁面 UI 實作 [checkpoint: 76cf26f]
 本階段完成最後的手機端實作。
 
 - [x] Task: 打造手機遙控頁面 UI 5df21dc
