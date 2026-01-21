@@ -6,9 +6,9 @@
 - [x] Task: 實作通訊 Service 與單元測試 c480dcc
     - [x] 撰寫測試：驗證 `PresentationSyncService` 是否能正確封裝 `BroadcastChannel`。
     - [x] 實作：建立基於 `BroadcastChannel` 的通訊類別，處理翻頁與狀態同步指令。
-- [ ] Task: 實作觀眾視圖 (Audience View) 基本路徑
-    - [ ] 撰寫測試：驗證渲染器能根據傳入的 Slides 數據正確顯示特定頁面。
-    - [ ] 實作：建立 `/audience` 專用渲染組件，僅包含全螢幕投影片內容。
+- [x] Task: 實作觀眾視圖 (Audience View) 基本路徑 d5c64fa
+    - [x] 撰寫測試：驗證渲染器能根據傳入的 Slides 數據正確顯示特定頁面。
+    - [x] 實作：建立 `/audience` 專用渲染組件，僅包含全螢幕投影片內容。
 - [ ] Task: 實作視窗開啟邏輯
     - [ ] 撰寫測試：驗證點擊啟動按鈕時，`window.open` 被呼叫且帶有正確參數。
     - [ ] 實作：在編輯器 Header 加入「開始演講」按鈕，實作開啟觀眾視窗邏輯。
