@@ -36,10 +36,15 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
   const broadcastState = (index: number, blackout: boolean) => {
     const currentNote = slides[index]?.config?.note || slides[index]?.metadata?.note || '';
     
+    const statePayload = { index, blackout, slides, total: slides.length, theme: propTheme };
+
+    // Save to localStorage for initial load of new windows
+    localStorage.setItem('md2ppt_presenter_state', JSON.stringify(statePayload));
+
     // Broadcast to other local windows (Audience View)
     syncService.current?.sendMessage({ 
       type: SyncAction.SYNC_STATE, 
-      payload: { index, blackout, slides, total: slides.length, theme: propTheme } 
+      payload: statePayload 
     });
 
     // Also send to mobile remote via P2P

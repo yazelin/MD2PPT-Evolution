@@ -31,6 +31,20 @@ export const AudienceView: React.FC<AudienceViewProps> = ({
   const syncService = useRef<PresentationSyncService | null>(null);
 
   useEffect(() => {
+    // 1. Try to load initial state from localStorage
+    const savedState = localStorage.getItem('md2ppt_presenter_state');
+    if (savedState) {
+      try {
+        const state = JSON.parse(savedState);
+        if (state.slides) setSlides(state.slides);
+        if (state.index !== undefined) setCurrentIndex(state.index);
+        if (state.theme) setSyncedTheme(state.theme);
+        if (state.blackout !== undefined) setIsBlackout(state.blackout);
+      } catch (e) {
+        console.error("Failed to load presenter state", e);
+      }
+    }
+
     syncService.current = new PresentationSyncService();
 
     syncService.current.onMessage((msg) => {

@@ -22,7 +22,8 @@ export const ScaledSlideContainer: React.FC<ScaledSlideContainerProps> = ({
   style = {}
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  // Start with 0 scale to prevent overflow before calculation
+  const [scale, setScale] = useState(0);
 
   useLayoutEffect(() => {
     const updateScale = () => {
@@ -32,26 +33,29 @@ export const ScaledSlideContainer: React.FC<ScaledSlideContainerProps> = ({
           const availableWidth = parent.clientWidth;
           const availableHeight = parent.clientHeight;
           
+          if (availableWidth === 0 || availableHeight === 0) return;
+
           const scaleX = availableWidth / designWidth;
           const scaleY = availableHeight / designHeight;
           
-          // Use the smaller scale to ensure containment
-          // Subtract a small margin (e.g., 0.95 factor) to avoid edge touching if desired, 
-          // or strictly match containment.
           setScale(Math.min(scaleX, scaleY));
         }
       }
     };
+
+    // Immediate update for initial render
+    // We use setTimeout to ensure layout has settled (sometimes parent dimensions are 0 inside useLayoutEffect)
+    const timer = setTimeout(updateScale, 0);
 
     const observer = new ResizeObserver(updateScale);
     if (containerRef.current?.parentElement) {
       observer.observe(containerRef.current.parentElement);
     }
     
-    updateScale();
     window.addEventListener('resize', updateScale);
 
     return () => {
+      clearTimeout(timer);
       observer.disconnect();
       window.removeEventListener('resize', updateScale);
     };
@@ -67,13 +71,13 @@ export const ScaledSlideContainer: React.FC<ScaledSlideContainerProps> = ({
         style={{
           width: designWidth,
           height: designHeight,
+          // If scale is 0, we hide it to avoid glitches
+          opacity: scale === 0 ? 0 : 1,
           transform: `scale(${scale})`,
           transformOrigin: 'center center',
           display: 'flex',
           flexDirection: 'column',
-          position: 'relative', // Ensure absolute children are contained
-          // We don't set overflow hidden here strictly, relying on SlideContent's internal structure 
-          // or global hidden if needed. But usually slides are fixed size canvas.
+          position: 'relative', 
           overflow: 'hidden' 
         }}
       >
