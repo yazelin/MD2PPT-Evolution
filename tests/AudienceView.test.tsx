@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { AudienceView } from '../components/presenter/AudienceView';
 import { ParsedBlock, BlockType } from '../services/types';
@@ -10,12 +10,27 @@ vi.mock('../components/editor/PreviewPane', () => ({
 }));
 
 // Mock PresentationSyncService to avoid side effects during render
+const vi_mockData = {
+  handler: null as any
+};
+
 vi.mock('../services/PresentationSyncService', () => ({
-  PresentationSyncService: vi.fn().mockImplementation(() => ({
-    onMessage: vi.fn(),
-    offMessage: vi.fn(),
-    close: vi.fn()
-  }))
+  PresentationSyncService: vi.fn(function() {
+    return {
+      onMessage: vi.fn((handler) => { 
+        (global as any).lastMessageHandler = handler; 
+      }),
+      offMessage: vi.fn(),
+      close: vi.fn(),
+      sendMessage: vi.fn()
+    };
+  }),
+  SyncAction: {
+    GOTO_SLIDE: 'GOTO_SLIDE',
+    BLACK_SCREEN: 'BLACK_SCREEN',
+    REQUEST_SYNC: 'REQUEST_SYNC',
+    SYNC_STATE: 'SYNC_STATE'
+  }
 }));
 
 const mockSlides: any[] = [
@@ -29,32 +44,33 @@ describe('AudienceView', () => {
     expect(screen.getByText(/Waiting for presenter/i)).toBeInTheDocument();
   });
 
-  it('renders the specific slide based on currentIndex', () => {
-    // Note: We need to mock how AudienceView renders the slide. 
-    // If it reuses SlideContent from PreviewPane, we check for that.
-    // For this test, we assume it passes data to a renderer.
+  it('updates slide index when receiving GOTO_SLIDE message', async () => {
+    render(<AudienceView slides={mockSlides} currentIndex={0} />);
     
-    // Actually, AudienceView in a real scenario might need to *receive* the content 
-    // via BroadcastChannel if it's a separate window opened empty.
-    // But typically in SPA, we might share state if opened via route, OR receive it.
-    // The spec says: "利用 window.open() 開啟一個新的「觀眾視圖」分頁".
-    // If it's a new window in a static site, it MUST be a new instance of the App.
-    // It won't share memory. It must receive content via localStorage or BroadcastChannel.
+    // Simulate sync message
+    act(() => {
+      (global as any).lastMessageHandler({ type: 'GOTO_SLIDE', payload: { index: 1 } });
+    });
+
+    expect(screen.getByText('Slide 1 Content')).toBeInTheDocument();
+  });
+
+  it('toggles blackout mode when receiving BLACK_SCREEN message', () => {
+    render(<AudienceView slides={mockSlides} currentIndex={0} />);
     
-    // For this "Basic Route" task, let's assume we pass slides as props for now (testing the component),
-    // or we simulate the data being present.
-    
-    // Let's refine the test to just check if it renders the slide provided in props.
-    // The synchronization logic is a separate concern/integration.
-    
-    render(<AudienceView slides={mockSlides} currentIndex={1} />);
-    // We expect it to render the 2nd slide (index 1)
-    // Using the mocked SlideContent output
-    expect(screen.getByText('Slide 1 Content')).toBeInTheDocument(); 
-    // Wait, my mock above says "Slide {slide.index} Content". 
-    // The SlideContent component usually takes `slide` object. 
-    // Let's adjust the expectation based on the mock implementation I wrote above.
-    // But `slide` object structure depends on how `splitBlocksToSlides` works.
-    // Let's rely on text content search if we can.
+    // Default: visible
+    expect(screen.queryByTestId('blackout-overlay')).not.toBeInTheDocument();
+
+    // Blackout ON
+    act(() => {
+      (global as any).lastMessageHandler({ type: 'BLACK_SCREEN', payload: { enabled: true } });
+    });
+    expect(screen.getByTestId('blackout-overlay')).toBeInTheDocument();
+
+    // Blackout OFF
+    act(() => {
+      (global as any).lastMessageHandler({ type: 'BLACK_SCREEN', payload: { enabled: false } });
+    });
+    expect(screen.queryByTestId('blackout-overlay')).not.toBeInTheDocument();
   });
 });

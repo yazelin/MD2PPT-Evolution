@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import MarkdownEditor from './components/MarkdownEditor';
 import { AudienceView } from './components/presenter/AudienceView';
 import { PresenterPage } from './components/presenter/PresenterPage';
+import { MobileRemote } from './components/presenter/MobileRemote';
 
 const App: React.FC = () => {
   const [route, setRoute] = useState(window.location.hash);
@@ -19,14 +20,19 @@ const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  if (route === '#/audience') {
-    // In a real scenario, AudienceView needs to receive data via BroadcastChannel or similar.
-    // For now, it will render the "Waiting" state.
+  // Handle Hash Parameters (e.g. #/remote?peer=...)
+  const currentPath = route.split('?')[0];
+
+  if (currentPath === '#/audience') {
     return <AudienceView slides={[]} currentIndex={0} />;
   }
 
-  if (route === '#/presenter') {
+  if (currentPath === '#/presenter') {
     return <PresenterPage />;
+  }
+
+  if (currentPath === '#/remote') {
+    return <MobileRemote />;
   }
 
   return (

@@ -23,13 +23,38 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [peerId, setPeerId] = useState<string>('');
   const [isRemoteModalOpen, setIsRemoteModalOpen] = useState(false);
+  const [isBlackout, setIsBlackout] = useState(false);
   
   const syncService = useRef<PresentationSyncService | null>(null);
   const remoteService = useRef<RemoteControlService | null>(null);
 
+  // Helper to send sync state to all windows
+  const broadcastState = (index: number, blackout: boolean) => {
+    const currentNote = slides[index]?.config?.note || slides[index]?.metadata?.note || '';
+    
+    // Broadcast to other local windows (Audience View)
+    syncService.current?.sendMessage({ 
+      type: SyncAction.SYNC_STATE, 
+      payload: { index, blackout, slides, total: slides.length } 
+    });
+
+    // Also send to mobile remote via P2P
+    remoteService.current?.broadcast({ 
+      type: 'SYNC_STATE', 
+      payload: { index, total: slides.length, note: currentNote, blackout } 
+    });
+  };
+
   useEffect(() => {
     syncService.current = new PresentationSyncService();
     remoteService.current = new RemoteControlService();
+
+    // Listen for local sync requests (e.g. when Audience View opens)
+    syncService.current.onMessage((msg) => {
+      if (msg.type === SyncAction.REQUEST_SYNC) {
+        broadcastState(currentIndex, isBlackout);
+      }
+    });
 
     remoteService.current.onReady((id) => {
       setPeerId(id);
@@ -38,8 +63,11 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     remoteService.current.onCommand((cmd) => {
       if (cmd.action === 'NEXT') handleNext();
       if (cmd.action === 'PREV') handlePrev();
-      // Handle other commands like BLACK_SCREEN if needed
+      if (cmd.action === 'BLACKOUT') toggleBlackout();
     });
+
+    // Initial broadcast
+    broadcastState(currentIndex, isBlackout);
 
     return () => {
       syncService.current?.close();
@@ -51,7 +79,7 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     setCurrentIndex(prev => {
       if (prev < slides.length - 1) {
         const next = prev + 1;
-        syncService.current?.sendMessage({ type: SyncAction.GOTO_SLIDE, payload: { index: next } });
+        broadcastState(next, isBlackout);
         return next;
       }
       return prev;
@@ -62,10 +90,19 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
     setCurrentIndex(prev => {
       if (prev > 0) {
         const next = prev - 1;
-        syncService.current?.sendMessage({ type: SyncAction.GOTO_SLIDE, payload: { index: next } });
+        broadcastState(next, isBlackout);
         return next;
       }
       return prev;
+    });
+  };
+
+  const toggleBlackout = () => {
+    setIsBlackout(prev => {
+      const newState = !prev;
+      syncService.current?.sendMessage({ type: SyncAction.BLACK_SCREEN, payload: { enabled: newState } });
+      broadcastState(currentIndex, newState);
+      return newState;
     });
   };
 
@@ -88,6 +125,13 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
             className="flex items-center gap-2 px-3 py-1 bg-white/5 hover:bg-orange-500/20 hover:text-[#EA580C] border border-white/10 rounded-lg text-xs font-bold transition-all uppercase tracking-wider"
           >
             <Smartphone size={14} /> Mobile Remote
+          </button>
+          
+          <button 
+            onClick={toggleBlackout}
+            className={`flex items-center gap-2 px-3 py-1 border rounded-lg text-xs font-bold transition-all uppercase tracking-wider ${isBlackout ? 'bg-red-600 border-red-500 text-white shadow-[0_0_15px_rgba(220,38,38,0.4)]' : 'bg-white/5 border-white/10 text-stone-400 hover:text-white'}`}
+          >
+            <MonitorOff size={14} /> Blackout {isBlackout ? 'ON' : 'OFF'}
           </button>
         </div>
         <PresenterTimer />

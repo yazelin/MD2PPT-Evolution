@@ -20,6 +20,7 @@ export class RemoteControlService {
   private commandHandlers: CommandHandler[] = [];
   private readyHandlers: ReadyHandler[] = [];
   private peerId: string | null = null;
+  public activeConnections: DataConnection[] = [];
 
   constructor() {
     this.initialize();
@@ -44,7 +45,7 @@ export class RemoteControlService {
   }
 
   private handleConnection(conn: DataConnection): void {
-    this.connections.push(conn);
+    this.activeConnections.push(conn);
 
     conn.on('data', (data) => {
       if (data && typeof data === 'object') {
@@ -54,7 +55,15 @@ export class RemoteControlService {
     });
 
     conn.on('close', () => {
-      this.connections = this.connections.filter(c => c !== conn);
+      this.activeConnections = this.activeConnections.filter(c => c !== conn);
+    });
+  }
+
+  public broadcast(data: any): void {
+    this.activeConnections.forEach(conn => {
+      if (conn.open) {
+        conn.send(data);
+      }
     });
   }
 
@@ -79,8 +88,8 @@ export class RemoteControlService {
 
   public close(): void {
     this.peer?.destroy();
-    this.connections.forEach(conn => conn.close());
-    this.connections = [];
+    this.activeConnections.forEach(conn => conn.close());
+    this.activeConnections = [];
     this.readyHandlers = [];
     this.commandHandlers = [];
   }

@@ -4,11 +4,12 @@
  * Licensed under the MIT License.
  */
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SlideContent } from '../editor/PreviewPane';
 import { SlideData } from '../../services/parser/slides';
 import { PptTheme } from '../../services/types';
 import { PRESET_THEMES, DEFAULT_THEME_ID } from '../../constants/themes';
+import { PresentationSyncService, SyncAction } from '../../services/PresentationSyncService';
 
 interface AudienceViewProps {
   slides: SlideData[];
@@ -18,44 +19,89 @@ interface AudienceViewProps {
 }
 
 export const AudienceView: React.FC<AudienceViewProps> = ({ 
-  slides, 
-  currentIndex, 
+  slides: initialSlides, 
+  currentIndex: initialIndex, 
   theme,
   globalBg
 }) => {
+  const [slides, setSlides] = useState(initialSlides);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [isBlackout, setIsBlackout] = useState(false);
+  const syncService = useRef<PresentationSyncService | null>(null);
+
+  useEffect(() => {
+    syncService.current = new PresentationSyncService();
+
+    syncService.current.onMessage((msg) => {
+      switch (msg.type) {
+        case SyncAction.GOTO_SLIDE:
+          if (msg.payload?.index !== undefined) {
+            setCurrentIndex(msg.payload.index);
+          }
+          break;
+        case SyncAction.BLACK_SCREEN:
+          setIsBlackout(!!msg.payload?.enabled);
+          break;
+        case SyncAction.SYNC_STATE:
+          if (msg.payload?.slides) setSlides(msg.payload.slides);
+          if (msg.payload?.index !== undefined) setCurrentIndex(msg.payload.index);
+          break;
+      }
+    });
+
+    // Request initial sync
+    syncService.current.sendMessage({ type: SyncAction.REQUEST_SYNC });
+
+    return () => {
+      syncService.current?.close();
+    };
+  }, []);
+
+  // Update internal state if props change (though sync service is primary)
+  useEffect(() => {
+    if (initialSlides.length > 0) setSlides(initialSlides);
+  }, [initialSlides]);
+
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
+
   const currentSlide = slides[currentIndex];
   const activeTheme = theme || PRESET_THEMES[DEFAULT_THEME_ID];
 
-  if (!currentSlide) {
+  if (!currentSlide && slides.length === 0) {
     return (
       <div className="flex items-center justify-center h-screen w-screen bg-black text-white">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Waiting for presenter...</h1>
-          <p className="opacity-60">No slide content available.</p>
+          <p className="opacity-60">Connecting to presentation session.</p>
         </div>
       </div>
     );
   }
 
-  // We reuse SlideContent but ensure it takes up the full viewport
   return (
-    <div className="w-screen h-screen overflow-hidden bg-black flex items-center justify-center">
-      {/* 
-         We need to scale the slide content to fit the screen. 
-         SlideContent expects to be in a container. 
-         Here we simulate the SlideCard's container logic but for full screen.
-      */}
+    <div className="w-screen h-screen overflow-hidden bg-black flex items-center justify-center relative">
+      {/* Blackout Overlay */}
+      {isBlackout && (
+        <div 
+          data-testid="blackout-overlay"
+          className="absolute inset-0 z-[1000] bg-black animate-in fade-in duration-500" 
+        />
+      )}
+
       <div 
         className="relative w-full h-full"
         style={{ 
           backgroundColor: activeTheme.colors.background.startsWith('#') ? activeTheme.colors.background : `#${activeTheme.colors.background}` 
         }}
       >
-         <SlideContent 
-            slide={currentSlide} 
-            theme={activeTheme} 
-            // We pass an undefined isDark to let SlideContent infer it from slide/theme
-         />
+         {currentSlide && (
+           <SlideContent 
+              slide={currentSlide} 
+              theme={activeTheme} 
+           />
+         )}
       </div>
     </div>
   );
