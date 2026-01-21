@@ -49,4 +49,31 @@ describe('PresenterConsole', () => {
     const nextSlide = screen.getByTestId('next-slide-view');
     expect(nextSlide).toHaveTextContent(/End of Presentation/i);
   });
+
+  it('renders Speaker Notes if available', () => {
+    const slidesWithNotes = [
+      { 
+        index: 0, 
+        blocks: [], 
+        config: { note: 'Do not forget to mention the roadmap.' } 
+      }
+    ];
+    render(<PresenterConsole slides={slidesWithNotes} currentIndex={0} />);
+    expect(screen.getByText('Do not forget to mention the roadmap.')).toBeInTheDocument();
+  });
+
+  it('renders Timer and Progress', () => {
+    render(<PresenterConsole slides={mockSlides} currentIndex={1} />);
+    
+    // Check Progress
+    // We expect "Slide 2 / 3" (since index 1 is 2nd slide, and length is 3)
+    // Using a flexible matcher because text is split across spans
+    const progressElement = screen.getByText((_, element) => {
+        return element?.textContent === 'Slide 2 / 3' || element?.textContent?.replace(/\s+/g, ' ').trim() === 'Slide 2 / 3';
+    });
+    expect(progressElement).toBeInTheDocument();
+
+    // Check Timer (Just check if the element exists for now)
+    expect(screen.getByTestId('presenter-timer')).toBeInTheDocument();
+  });
 });
