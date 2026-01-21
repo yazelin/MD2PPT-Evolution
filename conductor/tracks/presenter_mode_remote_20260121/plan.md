@@ -28,7 +28,7 @@
     - [x] 實作：確保主控台翻頁時，透過 `PresentationSyncService` 通知所有視窗。
 - [ ] Task: Conductor - User Manual Verification '階段二' (Protocol in workflow.md)
 
-## 階段三：WebRTC P2P 手機遙控基礎建設
+## 階段三：WebRTC P2P 手機遙控基礎建設 [checkpoint: d88de5b]
 本階段實作 PeerJS 整合與連線握手。
 
 - [x] Task: 實作 P2P 連線 Service cf931bf
