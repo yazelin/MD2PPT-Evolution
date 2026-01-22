@@ -11,7 +11,7 @@
     - [x] 使用 Regex 掃描內容末尾，將 `size` 數值存入 `ParsedBlock.metadata`。 1b65f58
 - [x] **Task: Conductor - User Manual Verification '第一階段：解析邏輯' (Protocol in workflow.md)** 65ba847
 
-## 第二階段：Markdown 更新器強化 (Persistence Logic)
+## 第二階段：Markdown 更新器強化 (Persistence Logic) [checkpoint: 5e0f011]
 實作智慧回寫功能，確保 Visual Tweaker 的調整能精確反映到原始碼。
 
 - [x] **Task: 實作屬性標籤更新函式** 870c03c
@@ -19,12 +19,12 @@
     - [x] 邏輯開發：自動偵測現有標籤並替換，或在末尾追加新標籤。 870c03c
 - [x] **Task: 建立回寫功能單元測試** 870c03c
     - [x] 驗證不同元素（標題 vs 列表）插入標籤時的字串處理正確性。 870c03c
-- [ ] **Task: Conductor - User Manual Verification '第二階段：回寫邏輯' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification '第二階段：回寫邏輯' (Protocol in workflow.md)** 5e0f011
 
 ## 第三階段：Tweaker UI 與即時預覽 (UI & Interaction)
 在視覺調整介面中加入控制器，並實現 Web 端的即時渲染。
 
-- [ ] **Task: 擴充 Visual Tweaker UI**
+- [~] **Task: 擴充 Visual Tweaker UI**
     - [ ] 在 `components/tweaker/TextTweaker.tsx` 加入字體大小輸入框。
     - [ ] 實作上下增減按鈕（每點擊一次 +/- 2pt）。
 - [ ] **Task: 實作 Web 預覽渲染**
