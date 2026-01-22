@@ -15,10 +15,10 @@
 - [x] **Task: 實作分頁 (===) 解析插件** c612a21
     - [x] 撰寫測試：驗證 AST 能夠正確識別 Thematic Break 並進行節點分群。 c612a21
     - [x] 實作插件邏輯：將 MDAST 轉換為初步的投影片樹狀結構。 c612a21
-- [~] **Task: 實作指令 (Directive) 處理器**
-    - [ ] 撰寫測試：驗證 `::: chart` 與 `:: right` 能被解析為 Directive 節點。
-    - [ ] 實作屬性提取邏輯：將 JSON 配置從指令中正確解析。
-- [ ] **Task: Conductor - User Manual Verification '第一階段：核心管線' (Protocol in workflow.md)**
+- [x] **Task: 實作指令 (Directive) 處理器** aeac9c0
+    - [x] 撰寫測試：驗證 `::: chart` 與 `:: right` 能被解析為 Directive 節點。 aeac9c0
+    - [x] 實作屬性提取邏輯：將 JSON 配置從指令中正確解析。 aeac9c0
+- [ ] **Task: Conductor - User Manual Verification '第一階段：核心管線' (Protocol in workflow.md)** aeac9c0
 
 ## 第二階段：SOM 2.0 數據映射與升級 (SOM Enhancement)
 將 Remark 產生的 MDAST 映射至我們自定義的 SOM 模型，並引入位置資訊。
