@@ -3,9 +3,9 @@
 ## 第零階段：分支建立與環境準備 (Branching & Setup)
 確保開發環境獨立，並安裝必要的 Unified 生態系套件。
 
-- [ ] **Task: 建立開發分支**
-    - [ ] 執行 `git checkout -b feature/remark-pipeline`。
-- [ ] **Task: 安裝 Remark 相關依賴**
+- [x] **Task: 建立開發分支** 06cb5cc
+    - [x] 執行 `git checkout -b feature/remark-pipeline`。 06cb5cc
+- [~] **Task: 安裝 Remark 相關依賴**
     - [ ] 安裝 `unified`, `remark-parse`, `remark-frontmatter`, `remark-gfm`, `remark-directive`。
 - [ ] **Task: Conductor - User Manual Verification '第零階段：分支準備' (Protocol in workflow.md)**
 

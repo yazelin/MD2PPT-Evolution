@@ -29,7 +29,12 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "recharts": "^3.6.0",
-    "shiki": "^3.21.0"
+    "remark-directive": "^4.0.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "shiki": "^3.21.0",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

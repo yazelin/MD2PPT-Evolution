@@ -43,5 +43,5 @@ This file tracks all major development tracks for MD2PPT-Evolution. Completed tr
 
 ---
 
-- [ ] **Track: 遷移至 Remark/Unified 解析管線**
+- [~] **Track: 遷移至 Remark/Unified 解析管線**
     *Link: [./tracks/remark_pipeline_20260122/](./tracks/remark_pipeline_20260122/)*
