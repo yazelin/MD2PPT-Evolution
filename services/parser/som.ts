@@ -38,7 +38,7 @@ export interface SlideObject {
  * This decouples the parsing logic from the rendering logic (PPTX vs HTML).
  */
 export const transformToSOM = (blocks: ParsedBlock[]): SlideObject[] => {
-  // 1. Group blocks into raw slides (similar to splitBlocksToSlides)
+  // 1. Group blocks into raw slides
   const rawSlides: { blocks: ParsedBlock[], config: SlideMetadata, line: number, start: number, end: number }[] = [];
   let currentBlocks: ParsedBlock[] = [];
   let currentConfig: SlideMetadata = {};
@@ -54,7 +54,7 @@ export const transformToSOM = (blocks: ParsedBlock[]): SlideObject[] => {
           config: currentConfig, 
           line: currentLine,
           start: currentStart,
-          end: lastBlock?.endIndex || 0
+          end: lastBlock?.endIndex || block.startIndex || 0
         });
         currentBlocks = [];
       }
@@ -76,7 +76,41 @@ export const transformToSOM = (blocks: ParsedBlock[]): SlideObject[] => {
       end: lastBlock?.endIndex || 0
     });
   }
-...
+
+  // 2. Transform each raw slide into a structured SlideObject
+  return rawSlides.map((raw, index) => {
+    const layout = raw.config.layout || 'default';
+    const regions: SOMRegion[] = [];
+    
+    const titleBlocks = raw.blocks.filter(b => b.type === BlockType.HEADING_1 || b.type === BlockType.HEADING_2);
+    const bodyBlocks = raw.blocks.filter(b => b.type !== BlockType.HEADING_1 && b.type !== BlockType.HEADING_2);
+
+    if (titleBlocks.length > 0) {
+      regions.push({ type: 'header', blocks: titleBlocks });
+    }
+
+    if (layout === 'two-column' || layout === 'grid') {
+      const numCols = layout === 'two-column' ? 2 : (raw.config.columns || 2);
+      const splitColumns = layoutEngine.splitIntoColumns(bodyBlocks, numCols);
+      
+      splitColumns.forEach((colBlocks, i) => {
+        regions.push({ 
+          type: 'column', 
+          blocks: colBlocks, 
+          id: `col-${i}`,
+          config: { index: i, total: numCols }
+        });
+      });
+    } else {
+      regions.push({ type: 'main', blocks: bodyBlocks });
+    }
+
+    let bgType: 'color' | 'image' | 'mesh' | 'none' = 'none';
+    const rawBg = raw.config.background || raw.config.bg;
+    if (raw.config.bgImage) bgType = 'image';
+    else if (rawBg === 'mesh' || (typeof rawBg === 'string' && rawBg.startsWith('mesh'))) bgType = 'mesh';
+    else if (rawBg) bgType = 'color';
+
     return {
       id: `slide-${index}`,
       layout,

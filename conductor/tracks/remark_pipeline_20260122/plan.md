@@ -23,9 +23,9 @@
 ## 第二階段：SOM 2.0 數據映射與升級 (SOM Enhancement)
 將 Remark 產生的 MDAST 映射至我們自定義的 SOM 模型，並引入位置資訊。
 
-- [~] **Task: 更新 SOM 介面定義**
-    - [ ] 在 `SlideObject` 與其子節點加入 `position` (start/end offsets) 屬性。
-- [ ] **Task: 開發 MDAST-to-SOM 轉換器**
+- [x] **Task: 更新 SOM 介面定義** 5b109e7
+    - [x] 在 `SlideObject` 與其子節點加入 `position` (start/end offsets) 屬性。 5b109e7
+- [~] **Task: 開發 MDAST-to-SOM 轉換器**
     - [ ] 確保現有的佈局與內容邏輯在 AST 架構下依然正確。
     - [ ] 驗證巢狀結構（如列表內部的表格）的解析完整性。
 - [ ] **Task: Conductor - User Manual Verification '第二階段：數據映射' (Protocol in workflow.md)**
