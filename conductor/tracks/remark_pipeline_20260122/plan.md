@@ -9,7 +9,7 @@
     - [x] 安裝 `unified`, `remark-parse`, `remark-frontmatter`, `remark-gfm`, `remark-directive`。 c612a21
 - [x] **Task: Conductor - User Manual Verification '第零階段：分支準備' (Protocol in workflow.md)** 72b7b1e
 
-## 第一階段：核心 AST 解析管線實作 (Core Pipeline)
+## 第一階段：核心 AST 解析管線實作 (Core Pipeline) [checkpoint: 877f36c]
 建立基礎的 Remark 解析鏈，並實作自定義插件。
 
 - [x] **Task: 實作分頁 (===) 解析插件** c612a21
@@ -18,7 +18,7 @@
 - [x] **Task: 實作指令 (Directive) 處理器** aeac9c0
     - [x] 撰寫測試：驗證 `::: chart` 與 `:: right` 能被解析為 Directive 節點。 aeac9c0
     - [x] 實作屬性提取邏輯：將 JSON 配置從指令中正確解析。 aeac9c0
-- [ ] **Task: Conductor - User Manual Verification '第一階段：核心管線' (Protocol in workflow.md)** aeac9c0
+- [x] **Task: Conductor - User Manual Verification '第一階段：核心管線' (Protocol in workflow.md)** 877f36c
 
 ## 第二階段：SOM 2.0 數據映射與升級 (SOM Enhancement)
 將 Remark 產生的 MDAST 映射至我們自定義的 SOM 模型，並引入位置資訊。
