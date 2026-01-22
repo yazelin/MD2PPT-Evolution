@@ -18,15 +18,10 @@
 - [x] **Task: 實作可拖拽的投影片容器** bd06dbc
     - [x] 在側欄 (Sidebar) 與主頁面預覽 (Preview) 整合 `SortableContext`。 bd06dbc
     - [x] 新增 `DragHandle` 組件並套用至所有投影片左上角。 bd06dbc
-- [~] **Task: 實作視覺反饋**
-    - [ ] 實作 `Ghost Image` (拖動時的半透明縮圖)。
-    - [ ] 實作 `Placeholder` (目標位置的佔位視覺)。
-- [ ] **Task: Conductor - User Manual Verification '第二階段：UI 基礎' (Protocol in workflow.md)**
-
-## 第三階段：跨檢視整合與同步 (Integration & Sync)
-確保側欄、預覽區與演講者主控台之間的同步運作。
-
-- [ ] **Task: 連結編輯器狀態更新**
+- [x] **Task: 實作視覺反饋** c56555f
+    - [x] 實作 `Ghost Image` (拖動時的半透明縮圖)。 c56555f
+    - [x] 實作 `Placeholder` (目標位置的佔位視覺)。 c56555f
+- [~] **Task: 連結編輯器狀態更新**
     - [ ] 在 `onDragEnd` 事件中呼叫 `reorderMarkdown` 並更新 `editorContent`。
 - [ ] **Task: 演講者主控台同步**
     - [ ] 確保主控台調整順序後，能透過 `BroadcastChannel` 同步至觀眾視窗。
