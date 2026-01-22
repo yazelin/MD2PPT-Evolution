@@ -5,6 +5,16 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [0.14.2] - 2026-01-22
+
+### 新增 (Added)
+- **PWA (Progressive Web App) 離線化與原生化**:
+    - **離線工作流**: 整合 `vite-plugin-pwa` 與 Workbox，支援在無網路環境下進行編輯與全螢幕演示。
+    - **桌面端安裝**: 支援將應用程式安裝至 Windows/macOS/Linux 桌面，具備獨立視窗與圖示。
+    - **智慧快取**: 自動快取 Shiki 語法高亮資源、Mermaid 引擎、Google Fonts 以及所有核心靜態資源。
+    - **UI 狀態感知**: 在 Header 新增離線狀態燈與 PWA 安裝按鈕。
+    - **無縫更新**: 實作「發現新版本」通知彈窗，確保使用者能手動觸發更新以獲得最新功能。
+
 ## [0.14.1] - 2026-01-22
 
 ### 新增 (Added)

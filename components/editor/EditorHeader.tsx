@@ -7,10 +7,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Settings2, Download, Sun, Moon, RotateCcw, Languages, 
-  FileText, StickyNote, Palette, Check, ChevronDown, Maximize, Presentation, Bot, Image as ImageIcon
+  FileText, StickyNote, Palette, Check, ChevronDown, Maximize, Presentation, Bot, Image as ImageIcon,
+  WifiOff, DownloadCloud, RefreshCw, X
 } from 'lucide-react';
 import { useEditor } from '../../contexts/EditorContext';
 import { usePresenterMode } from '../../hooks/usePresenterMode';
+import { usePWA } from '../../hooks/usePWA';
 import { Button } from '../ui/Button';
 import { IconButton } from '../ui/IconButton';
 import { CURATED_PALETTES } from '../../constants/palettes';
@@ -47,6 +49,7 @@ export const EditorHeader: React.FC = () => {
   } = useEditor() as any;
 
   const { startPresentation } = usePresenterMode();
+  const { isInstallable, isOffline, installPWA, needRefresh, updateServiceWorker, closeUpdate } = usePWA();
 
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
   const [isSizeDropdownOpen, setIsSizeDropdownOpen] = useState(false);
@@ -104,9 +107,16 @@ export const EditorHeader: React.FC = () => {
           />
         </div>
         <div className="flex flex-col">
-          <h1 className="text-base md:text-lg lg:text-xl font-black text-white leading-none tracking-tight">
-            MD2PPT <span className="text-[#FB923C] font-light ml-0.5 md:ml-1">EVO</span>
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-base md:text-lg lg:text-xl font-black text-white leading-none tracking-tight">
+              MD2PPT <span className="text-[#FB923C] font-light ml-0.5 md:ml-1">EVO</span>
+            </h1>
+            {isOffline && (
+              <div className="flex items-center gap-1 px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded text-[8px] font-bold uppercase tracking-widest border border-red-500/30 animate-pulse">
+                <WifiOff size={10} /> Offline
+              </div>
+            )}
+          </div>
           <p className="text-[9px] text-white/40 font-bold uppercase tracking-[0.3em] mt-1.5 hidden xl:block">
             Warm Business Pro
           </p>
@@ -116,6 +126,18 @@ export const EditorHeader: React.FC = () => {
       {/* Right: Actions */}
       <div className="flex items-center gap-1 md:gap-1.5 lg:gap-2.5 overflow-visible shrink-0">
         
+        {/* PWA Install Button */}
+        {isInstallable && (
+          <IconButton 
+            onClick={installPWA} 
+            title="Install App"
+            onBrand
+            className="bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 border border-blue-500/20 mr-1"
+          >
+            <DownloadCloud size={16} className="md:size-[18px]" />
+          </IconButton>
+        )}
+
         {/* AI Assistant Toggle */}
         <IconButton 
           onClick={openAiModal} 
@@ -315,6 +337,35 @@ export const EditorHeader: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* PWA Update Notification */}
+      {needRefresh && (
+        <div className="fixed bottom-6 right-6 z-[100] animate-in slide-in-from-right-10 duration-500">
+          <div className="bg-[#1C1917] border border-[#EA580C] shadow-[0_20px_50px_rgba(234,88,12,0.3)] rounded-2xl p-4 md:p-5 flex items-center gap-4 min-w-[300px]">
+            <div className="w-12 h-12 rounded-full bg-[#EA580C]/10 flex items-center justify-center text-[#EA580C] shrink-0">
+              <RefreshCw className="animate-spin-slow text-[#EA580C]" />
+            </div>
+            <div className="flex-1">
+              <h4 className="text-white font-black text-sm uppercase tracking-wider">New Version Available</h4>
+              <p className="text-stone-400 text-xs mt-1">Click update to enjoy the latest features of V0.14.2.</p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <button 
+                onClick={() => updateServiceWorker(true)}
+                className="px-4 py-2 bg-[#EA580C] hover:bg-[#FB923C] text-white text-[10px] font-black uppercase rounded-lg transition-all shadow-lg"
+              >
+                Update
+              </button>
+              <button 
+                onClick={closeUpdate}
+                className="flex items-center justify-center p-2 text-stone-500 hover:text-stone-300 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

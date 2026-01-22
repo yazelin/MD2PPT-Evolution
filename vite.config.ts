@@ -54,7 +54,51 @@ export default defineConfig(({ mode }) => {
             // Cleanup old caches
             cleanupOutdatedCaches: true,
             // Allow large chunks (some dependencies like pptxgenjs/shiki are big)
-            maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB
+            maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+            
+            // Runtime caching for external resources
+            runtimeCaching: [
+              {
+                urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'google-fonts-cache',
+                  expiration: {
+                    maxEntries: 10,
+                    maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200]
+                  }
+                }
+              },
+              {
+                urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'google-fonts-static-cache',
+                  expiration: {
+                    maxEntries: 20,
+                    maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200]
+                  }
+                }
+              },
+              {
+                // Cache Shiki assets from CDN if applicable, or generic JS/JSON from dynamic imports
+                urlPattern: /.*\.wasm|.*\.json|.*\.js/i,
+                handler: 'StaleWhileRevalidate',
+                options: {
+                  cacheName: 'dynamic-resources-cache',
+                  expiration: {
+                    maxEntries: 100,
+                    maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                  }
+                }
+              }
+            ]
           }
         })
       ],
