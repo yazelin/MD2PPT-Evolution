@@ -32,13 +32,13 @@
     - [x] 根據 `block.metadata.size` 動態設定 HTML 元素的 `style.fontSize`。 fa27dc7
 - [x] **Task: Conductor - User Manual Verification '第三階段：UI 互動' (Protocol in workflow.md)** fa27dc7
 
-## 第四階段：PPTX 導出支援與最終驗證 (Export & Release)
+## 第四階段：PPTX 導出支援與最終驗證 (Export & Release) [checkpoint: 9047808]
 確保樣式設定能完美轉移至 PowerPoint 檔案中。
 
-- [ ] **Task: 更新 PPTX 產生器**
-    - [ ] 修改 `services/pptGenerator.ts`。
-    - [ ] 在呼叫 `pptxgenjs` 時，優先使用 `metadata.size` 作為字體磅值。
-- [ ] **Task: 版本升級與文件更新**
-    - [ ] 更新 `package.json` 至 **V0.14.5**。
-    - [ ] 更新 `CHANGELOG.md` 並同步 `README.md`。
-- [ ] **Task: Conductor - User Manual Verification '第四階段：最終優化' (Protocol in workflow.md)**
+- [x] **Task: 更新 PPTX 產生器** 9047808
+    - [x] 修改 `services/pptGenerator.ts`。 9047808
+    - [x] 在呼叫 `pptxgenjs` 時，優先使用 `metadata.size` 作為字體磅值。 9047808
+- [x] **Task: 版本升級與文件更新** 9047808
+    - [x] 更新 `package.json` 至 **V0.15.0**。 9047808
+    - [x] 更新 `CHANGELOG.md` 並同步 `README.md`。 9047808
+- [x] **Task: Conductor - User Manual Verification '第四階段：最終優化' (Protocol in workflow.md)** 9047808
