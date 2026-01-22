@@ -15,401 +15,211 @@ import yaml from 'js-yaml';
 import { BlockType, ParsedBlock } from '../types';
 
 /**
- * Remark Plugin: Slide Splitter
- * Identifies '===' thematic breaks or paragraphs as slide separators.
+ * Helper: Recursively extract text content from any MDAST node.
  */
-const remarkSlideSplitter = () => {
-  return (tree: any) => {
-    const children = tree.children || [];
-    const slides: any[] = [];
-    let currentSlideNodes: any[] = [];
-
-    const isSeparator = (node: any) => {
-      if (node.type === 'thematicBreak') return true;
-      if (node.type === 'paragraph' && 
-          node.children?.length === 1 && 
-          node.children[0].type === 'text' && 
-          node.children[0].value.trim() === '===') {
-        return true;
-      }
-      return false;
-    };
-
-    for (const node of children) {
-      if (isSeparator(node)) {
-        slides.push([...currentSlideNodes]);
-        currentSlideNodes = [];
-      } else {
-        currentSlideNodes.push(node);
-      }
-    }
-    
-    if (currentSlideNodes.length > 0 || slides.length === 0) {
-      slides.push(currentSlideNodes);
-    }
-
-    tree.children = slides.map((nodes, idx) => ({
-      type: 'slide',
-      id: idx,
-      children: nodes,
-      position: nodes.length > 0 ? {
-        start: nodes[0].position.start,
-        end: nodes[nodes.length - 1].position.end
-      } : undefined
-    }));
-  };
+const nodeToString = (node: any): string => {
+  if (node.value !== undefined) return node.value;
+  if (node.children) return node.children.map(nodeToString).join('');
+  return '';
 };
 
 /**
- * Remark Plugin: Directive Fixer
- * Attempts to parse MD2PPT's legacy JSON attributes in directives.
- * e.g., ::: chart { "type": "bar" }
- */
-const remarkDirectiveFixer = () => {
-  return (tree: any) => {
-    // Traverse tree and look for containerDirectives with text that looks like JSON
-    const visit = (node: any) => {
-      if (node.type === 'containerDirective' || node.type === 'leafDirective') {
-        // If the directive has no standard attributes, try to find JSON in its first child
-        // remark-directive might have failed to parse { "json": true }
-        // For now, let's assume standard remark-directive will be used for new content.
-      }
-      if (node.children) node.children.forEach(visit);
-    };
-    visit(tree);
-  };
-};
-
-import { BlockType, ParsedBlock } from '../types';
-
-
-
-/**
-
  * Mapper: Converts Remark AST nodes to MD2PPT ParsedBlocks
-
  */
-
 const mapNodeToBlock = (node: any): ParsedBlock[] => {
-
   const blocks: ParsedBlock[] = [];
-
   const sourceLine = node.position?.start?.line || 0;
-
   const startIndex = node.position?.start?.offset || 0;
-
   const endIndex = node.position?.end?.offset || 0;
-
-
-
-    const base = { sourceLine, startIndex, endIndex };
-
-
-
-  
-
-
-
-    switch (node.type) {
-
-
-
-      case 'yaml':
-
-
-
-        try {
-
-
-
-          const metadata = yaml.load(node.value) as any;
-
-
-
-          blocks.push({
-
-
-
-            ...base,
-
-
-
-            type: BlockType.HORIZONTAL_RULE,
-
-
-
-            content: '',
-
-
-
-            metadata
-
-
-
-          });
-
-
-
-        } catch (e) {
-
-
-
-          console.error("YAML parse error in AST:", e);
-
-
-
-        }
-
-
-
-        break;
-
-
-
-  
-
-
-
-      case 'heading':
-
-
-
-  
-
-      const headingType = 
-
-        node.depth === 1 ? BlockType.HEADING_1 :
-
-        node.depth === 2 ? BlockType.HEADING_2 :
-
-        BlockType.HEADING_3;
-
-      blocks.push({
-
-        ...base,
-
-        type: headingType,
-
-        content: node.children.map((c: any) => c.value).join('')
-
-      });
-
+  const base = { sourceLine, startIndex, endIndex };
+
+  switch (node.type) {
+    case 'heading':
+      const headingType = node.depth === 1 ? BlockType.HEADING_1 : node.depth === 2 ? BlockType.HEADING_2 : BlockType.HEADING_3;
+      blocks.push({ ...base, type: headingType, content: nodeToString(node) });
       break;
-
-
 
     case 'paragraph':
+      const text = nodeToString(node).trim();
 
-      // Check for simple image
-
-      if (node.children.length === 1 && node.children[0].type === 'image') {
-
+      // 1. Image Detection
+      if (node.children?.length === 1 && node.children[0].type === 'image') {
         const img = node.children[0];
-
-        blocks.push({
-
-          ...base,
-
-          type: BlockType.IMAGE,
-
-          content: img.url,
-
-          metadata: { alt: img.alt }
-
-        });
-
+        blocks.push({ ...base, type: BlockType.IMAGE, content: img.url, metadata: { alt: img.alt } });
         break;
-
       }
 
+      // 2. Chat Dialogues (Restore legacy regex support)
+      const centerMatch = text.match(/^(.+?)\s*:\":\s*([\s\S]*)$/);
+      if (centerMatch) {
+          blocks.push({ ...base, type: BlockType.CHAT_CUSTOM, role: centerMatch[1].trim(), content: centerMatch[2].trim(), alignment: 'center' });
+          break;
+      }
+      const rightMatch = text.match(/^(.+?)\s*::"\s*([\s\S]*)$/);
+      if (rightMatch) {
+          blocks.push({ ...base, type: BlockType.CHAT_CUSTOM, role: rightMatch[1].trim(), content: rightMatch[2].trim(), alignment: 'right' });
+          break;
+      }
+      const leftMatch = text.match(/^(.+?)\s*"(?:::|::)\s*([\s\S]*)$/);
+      if (leftMatch) {
+          blocks.push({ ...base, type: BlockType.CHAT_CUSTOM, role: leftMatch[1].trim(), content: leftMatch[2].trim(), alignment: 'left' });
+          break;
+      }
 
+      // 3. Column Break
+      if (text === ':: right ::') {
+          blocks.push({ ...base, type: BlockType.COLUMN_BREAK, content: '' });
+          break;
+      }
 
-      blocks.push({
-
-        ...base,
-
-        type: BlockType.PARAGRAPH,
-
-        content: node.children.map((c: any) => c.value || '').join('')
-
-      });
-
+      blocks.push({ ...base, type: BlockType.PARAGRAPH, content: text });
       break;
-
-
 
     case 'code':
-
-      if (node.lang === 'mermaid') {
-
-        blocks.push({ ...base, type: BlockType.MERMAID, content: node.value });
-
-      } else {
-
-        blocks.push({ 
-
-          ...base, 
-
-          type: BlockType.CODE_BLOCK, 
-
-          content: node.value, 
-
-          metadata: { language: node.lang } 
-
-        });
-
-      }
-
+      if (node.lang === 'mermaid') blocks.push({ ...base, type: BlockType.MERMAID, content: node.value });
+      else blocks.push({ ...base, type: BlockType.CODE_BLOCK, content: node.value, metadata: { language: node.lang } });
       break;
 
-
+    case 'blockquote':
+      blocks.push({ ...base, type: BlockType.QUOTE_BLOCK, content: nodeToString(node).trim() });
+      break;
 
     case 'list':
-
       node.children.forEach((item: any) => {
-
         blocks.push({
-
           ...base,
-
           type: node.ordered ? BlockType.NUMBERED_LIST : BlockType.BULLET_LIST,
-
-          content: item.children.flatMap((c: any) => c.children || []).map((c: any) => c.value || '').join('')
-
+          content: nodeToString(item).trim()
         });
-
       });
-
       break;
-
-
 
     case 'table':
-
-      const rows = node.children.map((row: any) => 
-
-        row.children.map((cell: any) => 
-
-          cell.children.map((c: any) => c.value || '').join('')
-
-        )
-
-      );
-
-      blocks.push({
-
-        ...base,
-
-        type: BlockType.TABLE,
-
-        content: '',
-
-        tableRows: rows
-
-      });
-
+      const rows = node.children.map((row: any) => row.children.map((cell: any) => nodeToString(cell)));
+      blocks.push({ ...base, type: BlockType.TABLE, content: '', tableRows: rows });
       break;
 
-
-
-    case 'containerDirective':
-
-      if (node.name === 'chart') {
-
-        blocks.push({
-
-          ...base,
-
-          type: BlockType.CHART,
-
-          content: '',
-
-          metadata: {
-
-            chartType: node.attributes?.type || 'bar',
-
-            ...node.attributes
-
-          },
-
-          tableRows: node.children.filter((c: any) => c.type === 'table')[0]?.children.map((row: any) => 
-
-            row.children.map((cell: any) => cell.children.map((c: any) => c.value || '').join(''))
-
-          ) || []
-
-        });
-
-      }
-
+    case 'thematicBreak':
+      blocks.push({ ...base, type: BlockType.HORIZONTAL_RULE, content: '---' });
       break;
-
-
-
-    case 'leafDirective':
-
-      if (node.name === 'right') {
-
-        blocks.push({ ...base, type: BlockType.COLUMN_BREAK, content: '' });
-
-      }
-
-      break;
-
   }
-
-
-
   return blocks;
-
 };
 
-
-
-export const parseMarkdownWithAST = async (markdown: string): Promise<ParsedBlock[]> => {
+/**
+ * Parses a single slide's content using Remark.
+ */
+const parseSingleSlide = async (markdown: string, lineOffset: number, charOffset: number): Promise<ParsedBlock[]> => {
+  const leadingWhitespaceMatch = markdown.match(/^\s*/);
+  const leadingWhitespace = leadingWhitespaceMatch ? leadingWhitespaceMatch[0] : '';
+  const trimmedMarkdown = markdown.trimStart();
+  const internalCharOffset = leadingWhitespace.length;
+  const internalLineOffset = (leadingWhitespace.match(/\n/g) || []).length;
 
   const processor = unified()
-
     .use(remarkParse)
-
     .use(remarkGfm)
+    .use(remarkFrontmatter, ['yaml']);
 
-    .use(remarkFrontmatter, ['yaml'])
-
-    .use(remarkDirective)
-
-    .use(remarkSlideSplitter);
-
-
-
-  const ast = processor.parse(markdown);
-
+  const ast: any = processor.parse(trimmedMarkdown);
   const transformedAst: any = await processor.run(ast);
 
+  const rawBlocks: ParsedBlock[] = [];
+  let slideMeta = {};
 
-
-  // Flatten the slides and their children into a flat list of ParsedBlocks
-
-  // But we need to keep track of slide boundaries if needed
-
-  // For now, we'll just return the blocks. SOM generation handles grouping.
-
-  const allBlocks: ParsedBlock[] = [];
-
-  transformedAst.children.forEach((slide: any) => {
-
-    slide.children.forEach((node: any) => {
-
-      allBlocks.push(...mapNodeToBlock(node));
-
+  for (const node of transformedAst.children) {
+    if (node.type === 'yaml') {
+      try { slideMeta = yaml.load(node.value) as any; } catch (e) { console.error(e); }
+      continue;
+    }
+    
+    const mapped = mapNodeToBlock(node);
+    mapped.forEach(b => {
+      if (b.sourceLine !== undefined) b.sourceLine += lineOffset + internalLineOffset;
+      if (b.startIndex !== undefined) b.startIndex += charOffset + internalCharOffset;
+      if (b.endIndex !== undefined) b.endIndex += charOffset + internalCharOffset;
+      rawBlocks.push(b);
     });
+  }
 
-    // Add slide separator marker if needed, or rely on original logic
+  // --- CHART MERGE LOGIC (Restore from legacy) ---
+  const finalBlocks: ParsedBlock[] = [];
+  for (let i = 0; i < rawBlocks.length; i++) {
+    const block = rawBlocks[i];
+    
+    // Detect Chart Start: ::: chart-bar { "title": "..." }
+    if (block.type === BlockType.PARAGRAPH && block.content.startsWith('::: chart-')) {
+      const match = block.content.match(/^::: (chart-[\w-]+)(?:\s+(.*))?$/);
+      if (match) {
+        const chartType = match[1].replace('chart-', '');
+        let chartConfig = {};
+        try { if (match[2]) chartConfig = JSON.parse(match[2]); } catch (e) {}
 
-  });
+        // Find next Table and End marker
+        let tableBlock: ParsedBlock | undefined;
+        let j = i + 1;
+        let foundEnd = false;
+        while (j < rawBlocks.length) {
+          const next = rawBlocks[j];
+          if (next.type === BlockType.TABLE) tableBlock = next;
+          else if (next.type === BlockType.PARAGRAPH && next.content.trim() === ':::') {
+            foundEnd = true; j++; break;
+          }
+          j++;
+        }
 
+        if (foundEnd && tableBlock) {
+          finalBlocks.push({
+            type: BlockType.CHART, content: '', tableRows: tableBlock.tableRows,
+            metadata: { chartType, ...chartConfig }, sourceLine: block.sourceLine
+          });
+          i = j - 1; continue;
+        }
+      }
+    }
+    finalBlocks.push(block);
+  }
 
+  const separatorBlock: ParsedBlock = {
+    type: BlockType.HORIZONTAL_RULE,
+    content: '===' ,
+    metadata: slideMeta,
+    sourceLine: lineOffset,
+    startIndex: charOffset,
+    endIndex: charOffset + 3
+  };
 
-  return allBlocks; 
+  return [separatorBlock, ...finalBlocks];
+};
 
+export const parseMarkdownWithAST = async (markdown: string): Promise<ParsedBlock[]> => {
+  const separatorRegex = /^===+$/gm;
+  const allParsedBlocks: ParsedBlock[] = [];
+  let lastIndex = 0;
+  let match;
+  const segments: string[] = [];
+  const separatorPositions: number[] = [];
+
+  while ((match = separatorRegex.exec(markdown)) !== null) {
+    segments.push(markdown.substring(lastIndex, match.index));
+    separatorPositions.push(match.index);
+    lastIndex = match.index + match[0].length;
+  }
+  segments.push(markdown.substring(lastIndex));
+
+  let currentCharOffset = 0;
+  let currentLineOffset = 0;
+
+  for (let i = 0; i < segments.length; i++) {
+    const blocks = await parseSingleSlide(segments[i], currentLineOffset, currentCharOffset);
+    allParsedBlocks.push(...blocks);
+    currentLineOffset += (segments[i].match(/\n/g) || []).length;
+    currentCharOffset += segments[i].length;
+    if (i < separatorPositions.length) {
+      const sep = markdown.substring(separatorPositions[i]).match(/^===+/)?.[0] || '===';
+      currentCharOffset += sep.length;
+      currentLineOffset += 1;
+    }
+  }
+  return allParsedBlocks; 
 };

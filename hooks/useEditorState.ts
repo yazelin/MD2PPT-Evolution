@@ -1,3 +1,9 @@
+/**
+ * MD2PPT-Evolution
+ * Copyright (c) 2026 EricHuang
+ * Licensed under the MIT License.
+ */
+
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { saveAs } from 'file-saver';
@@ -27,6 +33,8 @@ export const useEditorState = () => {
   
   const [parsedBlocks, setParsedBlocks] = useState<ParsedBlock[]>([]);
   const [documentMeta, setDocumentMeta] = useState<DocumentMeta>({});
+  const [isParsing, setIsParsing] = useState(false);
+  
   const [showNotes, setShowNotes] = useState(() => {
     return localStorage.getItem('show_notes') === 'true';
   });
@@ -34,8 +42,6 @@ export const useEditorState = () => {
   const [activeThemeId, setActiveThemeId] = useState(() => {
     return localStorage.getItem('active_theme_id') || DEFAULT_THEME_ID;
   });
-
-  const [isParsing, setIsParsing] = useState(false);
 
   const [customThemeSettings, setCustomThemeSettings] = useState<Partial<PptTheme>>(() => {
     const saved = localStorage.getItem('custom_theme_settings');
@@ -49,23 +55,14 @@ export const useEditorState = () => {
 
   // Theme Logic
   const activeTheme = useMemo(() => {
-    // 1. Priority: Markdown YAML Global metadata > UI Selection
     const targetId = documentMeta.theme || activeThemeId;
     const preset = PRESET_THEMES[targetId] || PRESET_THEMES[DEFAULT_THEME_ID];
     
-    // 2. Incorporate Brand Overrides (if they differ from defaults)
-    // Actually, we should always merge brand colors as they are the "Corporate Identity"
-    const brandColors = {
-      primary: brandConfig.primaryColor.replace('#', ''),
-      accent: brandConfig.accentColor.replace('#', '')
-    };
-
     return {
       ...preset,
       ...customThemeSettings,
       colors: { 
         ...preset.colors, 
-        // ...brandColors, // Remove forced Brand override to let Preset Themes work
         ...customThemeSettings.colors 
       },
       fonts: { 
@@ -83,13 +80,9 @@ export const useEditorState = () => {
       setIsParsing(true);
       try {
         const blocks = await parseMarkdownWithAST(content);
-        
-        // Extract Global Meta from Frontmatter
-        // Note: In SOM 2.0, we will move this logic into the parser itself.
-        // For now, maintain compatibility.
         setParsedBlocks(blocks);
         
-        // Simple meta extraction for now (we'll improve this in next step)
+        // Simple meta extraction from HORIZONTAL_RULE blocks
         const metaBlock = blocks.find(b => b.type === 'HORIZONTAL_RULE' && b.metadata);
         if (metaBlock) setDocumentMeta(metaBlock.metadata || {});
 
@@ -118,8 +111,6 @@ export const useEditorState = () => {
 
   useEffect(() => {
     localStorage.setItem('brand_config', JSON.stringify(brandConfig));
-    
-    // Inject CSS Variables for UI and Preview components
     const root = document.documentElement;
     root.style.setProperty('--brand-primary', brandConfig.primaryColor);
     root.style.setProperty('--brand-secondary', brandConfig.secondaryColor);
@@ -127,10 +118,8 @@ export const useEditorState = () => {
     root.style.setProperty('--brand-font', brandConfig.font);
   }, [brandConfig]);
 
-  // Language Toggle Logic
   const toggleLanguage = () => {
     const nextLang = i18n.language.startsWith('zh') ? 'en' : 'zh';
-    
     if (confirm(t('switchLangConfirm'))) {
       i18n.changeLanguage(nextLang);
       setContent(getInitialContent(nextLang));
@@ -138,7 +127,6 @@ export const useEditorState = () => {
     }
   };
 
-  // Reset Logic
   const resetToDefault = () => {
     if (confirm(t('resetConfirm'))) {
       setContent(getInitialContent(i18n.language));
@@ -177,6 +165,7 @@ export const useEditorState = () => {
     setContent,
     parsedBlocks,
     documentMeta,
+    isParsing,
     showNotes,
     toggleNotes: () => setShowNotes(!showNotes),
     activeTheme,
@@ -190,6 +179,6 @@ export const useEditorState = () => {
     language,
     toggleLanguage,
     resetToDefault,
-    t // Export translation helper if needed
+    t
   };
 };

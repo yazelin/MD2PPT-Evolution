@@ -25,19 +25,19 @@
 
 - [x] **Task: 更新 SOM 介面定義** 5b109e7
     - [x] 在 `SlideObject` 與其子節點加入 `position` (start/end offsets) 屬性。 5b109e7
-- [~] **Task: 開發 MDAST-to-SOM 轉換器**
-    - [ ] 確保現有的佈局與內容邏輯在 AST 架構下依然正確。
-    - [ ] 驗證巢狀結構（如列表內部的表格）的解析完整性。
-- [ ] **Task: Conductor - User Manual Verification '第二階段：數據映射' (Protocol in workflow.md)**
+- [x] **Task: 開發 MDAST-to-SOM 轉換器** f50cd3b
+    - [x] 確保現有的佈局與內容邏輯在 AST 架構下依然正確。 f50cd3b
+    - [x] 驗證巢狀結構（如列表內部的表格）的解析完整性。 f50cd3b
+- [ ] **Task: Conductor - User Manual Verification '第二階段：數據映射' (Protocol in workflow.md)** f50cd3b
 
-## 第三階段：功能兼容性與回寫優化 (Compatibility & Tweaker)
-確保現現有功能在 AST 架構下正常運作，並利用位置資訊強化 Visual Tweaker。
+## 第三階段：功能兼容性與回寫優化 (Compatibility & Tweaker) [checkpoint: 877f36c]
+確保現有功能在 AST 架構下正常運作，並利用位置資訊強化 Visual Tweaker。
 
-- [ ] **Task: 遷移現有 Markdown 工具函式**
-    - [ ] 基於 AST 重構 `reorderSlides` 與 `updateSlideYaml`。
-- [ ] **Task: 強化 Visual Tweaker 回寫精度**
-    - [ ] 實作基於 Offset 的 Markdown 原地更新邏輯。
-- [ ] **Task: 版本升級與文件更新**
-    - [ ] 更新 `package.json` 至 **V0.14.3**。
-    - [ ] 更新 `CHANGELOG.md`。
-- [ ] **Task: Conductor - User Manual Verification '第三階段：功能驗證' (Protocol in workflow.md)**
+- [x] **Task: 遷移現有 Markdown 工具函式** f50cd3b
+    - [x] 基於 AST 重構 `reorderSlides` 與 `updateSlideYaml`。 f50cd3b
+- [x] **Task: 強化 Visual Tweaker 回寫精度** f50cd3b
+    - [x] 實作基於 Offset 的 Markdown 原地更新邏輯。 f50cd3b
+- [x] **Task: 版本升級與文件更新** f50cd3b
+    - [x] 更新 `package.json` 至 **V0.14.3**。 f50cd3b
+    - [x] 更新 `CHANGELOG.md`。 f50cd3b
+- [x] **Task: Conductor - User Manual Verification '第三階段：功能驗證' (Protocol in workflow.md)** f50cd3b

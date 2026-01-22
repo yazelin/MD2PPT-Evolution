@@ -211,10 +211,13 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({ parsedBlocks, previewR
       if (target.hasAttribute('data-source-line')) {
         const sourceLine = parseInt(target.getAttribute('data-source-line') || '0', 10);
         const blockType = target.getAttribute('data-block-type');
+        const start = target.getAttribute('data-start-index');
+        const end = target.getAttribute('data-end-index');
         
         if (sourceLine > 0 && blockType) {
           e.stopPropagation();
-          openTweaker(target, blockType as any, sourceLine);
+          const range = (start && end) ? { start: parseInt(start, 10), end: parseInt(end, 10) } : undefined;
+          openTweaker(target, blockType as any, sourceLine, range);
           return;
         }
       }

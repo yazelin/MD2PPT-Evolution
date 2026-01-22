@@ -80,7 +80,9 @@ export const PreviewBlock: React.FC<{ block: ParsedBlock, isDark?: boolean, them
 
   const commonProps = {
     'data-source-line': block.sourceLine,
-    'data-block-type': block.type
+    'data-block-type': block.type,
+    'data-start-index': block.startIndex,
+    'data-end-index': block.endIndex
   };
 
   const renderers: Record<string, () => React.ReactNode> = {

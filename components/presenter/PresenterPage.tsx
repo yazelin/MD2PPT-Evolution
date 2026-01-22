@@ -10,7 +10,7 @@ import { useDarkMode } from '../../hooks/useDarkMode';
 import { EditorProvider } from '../../contexts/EditorContext';
 import { PresenterConsole } from './PresenterConsole';
 import { transformToSOM } from '../../services/parser/som';
-import { reorderSlides } from '../../services/markdownUpdater';
+import { reorderSlidesV2 } from '../../services/markdownUpdater';
 
 export const PresenterPage: React.FC = () => {
   const editorState = useMarkdownEditor();
@@ -22,9 +22,9 @@ export const PresenterPage: React.FC = () => {
   const slides = transformToSOM(parsedBlocks);
 
   const handleReorder = useCallback((from: number, to: number) => {
-    const newContent = reorderSlides(content, from, to);
+    const newContent = reorderSlidesV2(content, slides, from, to);
     setContent(newContent);
-  }, [content, setContent]);
+  }, [content, setContent, slides]);
 
   return (
     <EditorProvider editorState={editorState} darkModeState={darkModeState}>

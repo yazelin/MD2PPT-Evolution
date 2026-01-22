@@ -5,6 +5,14 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [0.14.3] - 2026-01-22
+
+### 重大架構遷移 (Major Architecture Migration)
+- **Remark/Unified 解析管線**:
+    - **完全 AST 驅動**: 捨棄手動正則切割，改採 Remark 解析 MDAST 樹，徹底解決複雜巢狀語法的解析邊界問題。
+    - **高精度定位**: 整合 `startIndex` 與 `endIndex` 於 SOM 中，支援 Visual Tweaker 的字元級精準回寫。
+    - **異步解析架構**: 整合 Unified 異步管線，為大型文件處理與未來 AI 自動化提供更佳的效能基礎。
+
 ## [0.14.2] - 2026-01-22
 
 ### 新增 (Added)

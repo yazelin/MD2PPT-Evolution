@@ -10,7 +10,8 @@ import { useDarkMode } from './useDarkMode';
 import { EditorActionService } from '../services/editorActionService';
 import { ACTION_TEMPLATES } from '../constants/templates';
 import { fileToBase64 } from '../utils/imageUtils';
-import { updateSlideYaml, replaceContentByLine, updateGlobalTheme, reorderSlides } from '../services/markdownUpdater';
+import { transformToSOM } from '../services/parser/som';
+import { updateSlideYaml, replaceContentByLine, updateGlobalTheme, reorderSlidesV2, replaceContentByRange } from '../services/markdownUpdater';
 import { ActionType } from '../components/editor/QuickActionSidebar';
 import { DesignPalette } from '../constants/palettes';
 
@@ -131,21 +132,25 @@ export const useEditorController = () => {
   }, [content, setContent]);
 
   const handleReorderSlides = useCallback((fromIndex: number, toIndex: number) => {
-    const newContent = reorderSlides(content, fromIndex, toIndex);
+    const slides = transformToSOM(editorState.parsedBlocks);
+    const newContent = reorderSlidesV2(content, slides, fromIndex, toIndex);
     setContent(newContent);
-  }, [content, setContent]);
+  }, [content, setContent, editorState.parsedBlocks]);
 
-  const handleTweakerUpdate = useCallback((line: number, newContent: string) => {
-    const updated = replaceContentByLine(content, line, newContent);
+  const handleTweakerUpdate = useCallback((line: number, newContent: string, range?: { start: number, end: number }) => {
+    let updated = '';
+    if (range) {
+      updated = replaceContentByRange(content, range.start, range.end, newContent);
+    } else {
+      updated = replaceContentByLine(content, line, newContent);
+    }
     setContent(updated);
   }, [content, setContent]);
 
   const handleGetLineContent = useCallback((line: number) => {
     const lines = content.split(/\r?\n/);
-    
     const targetLine = lines[line]?.trim() || "";
 
-    // Block Detection: ::: (Charts, etc.)
     if (targetLine.startsWith(':::') && targetLine !== ':::') {
       let endIndex = line + 1;
       while (endIndex < lines.length) {
@@ -156,7 +161,6 @@ export const useEditorController = () => {
       }
     }
 
-    // Block Detection: --- (YAML)
     if (targetLine === '---') {
       let endIndex = line + 1;
       while (endIndex < lines.length) {

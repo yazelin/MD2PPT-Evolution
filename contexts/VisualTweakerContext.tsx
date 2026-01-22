@@ -1,3 +1,9 @@
+/**
+ * MD2PPT-Evolution
+ * Copyright (c) 2026 EricHuang
+ * Licensed under the MIT License.
+ */
+
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { BlockType } from '../services/types';
 
@@ -5,12 +11,14 @@ interface TweakerState {
   isVisible: boolean;
   selectedElement: HTMLElement | null;
   sourceLine: number | null;
+  startIndex: number | null;
+  endIndex: number | null;
   blockType: BlockType | null;
   position: { top: number; left: number };
 }
 
 interface VisualTweakerContextType extends TweakerState {
-  openTweaker: (element: HTMLElement, type: BlockType, sourceLine: number) => void;
+  openTweaker: (element: HTMLElement, type: BlockType, sourceLine: number, range?: { start: number, end: number }) => void;
   closeTweaker: () => void;
   updatePosition: () => void;
   updateContent: (newContent: string, lineOverride?: number) => void;
@@ -21,13 +29,15 @@ const VisualTweakerContext = createContext<VisualTweakerContextType | undefined>
 
 export const VisualTweakerProvider: React.FC<{ 
   children: ReactNode; 
-  onUpdateContent: (line: number, content: string) => void;
+  onUpdateContent: (line: number, content: string, range?: { start: number, end: number }) => void;
   onGetLineContent: (line: number) => string;
 }> = ({ children, onUpdateContent, onGetLineContent }) => {
   const [state, setState] = useState<TweakerState>({
     isVisible: false,
     selectedElement: null,
     sourceLine: null,
+    startIndex: null,
+    endIndex: null,
     blockType: null,
     position: { top: 0, left: 0 }
   });
@@ -35,9 +45,12 @@ export const VisualTweakerProvider: React.FC<{
   const updateContent = useCallback((newContent: string, lineOverride?: number) => {
     const line = lineOverride !== undefined ? lineOverride : state.sourceLine;
     if (line !== null) {
-      onUpdateContent(line, newContent);
+      const range = (state.startIndex !== null && state.endIndex !== null) 
+        ? { start: state.startIndex, end: state.endIndex } 
+        : undefined;
+      onUpdateContent(line, newContent, range);
     }
-  }, [state.sourceLine, onUpdateContent]);
+  }, [state.sourceLine, state.startIndex, state.endIndex, onUpdateContent]);
   
   const getLineContent = useCallback((line: number) => {
     return onGetLineContent(line);
@@ -47,17 +60,13 @@ export const VisualTweakerProvider: React.FC<{
     if (!state.selectedElement) return;
     
     const rect = state.selectedElement.getBoundingClientRect();
-    const OVERLAY_WIDTH = 300; // Estimated width (w-64 + padding)
+    const OVERLAY_WIDTH = 300; 
     const VIEWPORT_MARGIN = 20;
     
     let left = rect.right + VIEWPORT_MARGIN;
     
-    // Flip to left if not enough space on right
     if (left + OVERLAY_WIDTH > window.innerWidth) {
       left = rect.left - OVERLAY_WIDTH - VIEWPORT_MARGIN;
-      
-      // If left is also off-screen (e.g., huge element on small screen), 
-      // align to the right edge of the viewport
       if (left < 0) {
         left = window.innerWidth - OVERLAY_WIDTH - VIEWPORT_MARGIN;
       }
@@ -66,13 +75,13 @@ export const VisualTweakerProvider: React.FC<{
     setState(prev => ({
       ...prev,
       position: {
-        top: rect.top, // Use viewport coordinates for fixed positioning
+        top: rect.top,
         left: left
       }
     }));
   }, [state.selectedElement]);
 
-  const openTweaker = useCallback((element: HTMLElement, type: BlockType, sourceLine: number) => {
+  const openTweaker = useCallback((element: HTMLElement, type: BlockType, sourceLine: number, range?: { start: number, end: number }) => {
     const rect = element.getBoundingClientRect();
     const OVERLAY_WIDTH = 300; 
     const VIEWPORT_MARGIN = 20;
@@ -91,6 +100,8 @@ export const VisualTweakerProvider: React.FC<{
       selectedElement: element,
       blockType: type,
       sourceLine: sourceLine,
+      startIndex: range?.start ?? null,
+      endIndex: range?.end ?? null,
       position: {
         top: rect.top,
         left: left

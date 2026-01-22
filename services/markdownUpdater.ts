@@ -1,8 +1,53 @@
 /**
- * MD2PPT-Evolution
- * Copyright (c) 2026 EricHuang
- * Licensed under the MIT License.
+ * Replaces content in Markdown using a specific character range.
  */
+export const replaceContentByRange = (content: string, start: number, end: number, newText: string): string => {
+  const before = content.substring(0, start);
+  const after = content.substring(end);
+  return before + newText + after;
+};
+
+/**
+ * Reorders slides in a Markdown string using precise offsets from SOM.
+ */
+export const reorderSlidesV2 = (content: string, slides: SlideObject[], fromIndex: number, toIndex: number): string => {
+  if (fromIndex < 0 || fromIndex >= slides.length || toIndex < 0 || toIndex >= slides.length) return content;
+
+  // 1. Extract raw content for each slide using offsets
+  // We need to be careful: the separators (===) are NOT part of slide content in SOM
+  // So we need to reconstruct them or include them in the slice.
+  
+  // Strategy: Split the whole string into parts: [GlobalMeta, Slide0, Sep, Slide1, Sep, ...]
+  // Actually, simpler: just get the text block for each slide.
+  
+  const slideTexts = slides.map((s, i) => {
+    const raw = content.substring(s.startIndex || 0, s.endIndex || content.length);
+    
+    // If it's the first slide and has YAML, strip it for now to handle global preservation
+    if (i === 0) {
+      const yamlMatch = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (yamlMatch) return raw.replace(yamlMatch[0], '').trim();
+    }
+    return raw.trim();
+  });
+
+  // Extract Global YAML from original slide 0
+  let globalYaml = '';
+  const firstSlideRaw = content.substring(slides[0].startIndex || 0, slides[0].endIndex || content.length);
+  const yamlMatch = firstSlideRaw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+  if (yamlMatch) globalYaml = yamlMatch[0];
+
+  // 2. Perform the reorder
+  const [moved] = slideTexts.splice(fromIndex, 1);
+  slideTexts.splice(toIndex, 0, moved);
+
+  // 3. Reconstruct
+  if (globalYaml) {
+    slideTexts[0] = `${globalYaml}\n\n${slideTexts[0]}`.trim();
+  }
+
+  return slideTexts.join('\n\n===\n\n');
+};
 
 /**
  * Replaces content in Markdown starting at a specific line index.
