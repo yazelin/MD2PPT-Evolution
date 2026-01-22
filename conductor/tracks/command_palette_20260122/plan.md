@@ -3,7 +3,7 @@
 ## 第一階段：基礎架構與 kbar 整合 (Infrastructure)
 安裝依賴並建立命令面板的基礎組件與 Provider。
 
-- [ ] **Task: 安裝並設定 `kbar`**
+- [~] **Task: 安裝並設定 `kbar`**
     - [ ] 安裝 `kbar` 套件。
     - [ ] 建立 `components/editor/CommandPalette.tsx` 封裝面板 UI。
     - [ ] 在 `App.tsx` 或 `MarkdownEditor.tsx` 層級包裹 `KBarProvider`。
