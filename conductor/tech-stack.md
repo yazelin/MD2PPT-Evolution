@@ -8,7 +8,7 @@
 
 ## 關鍵功能庫
 - **PowerPoint 生成**: `pptxgenjs` (v4.0+) - 提供原生圖表與表格生成能力。
-- **Markdown 解析**: `marked` (AST 引擎) + `js-yaml` (配置解析)。
+- **Markdown 解析**: `unified` + `remark` (AST 解析) + `js-yaml` (配置解析)。
 - **圖表預覽**: `recharts` (React 原生 SVG 圖表渲染)。
 - **語法高亮**: `shiki` - 負責預處理程式碼 Token，確保預覽與 PPT 導出的一致性。
 - **流程圖渲染**: `mermaid` - 支援技術架構圖的 SVG 轉換。
