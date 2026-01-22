@@ -3,17 +3,21 @@
  * This is used for element-level style persistence.
  */
 export const updateElementAttribute = (text: string, key: string, value: string | number): string => {
+  // 1. Aggressively remove all trailing whitespace and line breaks (\r, \n)
+  const baseText = text.replace(/[\r\n\s]+$/, '');
+  
+  // 2. Look for existing attribute tag at the end
   const attrRegex = /\{([^}]+)\}\s*$/;
-  const match = text.match(attrRegex);
+  const match = baseText.match(attrRegex);
 
   if (match) {
     const attrString = match[1];
-    const pairs = attrString.split(/\s+/);
+    const pairs = attrString.split(/\s+/).filter(Boolean);
     let found = false;
     
     const newPairs = pairs.map(pair => {
-      const [k, v] = pair.split('=');
-      if (k === key) {
+      const parts = pair.split('=');
+      if (parts[0] === key) {
         found = true;
         return `${key}=${value}`;
       }
@@ -24,12 +28,12 @@ export const updateElementAttribute = (text: string, key: string, value: string 
       newPairs.push(`${key}=${value}`);
     }
 
-    return text.replace(attrRegex, `{${newPairs.join(' ')}}`);
+    // Replace the existing tag with updated one on the SAME line
+    return baseText.replace(attrRegex, `{${newPairs.join(' ')}}`);
   }
 
-  // No existing attribute tag, append one
-  const trimmed = text.trimEnd();
-  return `${trimmed} {${key}=${value}}`;
+  // No existing attribute tag, append one with exactly ONE space
+  return `${baseText} {${key}=${value}}`;
 };
 
 /**

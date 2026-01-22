@@ -25,50 +25,42 @@ const nodeToString = (node: any): string => {
 
 /**
  * Helper: Extract attributes like {size=48} from the end of a string.
- * Returns the cleaned string and the extracted attributes object.
  */
 const extractAttributes = (text: string): { content: string, metadata: any } => {
   const metadata: any = {};
-  let cleanedContent = text;
-
-  // Match {key=value} at the end of the string
-  // Support multiple attributes in the future if needed, e.g., {size=48 color=red}
   const attrRegex = /\s*\{([^}]+)\}\s*$/;
   const match = text.match(attrRegex);
 
   if (match) {
     const attrString = match[1];
-    cleanedContent = text.replace(attrRegex, '');
-
-    // Parse individual attributes within the braces
-    const pairs = attrString.split(/\s+/);
+    const cleanedContent = text.replace(attrRegex, '');
+    const pairs = attrString.split(/\s+/).filter(Boolean);
     for (const pair of pairs) {
       const [key, value] = pair.split('=');
       if (key && value) {
-        // Convert numeric values
         if (key === 'size') {
           const num = parseInt(value, 10);
-          if (!isNaN(num)) {
-            metadata[key] = num;
-          }
+          if (!isNaN(num)) metadata[key] = num;
         } else {
           metadata[key] = value;
         }
       }
     }
+    return { content: cleanedContent, metadata };
   }
 
-  return { content: cleanedContent, metadata };
+  return { content: text, metadata };
 };
 
 /**
  * Mapper: Converts Remark AST nodes to MD2PPT ParsedBlocks
  */
-const mapNodeToBlock = (node: any): ParsedBlock[] => {
+const mapNodeToBlock = (node: any, lineOffset: number, charOffset: number): ParsedBlock[] => {
   const blocks: ParsedBlock[] = [];
-  const sourceLine = node.position?.start?.line || 0;
-  const startIndex = node.position?.start?.offset || 0;
-  const endIndex = node.position?.end?.offset || 0;
+  // Remark is 1-based, MD2PPT is 0-based. Apply lineOffset for slide position.
+  const sourceLine = (node.position?.start?.line || 1) - 1 + lineOffset;
+  const startIndex = (node.position?.start?.offset || 0) + charOffset;
+  const endIndex = (node.position?.end?.offset || 0) + charOffset;
   const base = { sourceLine, startIndex, endIndex };
 
   switch (node.type) {
@@ -82,15 +74,14 @@ const mapNodeToBlock = (node: any): ParsedBlock[] => {
     case 'paragraph': {
       const rawText = nodeToString(node).trim();
 
-      // 1. Image Detection
       if (node.children?.length === 1 && node.children[0].type === 'image') {
         const img = node.children[0];
         blocks.push({ ...base, type: BlockType.IMAGE, content: img.url, metadata: { alt: img.alt } });
         break;
       }
 
-      // 2. Chat Dialogues (Restore legacy regex support)
-      const centerMatch = rawText.match(/^(.+?)\s*:\":\s*([\s\S]*)$/);
+      // Chat Dialogues
+      const centerMatch = rawText.match(/^(.+?)\s*:\"\s*([\s\S]*)$/);
       if (centerMatch) {
           blocks.push({ ...base, type: BlockType.CHAT_CUSTOM, role: centerMatch[1].trim(), content: centerMatch[2].trim(), alignment: 'center' });
           break;
@@ -106,7 +97,6 @@ const mapNodeToBlock = (node: any): ParsedBlock[] => {
           break;
       }
 
-      // 3. Column Break
       if (rawText === ':: right ::') {
           blocks.push({ ...base, type: BlockType.COLUMN_BREAK, content: '' });
           break;
@@ -154,6 +144,7 @@ const mapNodeToBlock = (node: any): ParsedBlock[] => {
  * Parses a single slide's content using Remark.
  */
 const parseSingleSlide = async (markdown: string, lineOffset: number, charOffset: number): Promise<ParsedBlock[]> => {
+  // IMPORTANT: remark-frontmatter requires the YAML to be at the ABSOLUTE start.
   const leadingWhitespaceMatch = markdown.match(/^\s*/);
   const leadingWhitespace = leadingWhitespaceMatch ? leadingWhitespaceMatch[0] : '';
   const trimmedMarkdown = markdown.trimStart();
@@ -177,29 +168,20 @@ const parseSingleSlide = async (markdown: string, lineOffset: number, charOffset
       continue;
     }
     
-    const mapped = mapNodeToBlock(node);
-    mapped.forEach(b => {
-      if (b.sourceLine !== undefined) b.sourceLine += lineOffset + internalLineOffset;
-      if (b.startIndex !== undefined) b.startIndex += charOffset + internalCharOffset;
-      if (b.endIndex !== undefined) b.endIndex += charOffset + internalCharOffset;
-      rawBlocks.push(b);
-    });
+    const mapped = mapNodeToBlock(node, lineOffset + internalLineOffset, charOffset + internalCharOffset);
+    rawBlocks.push(...mapped);
   }
 
-  // --- CHART MERGE LOGIC (Restore from legacy) ---
+  // --- CHART MERGE LOGIC ---
   const finalBlocks: ParsedBlock[] = [];
   for (let i = 0; i < rawBlocks.length; i++) {
     const block = rawBlocks[i];
-    
-    // Detect Chart Start: ::: chart-bar { "title": "..." }
     if (block.type === BlockType.PARAGRAPH && block.content.startsWith('::: chart-')) {
       const match = block.content.match(/^::: (chart-[\w-]+)(?:\s+(.*))?$/);
       if (match) {
         const chartType = match[1].replace('chart-', '');
         let chartConfig = {};
         try { if (match[2]) chartConfig = JSON.parse(match[2]); } catch (e) {}
-
-        // Find next Table and End marker
         let tableBlock: ParsedBlock | undefined;
         let j = i + 1;
         let foundEnd = false;
@@ -211,11 +193,11 @@ const parseSingleSlide = async (markdown: string, lineOffset: number, charOffset
           }
           j++;
         }
-
         if (foundEnd && tableBlock) {
           finalBlocks.push({
             type: BlockType.CHART, content: '', tableRows: tableBlock.tableRows,
-            metadata: { chartType, ...chartConfig }, sourceLine: block.sourceLine
+            metadata: { ...block.metadata, chartType, ...chartConfig }, 
+            sourceLine: block.sourceLine
           });
           i = j - 1; continue;
         }
@@ -255,13 +237,17 @@ export const parseMarkdownWithAST = async (markdown: string): Promise<ParsedBloc
   let currentLineOffset = 0;
 
   for (let i = 0; i < segments.length; i++) {
-    const blocks = await parseSingleSlide(segments[i], currentLineOffset, currentCharOffset);
+    const segment = segments[i];
+    const blocks = await parseSingleSlide(segment, currentLineOffset, currentCharOffset);
     allParsedBlocks.push(...blocks);
-    currentLineOffset += (segments[i].match(/\n/g) || []).length;
-    currentCharOffset += segments[i].length;
+    
+    const linesInSegment = (segment.match(/\n/g) || []).length;
+    currentLineOffset += linesInSegment;
+    currentCharOffset += segment.length;
+
     if (i < separatorPositions.length) {
-      const sep = markdown.substring(separatorPositions[i]).match(/^===+/)?.[0] || '===';
-      currentCharOffset += sep.length;
+      const fullSepText = markdown.substring(separatorPositions[i]).match(/^===+/)?.[0] || '===';
+      currentCharOffset += fullSepText.length;
       currentLineOffset += 1;
     }
   }

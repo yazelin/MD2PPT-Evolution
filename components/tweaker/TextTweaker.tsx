@@ -32,13 +32,22 @@ export const TextTweaker: React.FC = () => {
 
   const updateFontSize = (newSize: number | '') => {
     setFontSize(newSize);
+    
+    if (sourceLine === null) return;
+
+    // Get fresh content directly from source to avoid stale state issues
+    const currentRaw = getLineContent(sourceLine);
+    let updatedLine = '';
+    
     if (newSize === '') {
-      // Logic to remove tag could be added later, currently we just don't update
-      return;
+      // Remove any existing size tags
+      updatedLine = currentRaw.replace(/\s*\{size=\d+\}\s*$/, '').trimEnd();
+    } else {
+      updatedLine = updateElementAttribute(currentRaw, 'size', newSize);
     }
-    const updatedLine = updateElementAttribute(text, 'size', newSize);
+    
     setText(updatedLine);
-    updateContent(updatedLine);
+    updateContent(updatedLine); 
   };
 
   const adjustSize = (delta: number) => {

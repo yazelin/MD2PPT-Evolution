@@ -45,12 +45,22 @@ export const VisualTweakerProvider: React.FC<{
   const updateContent = useCallback((newContent: string, lineOverride?: number) => {
     const line = lineOverride !== undefined ? lineOverride : state.sourceLine;
     if (line !== null) {
-      const range = (state.startIndex !== null && state.endIndex !== null) 
+      // DANGER: We MUST disable range-based updates for text types because adding {size=N} 
+      // changes the length of the content, making the original startIndex/endIndex invalid.
+      // By passing undefined range, handleTweakerUpdate will fallback to replaceContentByLine.
+      const isTextType = state.blockType && [
+        BlockType.HEADING_1, BlockType.HEADING_2, BlockType.HEADING_3, 
+        BlockType.PARAGRAPH, BlockType.QUOTE_BLOCK, BlockType.LIST_ITEM,
+        BlockType.BULLET_LIST, BlockType.NUMBERED_LIST
+      ].includes(state.blockType);
+
+      const range = (!isTextType && state.startIndex !== null && state.endIndex !== null) 
         ? { start: state.startIndex, end: state.endIndex } 
         : undefined;
+        
       onUpdateContent(line, newContent, range);
     }
-  }, [state.sourceLine, state.startIndex, state.endIndex, onUpdateContent]);
+  }, [state.sourceLine, state.startIndex, state.endIndex, state.blockType, onUpdateContent]);
   
   const getLineContent = useCallback((line: number) => {
     return onGetLineContent(line);
