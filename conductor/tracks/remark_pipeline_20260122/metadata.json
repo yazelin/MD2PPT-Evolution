@@ -1,0 +1,8 @@
+{
+  "track_id": "remark_pipeline_20260122",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-22T11:20:00Z",
+  "updated_at": "2026-01-22T11:20:00Z",
+  "description": "遷移至 Remark/Unified 解析管線 — 捨棄手動正則切割，完全基於 Remark AST 進行解析，徹底解決巢狀語法解析邊界問題，並升級 SOM 支援高精度回寫。"
+}
