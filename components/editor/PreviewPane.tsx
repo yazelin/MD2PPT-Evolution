@@ -72,13 +72,16 @@ const SortableSlideCard: React.FC<{
     transition,
     zIndex: isDragging ? 50 : 'auto',
     opacity: isDragging ? 0.3 : 1,
-    contentVisibility: 'auto' as any, // Modern CSS for skipping off-screen rendering
-    containIntrinsicSize: `1200px ${1200 * (layout.height / layout.width)}px`,
-    willChange: 'transform',
   };
 
   useLayoutEffect(() => {
-    const updateScale = () => { if (containerRef.current) setScale(containerRef.current.offsetWidth / DESIGN_WIDTH); };
+    const updateScale = () => { 
+      if (containerRef.current) {
+        const newScale = containerRef.current.offsetWidth / DESIGN_WIDTH;
+        // Round to 4 decimal places to prevent sub-pixel blurring
+        setScale(Math.round(newScale * 10000) / 10000); 
+      }
+    };
     const resizeObserver = new ResizeObserver(updateScale);
     if (containerRef.current) resizeObserver.observe(containerRef.current);
     updateScale();
@@ -230,7 +233,7 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({ parsedBlocks, previewR
   const activeSlide = activeSlideIndex >= 0 ? slides[activeSlideIndex] : null;
 
   return (
-    <div className="w-1/2 flex flex-col bg-[#F5F5F4] dark:bg-[#0C0A09] transition-colors duration-500 border-l border-[#E7E5E4] dark:border-[#44403C]">
+    <div className="w-[55%] flex flex-col bg-[#F5F5F4] dark:bg-[#0C0A09] transition-colors duration-500 border-l border-[#E7E5E4] dark:border-[#44403C]">
       <div className="bg-white dark:bg-[#1C1917] px-6 py-2.5 border-b border-[#E7E5E4] dark:border-[#44403C] flex justify-between items-center shrink-0">
         <span className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">Canvas Preview</span>
         <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter" style={{ color: `#${activeTheme.colors.primary}` }}>

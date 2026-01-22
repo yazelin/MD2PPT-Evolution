@@ -13,6 +13,15 @@ import { SlideObject } from '../../services/parser/som';
 export const SlideContent: React.FC<{ slide: SlideObject, isDark?: boolean, theme: PptTheme }> = memo(({ slide, isDark, theme }) => {
   const { regions, layout } = slide;
 
+  // --- TEXT-ONLY DETECTION ---
+  const allBlocks = regions.flatMap(r => r.blocks);
+  const hasHeavyElements = allBlocks.some(b => 
+    [BlockType.CHART, BlockType.IMAGE, BlockType.MERMAID, BlockType.TABLE].includes(b.type)
+  );
+  
+  // A slide is considered "Text Only" if it doesn't have images, charts, tables, or diagrams.
+  const isTextOnly = !hasHeavyElements;
+
   const renderBlocks = (contentBlocks: ParsedBlock[]) => {
     const elements: React.ReactNode[] = [];
     let i = 0;
@@ -24,23 +33,42 @@ export const SlideContent: React.FC<{ slide: SlideObject, isDark?: boolean, them
         const type = block.type;
         while (i < contentBlocks.length && contentBlocks[i].type === type) { listItems.push(contentBlocks[i]); i++; }
         const ListTag = isOrdered ? 'ol' : 'ul';
-        elements.push(<ListTag key={`list-${i}`} className={`ml-14 mb-4 ${isOrdered ? 'list-decimal' : ''}`}>{listItems.map((item, idx) => (<li key={idx} className={`mb-2 pl-4 leading-relaxed text-2xl ${!isOrdered ? "relative list-none before:content-[''] before:absolute before:left-[-1.5em] before:top-[0.6em] before:w-2.5 before:h-2.5 before:rounded-full" : ""}`} style={{ '--tw-before-bg': `#${theme.colors.primary}` } as any}><span className="before:bg-[var(--tw-before-bg)] absolute left-[-1.5em] top-[0.6em] w-2.5 h-2.5 rounded-full" style={{ backgroundColor: `#${theme.colors.primary}` }}></span><RenderRichText text={item.content} theme={theme} /></li>))}</ListTag>);
-      } else { elements.push(<PreviewBlock key={i} block={block} isDark={isDark} theme={theme} />); i++; }
+        elements.push(
+          <ListTag key={`list-${i}`} className={`ml-14 mb-4 ${isOrdered ? 'list-decimal' : ''}`}>
+            {listItems.map((item, idx) => (
+              <li key={idx} className={`mb-2 pl-4 leading-relaxed text-2xl ${!isOrdered ? "relative list-none" : ""}`}>
+                {!isOrdered && <span className="absolute left-[-1.5em] top-[0.6em] w-2.5 h-2.5 rounded-full" style={{ backgroundColor: `#${theme.colors.primary}` }}></span>}
+                <RenderRichText text={item.content} theme={theme} />
+              </li>
+            ))}
+          </ListTag>
+        );
+      } else { 
+        elements.push(<PreviewBlock key={i} block={block} isDark={isDark} theme={theme} />); 
+        i++; 
+      }
     }
     return elements;
   };
 
+  // Centered Layouts (Impact, Center, Quote)
   if (layout === 'impact' || layout === 'full-bg' || layout === 'center' || layout === 'quote') {
     const isImpact = layout === 'impact' || layout === 'full-bg';
     const isQuote = layout === 'quote';
-    const allBlocks = regions.flatMap(r => r.blocks);
+    const impactBlocks = regions.flatMap(r => r.blocks);
     
+    // Centered text-only pages get a significant boost
+    const centeredScale = isTextOnly ? (isImpact ? 1.25 : 1.15) : (isImpact ? 1.1 : 1.0);
+
     return (
-      <div className={`flex flex-col h-full items-center justify-center text-center ${isImpact ? 'scale-110 origin-center' : ''}`}>
+      <div 
+        className="flex flex-col h-full items-center justify-center text-center transition-transform duration-500"
+        style={{ transform: `scale(${centeredScale})`, transformOrigin: 'center' }}
+      >
         <div className={`w-full ${isDark && isImpact ? 'drop-shadow-[0_4px_15px_rgba(0,0,0,0.6)]' : ''} ${isQuote ? 'italic opacity-90 relative' : ''}`}>
           {isQuote && <div className="absolute -top-16 left-1/2 -translate-x-1/2 text-[120px] leading-none opacity-20 pointer-events-none font-serif" style={{ color: `#${theme.colors.primary}` }}>“</div>}
           <div className={isQuote ? 'text-5xl md:text-6xl font-medium tracking-tight px-10' : ''}>
-            {renderBlocks(allBlocks)}
+            {renderBlocks(impactBlocks)}
           </div>
           {isQuote && <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 text-[120px] leading-none opacity-20 pointer-events-none font-serif mt-6" style={{ color: `#${theme.colors.primary}` }}>”</div>}
         </div>
@@ -48,8 +76,9 @@ export const SlideContent: React.FC<{ slide: SlideObject, isDark?: boolean, them
     );
   }
   
+  // Alert Layout
   if (layout === 'alert') {
-    const allBlocks = regions.flatMap(r => r.blocks);
+    const alertBlocks = regions.flatMap(r => r.blocks);
     return (
       <div className="flex flex-col h-full items-center justify-center p-6">
         <div className="w-full p-12 rounded-3xl text-center border-4" style={{ backgroundColor: `#${theme.colors.primary}15`, borderColor: `#${theme.colors.primary}` }}>
@@ -57,19 +86,30 @@ export const SlideContent: React.FC<{ slide: SlideObject, isDark?: boolean, them
             <Sparkles />
           </div>
           <div className="space-y-4">
-            {renderBlocks(allBlocks)}
+            {renderBlocks(alertBlocks)}
           </div>
         </div>
       </div>
     );
   }
 
+  // Handle Header + Body/Columns (Default, Grid, Two-Column)
   const headerRegion = regions.find(r => r.type === 'header');
   const columnRegions = regions.filter(r => r.type === 'column');
   const mainRegion = regions.find(r => r.type === 'main');
 
+  // Text-only boost for standard layouts
+  const textScale = isTextOnly ? 1.12 : 1.0;
+
   return (
-    <div className="flex flex-col h-full text-left">
+    <div 
+      className="flex flex-col h-full text-left transition-transform duration-500"
+      style={{ 
+        transform: `scale(${textScale})`, 
+        transformOrigin: 'top left',
+        width: isTextOnly ? '89%' : '100%' // Prevent overflow after scale
+      }}
+    >
       {headerRegion && <div className="mb-10">{renderBlocks(headerRegion.blocks)}</div>}
       
       {columnRegions.length > 0 ? (

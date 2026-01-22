@@ -41,7 +41,7 @@ This file tracks all major development tracks for MD2PPT-Evolution. Completed tr
 - [x] **Track: PWA (Progressive Web App) 離線化**
     *Link: [./archive/pwa_offline_20260122/](./archive/pwa_offline_20260122/)*
 
----
-
 - [x] **Track: 遷移至 Remark/Unified 解析管線**
-    *Link: [./tracks/remark_pipeline_20260122/](./tracks/remark_pipeline_20260122/)*
+    *Link: [./archive/remark_pipeline_20260122/](./archive/remark_pipeline_20260122/)*
+
+---

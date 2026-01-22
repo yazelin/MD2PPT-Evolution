@@ -218,63 +218,95 @@ const MarkdownEditor: React.FC = () => {
 
             
 
-            <div className="flex flex-1 overflow-hidden">
+                        <div className="flex flex-1 overflow-hidden">
 
-              <div 
+            
 
-                  className="w-1/2 flex flex-col"
+                          <div 
 
-                  onDragOver={(e) => e.preventDefault()}
+            
 
-                  onDrop={handleEditorDrop}
+                              className="w-[45%] flex flex-col"
 
-              >
+            
 
-                  <EditorPane 
+                              onDragOver={(e) => e.preventDefault()}
 
-                    content={content}
+            
 
-                    setContent={setContent}
+                              onDrop={handleEditorDrop}
 
-                    wordCount={wordCount}
+            
 
-                    textareaRef={textareaRef}
+                          >
 
-                    onScroll={editorState.handleScroll}
+            
 
-                  />
+                              <EditorPane 
 
-              </div>
+            
 
+                                content={content}
 
+            
 
-                            <PreviewPane 
+                                setContent={setContent}
 
+            
 
+                                wordCount={wordCount}
 
-                              parsedBlocks={parsedBlocks}
+            
 
+                                textareaRef={textareaRef}
 
+            
 
-                              previewRef={previewRef}
+                                onScroll={editorState.handleScroll}
 
-
-
-                              onUpdateSlideConfig={handleUpdateSlideConfig}
-
-
-
-                              onReorderSlides={handleReorderSlides}
-
-
+            
 
                               />
 
+            
 
+                          </div>
 
-              
+            
 
-            </div>
+            
+
+            
+
+                          <PreviewPane 
+
+            
+
+                            parsedBlocks={parsedBlocks}
+
+            
+
+                            previewRef={previewRef}
+
+            
+
+                            onUpdateSlideConfig={handleUpdateSlideConfig}
+
+            
+
+                            onReorderSlides={handleReorderSlides}
+
+            
+
+                            />
+
+            
+
+                        </div>
+
+            
+
+            
 
           </main>
 

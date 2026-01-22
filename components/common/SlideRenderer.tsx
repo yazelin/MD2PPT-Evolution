@@ -91,12 +91,16 @@ export const SlideRenderer: React.FC<SlideRendererProps> = memo(({
       style={{ 
         width: `${width}px`, 
         height: `${finalHeight}px`, 
-        transform: `translate3d(0,0,0) scale(${scale})`, 
+        transform: `perspective(1px) scale(${scale}) translateZ(0)`, 
         transformOrigin: 'top left', 
         ...finalBgStyle,
         color: textColor, 
         fontFamily: theme.fonts.main,
-        willChange: 'transform'
+        textRendering: 'optimizeLegibility',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
       }}
     >
       {bgImage && <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: `url(${bgImage})` }}><div className="absolute inset-0 bg-black/40"></div></div>}
