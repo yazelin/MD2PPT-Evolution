@@ -19,15 +19,28 @@ import {
 export const CommandPalette: React.FC = () => {
   return (
     <KBarPortal>
-      <KBarPositioner className="z-[100] backdrop-blur-sm bg-stone-900/20">
-        <KBarAnimator className="w-full max-w-[600px] overflow-hidden rounded-2xl bg-[#1C1917] border border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.7)]">
-          <div className="p-4 border-b border-white/5">
+      <KBarPositioner className="z-[100] backdrop-blur-sm bg-stone-900/40 p-4 md:p-0">
+        <KBarAnimator className="w-full max-w-[640px] overflow-hidden rounded-2xl bg-[#1C1917] border border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-200">
+          <div className="p-5 border-b border-white/5 bg-white/[0.02]">
             <KBarSearch 
-              className="w-full bg-transparent text-white outline-none placeholder-stone-500 text-lg font-medium" 
-              placeholder="輸入指令或搜尋投影片..."
+              className="w-full bg-transparent text-white outline-none placeholder-stone-600 text-xl font-medium tracking-tight" 
+              placeholder="輸入指令執行操作..."
             />
           </div>
-          <RenderResults />
+          <div className="max-h-[450px] overflow-y-auto custom-scrollbar">
+            <RenderResults />
+          </div>
+          <div className="px-5 py-3 border-t border-white/5 flex items-center justify-between bg-black/20">
+            <div className="flex gap-4">
+              <span className="text-[9px] font-bold text-stone-500 flex items-center gap-1.5 uppercase tracking-widest">
+                <kbd className="px-1.5 py-0.5 rounded bg-stone-800 border border-white/5 text-stone-400">↑↓</kbd> 選擇
+              </span>
+              <span className="text-[9px] font-bold text-stone-500 flex items-center gap-1.5 uppercase tracking-widest">
+                <kbd className="px-1.5 py-0.5 rounded bg-stone-800 border border-white/5 text-stone-400">Enter</kbd> 執行
+              </span>
+            </div>
+            <span className="text-[9px] font-black text-[#EA580C] uppercase tracking-[0.2em] opacity-80">Command Center</span>
+          </div>
         </KBarAnimator>
       </KBarPositioner>
     </KBarPortal>
@@ -35,30 +48,36 @@ export const CommandPalette: React.FC = () => {
 };
 
 function RenderResults() {
-  const { results, rootActionId } = useMatches();
+  const { results } = useMatches();
 
   return (
     <KBarResults
       items={results}
       onRender={({ item, active }) =>
         typeof item === "string" ? (
-          <div className="px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 bg-stone-950/50">
+          <div className="px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#EA580C] bg-stone-950/80 sticky top-0 z-10 backdrop-blur-md border-b border-white/5">
             {item}
           </div>
         ) : (
           <div
-            className={`px-4 py-3 flex items-center justify-between cursor-pointer transition-colors duration-200 ${
+            className={`px-5 py-4 flex items-center justify-between cursor-pointer transition-all duration-200 relative group ${
               active 
-                ? "bg-[#EA580C]/10 border-l-4 border-[#EA580C] text-white" 
+                ? "bg-[#EA580C]/10 text-white" 
                 : "text-stone-400 hover:bg-white/5"
             }`}
           >
-            <div className="flex items-center gap-3">
-              {item.icon && <span className="shrink-0">{item.icon}</span>}
+            {active && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#EA580C] shadow-[0_0_15px_#EA580C]" />}
+            
+            <div className="flex items-center gap-4">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${active ? "bg-[#EA580C] text-white" : "bg-white/5 text-stone-500 group-hover:text-stone-300"}`}>
+                {item.icon || <div className="w-4 h-4 rounded-sm border border-current opacity-40" />}
+              </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold tracking-tight">{item.name}</span>
+                <span className={`text-[15px] font-bold tracking-tight ${active ? "text-white" : "text-stone-300"}`}>
+                  {item.name}
+                </span>
                 {item.subtitle && (
-                  <span className="text-[10px] opacity-60 font-medium truncate max-w-[300px]">
+                  <span className="text-[11px] opacity-50 font-medium truncate max-w-[350px] mt-0.5">
                     {item.subtitle}
                   </span>
                 )}
@@ -66,13 +85,17 @@ function RenderResults() {
             </div>
             
             {item.shortcut?.length ? (
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 {item.shortcut.map((sc) => (
                   <kbd 
                     key={sc} 
-                    className="px-2 py-1 rounded bg-stone-800 text-[10px] font-mono font-bold text-stone-500 border border-white/5"
+                    className={`px-2 py-1 rounded text-[10px] font-mono font-bold border transition-colors ${
+                      active 
+                        ? "bg-[#EA580C] border-orange-400 text-white shadow-lg shadow-orange-900/20" 
+                        : "bg-stone-800 border-white/5 text-stone-500"
+                    }`}
                   >
-                    {sc}
+                    {sc.toUpperCase()}
                   </kbd>
                 ))}
               </div>

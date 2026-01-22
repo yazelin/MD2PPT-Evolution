@@ -5,6 +5,16 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [0.14.4] - 2026-01-22
+
+### 新增 (Added)
+- **全域命令面板 (Command Palette)**:
+    - **鍵盤驅動工作流**: 實作 `Ctrl + K` (Windows/Linux) 或 `Cmd + K` (macOS) 喚起指令中心。
+    - **分層指令系統**: 支援嵌套子選單，將指令分類為「導航」、「佈局」、「元件」、「系統」與「匯出」。
+    - **動態投影片搜尋**: 自動偵測投影片內容並提供搜尋跳轉功能。
+    - **視覺優化**: 面板採用琥珀/石墨主題風格，具備高對比度、毛玻璃背景與精緻的動畫回饋。
+    - **全域實體快捷鍵**: 支援 `D+M` (深色模式)、`E+P` (匯出 PPTX) 等連續組合鍵操作。
+
 ## [0.14.3] - 2026-01-22
 
 ### 重大架構遷移 (Major Architecture Migration)
