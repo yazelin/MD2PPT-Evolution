@@ -183,16 +183,18 @@ export const PresenterConsole: React.FC<PresenterConsoleProps> = ({ slides, curr
   };
 
   const handleNextInternal = () => {
-    if (stateRef.current.currentIndex < slides.length - 1) {
-      const next = stateRef.current.currentIndex + 1;
+    const { currentIndex, slides } = stateRef.current;
+    if (currentIndex < slides.length - 1) {
+      const next = currentIndex + 1;
       setCurrentIndex(next);
       broadcastState(next, stateRef.current.isBlackout);
     }
   };
 
   const handlePrevInternal = () => {
-    if (stateRef.current.currentIndex > 0) {
-      const next = stateRef.current.currentIndex - 1;
+    const { currentIndex } = stateRef.current;
+    if (currentIndex > 0) {
+      const next = currentIndex - 1;
       setCurrentIndex(next);
       broadcastState(next, stateRef.current.isBlackout);
     }
