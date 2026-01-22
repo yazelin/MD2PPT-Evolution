@@ -39,3 +39,8 @@ This file tracks all major development tracks for MD2PPT-Evolution. Completed tr
 
 - [x] **Track: 企業級品牌系統 (Enterprise Brand System) 讓產出的簡報符合公司 CI，無需手動調整。**
     *Link: [./tracks/enterprise_brand_system_20260120/](./tracks/enterprise_brand_system_20260120/)*
+
+---
+
+- [~] **Track: 投影片拖拽重排 (Drag & Drop Reordering)**
+    *Link: [./tracks/slide_reordering_20260122/](./tracks/slide_reordering_20260122/)*

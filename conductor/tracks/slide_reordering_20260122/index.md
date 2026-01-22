@@ -1,4 +1,4 @@
-# Track presenter_mode_remote_20260121 Context
+# Track slide_reordering_20260122 Context
 
 - [Specification](./spec.md)
 - [Implementation Plan](./plan.md)

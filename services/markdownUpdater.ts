@@ -193,7 +193,53 @@ export const updateGlobalTheme = (content: string, themeId: string, meshColors?:
   const finalYaml = `---\n${newYamlLines.join('\n')}\n---`;
   
   // Reconstruct
-  slidesContent[0] = restOfContent ? `${finalYaml}\n\n${restOfContent}` : finalYaml;
+  return restOfContent ? `${finalYaml}\n\n${restOfContent}` : finalYaml;
 
   return slidesContent.map(s => s.trim()).join('\n\n===\n\n');
 };
+
+/**
+ * Reorders slides in a Markdown string.
+ * 
+ * @param content The full Markdown content
+ * @param fromIndex The original 0-based index of the slide
+ * @param toIndex The target 0-based index
+ * @returns Updated Markdown content
+ */
+export const reorderSlides = (content: string, fromIndex: number, toIndex: number): string => {
+  // 1. Split into sections by ===
+  // We use a regex that matches === at the start of a line
+  const slides = content.split(/^===+$/m).map(s => s.trim());
+
+  if (fromIndex < 0 || fromIndex >= slides.length || toIndex < 0 || toIndex >= slides.length) {
+    return content;
+  }
+
+  // 2. Identify and extract global YAML from the FIRST slide if it exists
+  let globalYaml = '';
+  let slidesData = [...slides];
+  
+  const firstSlide = slidesData[0];
+  const yamlMatch = firstSlide.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+  
+  if (yamlMatch) {
+    // Check if it's actually GLOBAL (meaning it's the very first thing in the file)
+    // Actually, in our architecture, slide 0 IS the global slide.
+    // If we want to keep it at the top, we need to strip it from its original content
+    // and re-attach it to whatever becomes the NEW slide 0.
+    globalYaml = yamlMatch[0];
+    slidesData[0] = firstSlide.replace(yamlMatch[0], '').trim();
+  }
+
+  // 3. Perform the reorder
+  const [movedSlide] = slidesData.splice(fromIndex, 1);
+  slidesData.splice(toIndex, 0, movedSlide);
+
+  // 4. Reconstruct with global YAML ALWAYS at the very top
+  if (globalYaml) {
+    slidesData[0] = `${globalYaml}\n\n${slidesData[0]}`.trim();
+  }
+
+  return slidesData.join('\n\n===\n\n');
+};
+

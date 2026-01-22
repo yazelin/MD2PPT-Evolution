@@ -1,0 +1,8 @@
+{
+  "track_id": "slide_reordering_20260122",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-22T09:50:00Z",
+  "updated_at": "2026-01-22T09:50:00Z",
+  "description": "投影片拖拽重排 (Drag & Drop Reordering) — 讓使用者在側欄、預覽區或演講者主控台透過拖移方式變更投影片順序，並即時更新 Markdown 原始碼。"
+}

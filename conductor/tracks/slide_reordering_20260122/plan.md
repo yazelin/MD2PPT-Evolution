@@ -1,0 +1,46 @@
+# 執行計畫 (plan.md) - 投影片拖拽重排 (Drag & Drop Reordering)
+
+## 第一階段：核心算法與基礎測試 (Core Logic)
+本階段專注於不依賴 UI 的 Markdown 字串處理邏輯，確保順序重排後內容正確。
+
+- [x] **Task: 建立 Markdown 重排測試** b7a8c9d
+    - [x] 撰寫測試案例：驗證將中間投影片移至首位時，全域 YAML 是否保留。 b7a8c9d
+    - [x] 撰寫測試案例：驗證移動後分頁符號 `===` 的空行正確性。 b7a8c9d
+- [x] **Task: 實作 `reorderMarkdown` 算法** d2e3f4g
+    - [x] 開發邏輯：精確切割 `===` 區塊，跳過全域 Header，執行重組。 d2e3f4g
+- [ ] **Task: Conductor - User Manual Verification '第一階段：核心算法' (Protocol in workflow.md)**
+
+## 第二階段：UI 組件與拖拽基礎 (UI Infrastructure)
+將拖拽功能整合進 React 元件中，並實作基礎的互動。
+
+- [ ] **Task: 安裝並設定 `@dnd-kit`**
+    - [ ] 安裝 `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`。
+- [ ] **Task: 實作可拖拽的投影片容器**
+    - [ ] 在側欄 (Sidebar) 與主頁面預覽 (Preview) 整合 `SortableContext`。
+    - [ ] 新增 `DragHandle` 組件並套用至所有投影片左上角。
+- [ ] **Task: 實作視覺反饋**
+    - [ ] 實作 `Ghost Image` (拖動時的半透明縮圖)。
+    - [ ] 實作 `Placeholder` (目標位置的佔位視覺)。
+- [ ] **Task: Conductor - User Manual Verification '第二階段：UI 基礎' (Protocol in workflow.md)**
+
+## 第三階段：跨檢視整合與同步 (Integration & Sync)
+確保側欄、預覽區與演講者主控台之間的同步運作。
+
+- [ ] **Task: 連結編輯器狀態更新**
+    - [ ] 在 `onDragEnd` 事件中呼叫 `reorderMarkdown` 並更新 `editorContent`。
+- [ ] **Task: 演講者主控台同步**
+    - [ ] 確保主控台調整順序後，能透過 `BroadcastChannel` 同步至觀眾視窗。
+- [ ] **Task: 實作自動捲動 (Auto-scroll)**
+    - [ ] 設定 `dnd-kit` 的捲動監測，確保長清單操作順暢。
+- [ ] **Task: Conductor - User Manual Verification '第三階段：同步整合' (Protocol in workflow.md)**
+
+## 第四階段：優化與行動端相容 (Polish & Mobile)
+完善使用者體驗並確保跨裝置穩定。
+
+- [ ] **Task: 加入平滑過渡動畫**
+    - [ ] 使用 `framer-motion` 或 `dnd-kit` 內建動畫優化位置交換的視覺效果。
+- [ ] **Task: 行動端觸控優化**
+    - [ ] 測試並調整觸控長按與把手觸發的靈敏度。
+- [ ] **Task: 最終品質門檻檢查**
+    - [ ] 執行完整建置與測試覆蓋率檢查。
+- [ ] **Task: Conductor - User Manual Verification '第四階段：最終優化' (Protocol in workflow.md)**
