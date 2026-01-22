@@ -14,10 +14,26 @@ import remarkDirective from 'remark-directive';
 import yaml from 'js-yaml';
 import { BlockType, ParsedBlock } from '../types';
 
+interface UnistNode {
+  type: string;
+  value?: string;
+  children?: UnistNode[];
+  position?: {
+    start: { line: number; column: number; offset: number };
+    end: { line: number; column: number; offset: number };
+  };
+  depth?: number; // heading
+  lang?: string; // code
+  ordered?: boolean; // list
+  url?: string; // image
+  alt?: string; // image
+  [key: string]: unknown;
+}
+
 /**
  * Helper: Recursively extract text content from any MDAST node.
  */
-const nodeToString = (node: any): string => {
+const nodeToString = (node: UnistNode): string => {
   if (node.value !== undefined) return node.value;
   if (node.children) return node.children.map(nodeToString).join('');
   return '';
@@ -55,7 +71,7 @@ const extractAttributes = (text: string): { content: string, metadata: any } => 
 /**
  * Mapper: Converts Remark AST nodes to MD2PPT ParsedBlocks
  */
-const mapNodeToBlock = (node: any, lineOffset: number, charOffset: number): ParsedBlock[] => {
+const mapNodeToBlock = (node: UnistNode, lineOffset: number, charOffset: number): ParsedBlock[] => {
   const blocks: ParsedBlock[] = [];
   const sourceLine = (node.position?.start?.line || 1) - 1 + lineOffset;
   const startIndex = (node.position?.start?.offset || 0) + charOffset;
@@ -75,7 +91,7 @@ const mapNodeToBlock = (node: any, lineOffset: number, charOffset: number): Pars
 
       if (node.children?.length === 1 && node.children[0].type === 'image') {
         const img = node.children[0];
-        blocks.push({ ...base, type: BlockType.IMAGE, content: img.url, metadata: { alt: img.alt } });
+        blocks.push({ ...base, type: BlockType.IMAGE, content: img.url || '', metadata: { alt: img.alt } });
         break;
       }
 
@@ -107,8 +123,8 @@ const mapNodeToBlock = (node: any, lineOffset: number, charOffset: number): Pars
     }
 
     case 'code':
-      if (node.lang === 'mermaid') blocks.push({ ...base, type: BlockType.MERMAID, content: node.value });
-      else blocks.push({ ...base, type: BlockType.CODE_BLOCK, content: node.value, metadata: { language: node.lang } });
+      if (node.lang === 'mermaid') blocks.push({ ...base, type: BlockType.MERMAID, content: node.value || '' });
+      else blocks.push({ ...base, type: BlockType.CODE_BLOCK, content: node.value || '', metadata: { language: node.lang } });
       break;
 
     case 'blockquote':
@@ -116,20 +132,26 @@ const mapNodeToBlock = (node: any, lineOffset: number, charOffset: number): Pars
       break;
 
     case 'list':
-      node.children.forEach((item: any) => {
-        const { content, metadata } = extractAttributes(nodeToString(item).trim());
-        blocks.push({
-          ...base,
-          type: node.ordered ? BlockType.NUMBERED_LIST : BlockType.BULLET_LIST,
-          content,
-          metadata
+      if (node.children) {
+        node.children.forEach((item: UnistNode) => {
+          const { content, metadata } = extractAttributes(nodeToString(item).trim());
+          blocks.push({
+            ...base,
+            type: node.ordered ? BlockType.NUMBERED_LIST : BlockType.BULLET_LIST,
+            content,
+            metadata
+          });
         });
-      });
+      }
       break;
 
     case 'table':
-      const rows = node.children.map((row: any) => row.children.map((cell: any) => nodeToString(cell)));
-      blocks.push({ ...base, type: BlockType.TABLE, content: '', tableRows: rows });
+      if (node.children) {
+        const rows = node.children.map((row: UnistNode) => 
+          row.children ? row.children.map((cell: UnistNode) => nodeToString(cell)) : []
+        );
+        blocks.push({ ...base, type: BlockType.TABLE, content: '', tableRows: rows });
+      }
       break;
 
     case 'thematicBreak':
@@ -147,18 +169,20 @@ const parseSingleSlide = async (markdown: string, lineOffset: number, charOffset
   const internalLineOffset = (leadingWhitespace.match(/\n/g) || []).length;
 
   const processor = unified().use(remarkParse).use(remarkGfm).use(remarkFrontmatter, ['yaml']);
-  const ast: any = processor.parse(trimmedMarkdown);
-  const transformedAst: any = await processor.run(ast);
+  const ast = processor.parse(trimmedMarkdown) as UnistNode;
+  const transformedAst = await processor.run(ast) as UnistNode;
 
   const rawBlocks: ParsedBlock[] = [];
   let slideMeta = {};
 
-  for (const node of transformedAst.children) {
-    if (node.type === 'yaml') {
-      try { slideMeta = yaml.load(node.value) as any; } catch (e) { console.error(e); }
-      continue;
+  if (transformedAst.children) {
+    for (const node of transformedAst.children) {
+      if (node.type === 'yaml' && node.value) {
+        try { slideMeta = yaml.load(node.value) as any; } catch (e) { console.error(e); }
+        continue;
+      }
+      rawBlocks.push(...mapNodeToBlock(node, lineOffset + internalLineOffset, charOffset + internalCharOffset));
     }
-    rawBlocks.push(...mapNodeToBlock(node, lineOffset + internalLineOffset, charOffset + internalCharOffset));
   }
 
   const finalBlocks: ParsedBlock[] = [];

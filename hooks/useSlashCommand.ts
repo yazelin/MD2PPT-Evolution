@@ -5,7 +5,7 @@
  * Licensed under the MIT License.
  */
 
-import { useState, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Heading1, Heading2, List, ListOrdered, 
   LayoutGrid, Layout, Quote, AlertCircle,

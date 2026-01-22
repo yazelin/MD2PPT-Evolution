@@ -50,7 +50,7 @@ export const VisualTweakerProvider: React.FC<{
       // By passing undefined range, handleTweakerUpdate will fallback to replaceContentByLine.
       const isTextType = state.blockType && [
         BlockType.HEADING_1, BlockType.HEADING_2, BlockType.HEADING_3, 
-        BlockType.PARAGRAPH, BlockType.QUOTE_BLOCK, BlockType.LIST_ITEM,
+        BlockType.PARAGRAPH, BlockType.QUOTE_BLOCK, BlockType.BULLET_LIST, BlockType.NUMBERED_LIST,
         BlockType.BULLET_LIST, BlockType.NUMBERED_LIST
       ].includes(state.blockType);
 

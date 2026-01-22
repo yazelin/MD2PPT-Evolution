@@ -46,5 +46,5 @@ export const HeadingRenderers: PreviewBlockRenderer[] = [
 ];
 
 export const registerCoreRenderers = () => {
-  HeadingRenderers.forEach(r => previewRendererRegistry.register(renderer));
+  HeadingRenderers.forEach(r => previewRendererRegistry.register(r));
 };

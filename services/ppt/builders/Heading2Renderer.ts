@@ -15,7 +15,7 @@ export const heading2Renderer: BlockRenderer = {
           x, y, w, h: 0.6,
           fontSize: options.fontSize || 32,
           bold: true,
-          color: textColor,
+          color: accentColor,
           fontFace: fontFace,
           align: align || 'left'
         });    

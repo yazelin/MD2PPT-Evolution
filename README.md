@@ -1,6 +1,6 @@
 # MD2PPT-EVOLUTION 🚀
 
-![Version](https://img.shields.io/badge/version-0.15.0-orange.svg)
+![Version](https://img.shields.io/badge/version-0.16.1-orange.svg)
 ...
 - **全域命令面板 (Command Palette)**: 按下 `Ctrl + K` 喚起，一站式執行跳轉、更換主題、切換深色模式與各類匯出操作。
 - **字體大小客製化 (Custom Font Sizing v0.15.0)**: 透過 Visual Tweaker 調整個別元素的字體大小，設定自動回寫至 Markdown 的 `{size=N}` 標籤，確保樣式可攜且多端一致。
@@ -238,10 +238,12 @@ npm run build
 - [x] **v0.14.2**: PWA 離線化支援。
 - [x] **v0.14.3**: Remark/Unified AST 解析引擎。
 - [x] **v0.14.4**: 全域命令面板 (Command Palette)。
+- [x] **v0.15.0**: 字體大小客製化 (Custom Font Sizing)。
+- [x] **v0.16.0**: 效能優化與架構重構 (Performance & Refactoring)。
 
 ## 🤝 貢獻 (Contributing)
 
-我們非常歡迎社群貢獻！如果您想新增佈局或修復 Bug，請查看 [CONTRIBUTING.md](CONTRIBUTING.md) (Coming Soon)。
+我們非常歡迎社群貢獻！如果您想新增佈局或修復 Bug，請查看 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 📄 授權 (License)
 

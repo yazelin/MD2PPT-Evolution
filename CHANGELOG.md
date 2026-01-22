@@ -5,6 +5,21 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [0.16.1] - 2026-01-22
+
+### 優化 (Optimization)
+- **核心效能優化 (Performance)**:
+    - **Context Memoization**: 對 `EditorContext` 進行了記憶化處理，避免每次狀態更新導致全應用無效重繪 (Re-render)，顯著提升打字與選單操作的流暢度。
+    - **命令列邏輯拆分**: 將龐大的 Command Palette 邏輯從主組件拆分至 `hooks/useEditorKBarActions`，降低組件複雜度並提升載入效能。
+
+### 程式碼品質 (Code Quality)
+- **型別安全強化 (Type Safety)**:
+    - **AST 引擎強型別化**: 全面移除 AST 解析層的 `any` 型別，導入標準化的 `UnistNode` 介面，大幅提升核心解析邏輯的穩定性。
+    - **Hook 介面補全**: 為新拆分的 Hook 補齊完整的 TypeScript 介面定義。
+
+### 測試 (Testing)
+- **穩定性測試**: 新增 `tests/markdownUpdaterStability.test.ts`，針對邊界情況（如混合分隔符、YAML 更新）進行壓力測試，確保編輯器操作的 robustness。
+
 ## [0.16.0] - 2026-01-22
 
 ### 技術債清理 (Technical Debt Cleanup)

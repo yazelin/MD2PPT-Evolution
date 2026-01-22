@@ -4,7 +4,7 @@
  * Licensed under the MIT License.
  */
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 import { useMarkdownEditor } from '../hooks/useMarkdownEditor';
 import { useDarkMode } from '../hooks/useDarkMode';
 
@@ -19,8 +19,13 @@ interface EditorProviderProps {
 }
 
 export const EditorProvider: React.FC<EditorProviderProps> = ({ children, editorState, darkModeState }) => {
+  const value = useMemo(() => ({
+    ...editorState,
+    ...darkModeState
+  }), [editorState, darkModeState]);
+
   return (
-    <EditorContext.Provider value={{ ...editorState, ...darkModeState }}>
+    <EditorContext.Provider value={value}>
       {children}
     </EditorContext.Provider>
   );

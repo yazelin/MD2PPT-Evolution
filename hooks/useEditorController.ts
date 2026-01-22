@@ -4,7 +4,7 @@
  * Licensed under the MIT License.
  */
 
-import { useState, useRef, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useMarkdownEditor } from './useMarkdownEditor';
 import { useDarkMode } from './useDarkMode';
 import { EditorActionService } from '../services/editorActionService';
