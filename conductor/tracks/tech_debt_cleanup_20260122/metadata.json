@@ -1,0 +1,8 @@
+{
+  "track_id": "tech_debt_cleanup_20260122",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-01-22T15:22:00Z",
+  "updated_at": "2026-01-22T15:22:00Z",
+  "description": "技術債清理：移除舊解析器與修復測試 (Technical Debt Cleanup) — 移除 services/markdownParser.ts 並修復因解析架構變更而失敗的測試套件。"
+}
