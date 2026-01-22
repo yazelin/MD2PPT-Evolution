@@ -3,21 +3,21 @@
 ## 第一階段：基礎架構與 kbar 整合 (Infrastructure)
 安裝依賴並建立命令面板的基礎組件與 Provider。
 
-- [~] **Task: 安裝並設定 `kbar`**
-    - [ ] 安裝 `kbar` 套件。
-    - [ ] 建立 `components/editor/CommandPalette.tsx` 封裝面板 UI。
-    - [ ] 在 `App.tsx` 或 `MarkdownEditor.tsx` 層級包裹 `KBarProvider`。
-- [ ] **Task: 建立基礎樣式與動畫**
-    - [ ] 實作符合專案風格（琥珀/石墨）的面板樣式。
-    - [ ] 加入毛玻璃背景效果。
-- [ ] **Task: Conductor - User Manual Verification '第一階段：基礎架構' (Protocol in workflow.md)**
+- [x] **Task: 安裝並設定 `kbar`** 72eb377
+    - [x] 安裝 `kbar` 套件。 72eb377
+    - [x] 建立 `components/editor/CommandPalette.tsx` 封裝面板 UI。 72eb377
+    - [x] 在 `App.tsx` 或 `MarkdownEditor.tsx` 層級包裹 `KBarProvider`。 72eb377
+- [x] **Task: 建立基礎樣式與動畫** 72eb377
+    - [x] 實作符合專案風格（琥珀/石墨）的面板樣式。 72eb377
+    - [x] 加入毛玻璃背景效果。 72eb377
+- [ ] **Task: Conductor - User Manual Verification '第一階段：基礎架構' (Protocol in workflow.md)** 72eb377
 
 ## 第二階段：指令註冊與邏輯串接 (Actions Registry)
 定義所有可執行的指令，並將其與現有的編輯器處理函式連結。
 
-- [ ] **Task: 實作系統控制指令**
+- [~] **Task: 實作系統控制指令**
     - [ ] 註冊「切換主題」、「切換語系」、「切換深色模式」指令。
-- [ ] **Task: 整合插入功能（與斜線選單同步）**
+- [~] **Task: 整合插入功能（與斜線選單同步）**
     - [ ] 註冊所有佈局（Grid, Two-col...）與元件（Chart, Table...）的插入指令。
 - [ ] **Task: 實作檔案與導航指令**
     - [ ] 註冊 PPTX/MD/Image 匯出指令。
