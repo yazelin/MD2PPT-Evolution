@@ -38,7 +38,7 @@ This file tracks all major development tracks for MD2PPT-Evolution. Completed tr
 - [x] **Track: 投影片拖拽重排 (Drag & Drop Reordering)**
     *Link: [./archive/slide_reordering_20260122/](./archive/slide_reordering_20260122/)*
 
----
-
 - [x] **Track: PWA (Progressive Web App) 離線化**
-    *Link: [./tracks/pwa_offline_20260122/](./tracks/pwa_offline_20260122/)*
+    *Link: [./archive/pwa_offline_20260122/](./archive/pwa_offline_20260122/)*
+
+---
