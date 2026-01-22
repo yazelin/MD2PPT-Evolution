@@ -12,10 +12,10 @@
 ## 第一階段：核心 AST 解析管線實作 (Core Pipeline)
 建立基礎的 Remark 解析鏈，並實作自定義插件。
 
-- [ ] **Task: 實作分頁 (===) 解析插件**
-    - [ ] 撰寫測試：驗證 AST 能夠正確識別 Thematic Break 並進行節點分群。
-    - [ ] 實作插件邏輯：將 MDAST 轉換為初步的投影片樹狀結構。
-- [ ] **Task: 實作指令 (Directive) 處理器**
+- [x] **Task: 實作分頁 (===) 解析插件** c612a21
+    - [x] 撰寫測試：驗證 AST 能夠正確識別 Thematic Break 並進行節點分群。 c612a21
+    - [x] 實作插件邏輯：將 MDAST 轉換為初步的投影片樹狀結構。 c612a21
+- [~] **Task: 實作指令 (Directive) 處理器**
     - [ ] 撰寫測試：驗證 `::: chart` 與 `:: right` 能被解析為 Directive 節點。
     - [ ] 實作屬性提取邏輯：將 JSON 配置從指令中正確解析。
 - [ ] **Task: Conductor - User Manual Verification '第一階段：核心管線' (Protocol in workflow.md)**
