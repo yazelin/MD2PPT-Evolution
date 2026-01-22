@@ -1,6 +1,6 @@
 # 執行計畫 (plan.md) - 投影片拖拽重排 (Drag & Drop Reordering)
 
-## 第一階段：核心算法與基礎測試 (Core Logic)
+## 第一階段：核心算法與基礎測試 (Core Logic) [checkpoint: 6bde63c]
 本階段專注於不依賴 UI 的 Markdown 字串處理邏輯，確保順序重排後內容正確。
 
 - [x] **Task: 建立 Markdown 重排測試** 1d3374c
@@ -8,7 +8,7 @@
     - [x] 撰寫測試案例：驗證移動後分頁符號 `===` 的空行正確性。 1d3374c
 - [x] **Task: 實作 `reorderMarkdown` 算法** 1d3374c
     - [x] 開發邏輯：精確切割 `===` 區塊，跳過全域 Header，執行重組。 1d3374c
-- [ ] **Task: Conductor - User Manual Verification '第一階段：核心算法' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification '第一階段：核心算法' (Protocol in workflow.md)** 6bde63c
 
 ## 第二階段：UI 組件與拖拽基礎 (UI Infrastructure)
 將拖拽功能整合進 React 元件中，並實作基礎的互動。
