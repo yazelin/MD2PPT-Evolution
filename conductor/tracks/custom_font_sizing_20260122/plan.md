@@ -14,11 +14,11 @@
 ## 第二階段：Markdown 更新器強化 (Persistence Logic)
 實作智慧回寫功能，確保 Visual Tweaker 的調整能精確反映到原始碼。
 
-- [~] **Task: 實作屬性標籤更新函式**
-    - [ ] 在 `services/markdownUpdater.ts` 新增 `updateElementAttribute`。
-    - [ ] 邏輯開發：自動偵測現有標籤並替換，或在末尾追加新標籤。
-- [ ] **Task: 建立回寫功能單元測試**
-    - [ ] 驗證不同元素（標題 vs 列表）插入標籤時的字串處理正確性。
+- [x] **Task: 實作屬性標籤更新函式** 870c03c
+    - [x] 在 `services/markdownUpdater.ts` 新增 `updateElementAttribute`。 870c03c
+    - [x] 邏輯開發：自動偵測現有標籤並替換，或在末尾追加新標籤。 870c03c
+- [x] **Task: 建立回寫功能單元測試** 870c03c
+    - [x] 驗證不同元素（標題 vs 列表）插入標籤時的字串處理正確性。 870c03c
 - [ ] **Task: Conductor - User Manual Verification '第二階段：回寫邏輯' (Protocol in workflow.md)**
 
 ## 第三階段：Tweaker UI 與即時預覽 (UI & Interaction)
