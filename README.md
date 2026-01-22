@@ -105,14 +105,6 @@ layout: two-column
 
 ---
 
-## 🗺️ 開發藍圖 (Roadmap)
-
-- [x] **v0.14.0**: 全域命令面板 (Command Palette)
-- [x] **v0.14.2**: PWA 離線化支援
-- [x] **v0.15.0**: 字體大小客製化 (Custom Font Sizing)
-- [x] **v0.16.0**: 效能優化與架構重構 (Performance & Refactoring)
-- [ ] **Future**: 更多生成式 AI 整合與雲端同步功能
-
 ## 🤝 貢獻 (Contributing)
 
 我們非常歡迎社群貢獻！如果您想新增佈局或修復 Bug，請查看 [CONTRIBUTING.md](CONTRIBUTING.md)。
