@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { saveAs } from 'file-saver';
-import { parseMarkdown } from '../services/markdownParser';
+import { parseMarkdownWithAST } from '../services/parser/ast';
 import { ParsedBlock, DocumentMeta } from '../services/types';
 import { INITIAL_CONTENT_ZH, INITIAL_CONTENT_EN } from '../constants/defaultContent';
 import { PRESET_THEMES, DEFAULT_THEME_ID } from '../constants/themes';
@@ -34,6 +34,8 @@ export const useEditorState = () => {
   const [activeThemeId, setActiveThemeId] = useState(() => {
     return localStorage.getItem('active_theme_id') || DEFAULT_THEME_ID;
   });
+
+  const [isParsing, setIsParsing] = useState(false);
 
   const [customThemeSettings, setCustomThemeSettings] = useState<Partial<PptTheme>>(() => {
     const saved = localStorage.getItem('custom_theme_settings');
@@ -77,14 +79,25 @@ export const useEditorState = () => {
 
   // Parsing & Auto-save (Debounced)
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
+      setIsParsing(true);
       try {
-        const { blocks, meta } = parseMarkdown(content);
+        const blocks = await parseMarkdownWithAST(content);
+        
+        // Extract Global Meta from Frontmatter
+        // Note: In SOM 2.0, we will move this logic into the parser itself.
+        // For now, maintain compatibility.
         setParsedBlocks(blocks);
-        setDocumentMeta(meta);
+        
+        // Simple meta extraction for now (we'll improve this in next step)
+        const metaBlock = blocks.find(b => b.type === 'HORIZONTAL_RULE' && b.metadata);
+        if (metaBlock) setDocumentMeta(metaBlock.metadata || {});
+
         localStorage.setItem('draft_content', content);
       } catch (e) {
         console.error("Markdown parsing error:", e);
+      } finally {
+        setIsParsing(false);
       }
     }, 300);
 

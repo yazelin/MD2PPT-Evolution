@@ -11,6 +11,7 @@ import remarkParse from 'remark-parse';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkDirective from 'remark-directive';
+import yaml from 'js-yaml';
 import { BlockType, ParsedBlock } from '../types';
 
 /**
@@ -101,13 +102,79 @@ const mapNodeToBlock = (node: any): ParsedBlock[] => {
 
 
 
-  const base = { sourceLine, startIndex, endIndex };
+    const base = { sourceLine, startIndex, endIndex };
 
 
 
-  switch (node.type) {
+  
 
-    case 'heading':
+
+
+    switch (node.type) {
+
+
+
+      case 'yaml':
+
+
+
+        try {
+
+
+
+          const metadata = yaml.load(node.value) as any;
+
+
+
+          blocks.push({
+
+
+
+            ...base,
+
+
+
+            type: BlockType.HORIZONTAL_RULE,
+
+
+
+            content: '',
+
+
+
+            metadata
+
+
+
+          });
+
+
+
+        } catch (e) {
+
+
+
+          console.error("YAML parse error in AST:", e);
+
+
+
+        }
+
+
+
+        break;
+
+
+
+  
+
+
+
+      case 'heading':
+
+
+
+  
 
       const headingType = 
 
