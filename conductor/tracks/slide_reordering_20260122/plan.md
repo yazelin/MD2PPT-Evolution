@@ -29,13 +29,13 @@
     - [x] 設定 `dnd-kit` 的捲動監測，確保長清單操作順暢。 930ecdb
 - [x] **Task: Conductor - User Manual Verification '第三階段：同步整合' (Protocol in workflow.md)** 930ecdb
 
-## 第四階段：優化與行動端相容 (Polish & Mobile)
+## 第四階段：優化與行動端相容 (Polish & Mobile) [checkpoint: 6bde63c]
 完善使用者體驗並確保跨裝置穩定。
 
-- [ ] **Task: 加入平滑過渡動畫**
-    - [ ] 使用 `framer-motion` 或 `dnd-kit` 內建動畫優化位置交換的視覺效果。
-- [ ] **Task: 行動端觸控優化**
-    - [ ] 測試並調整觸控長按與把手觸發的靈敏度。
-- [ ] **Task: 最終品質門檻檢查**
-    - [ ] 執行完整建置與測試覆蓋率檢查。
-- [ ] **Task: Conductor - User Manual Verification '第四階段：最終優化' (Protocol in workflow.md)**
+- [x] **Task: 加入平滑過渡動畫** 930ecdb
+    - [x] 使用 `framer-motion` 或 `dnd-kit` 內建動畫優化位置交換的視覺效果。 930ecdb
+- [x] **Task: 行動端觸控優化** 930ecdb
+    - [x] 測試並調整觸控長按與把手觸發的靈敏度。 930ecdb
+- [x] **Task: 最終品質門檻檢查** 930ecdb
+    - [x] 執行完整建置與測試覆蓋率檢查。 930ecdb
+- [x] **Task: Conductor - User Manual Verification '第四階段：最終優化' (Protocol in workflow.md)** 930ecdb

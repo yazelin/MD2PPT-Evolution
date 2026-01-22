@@ -34,6 +34,7 @@ import { useVisualTweaker } from '../../contexts/VisualTweakerContext';
 import { fileToBase64 } from '../../utils/imageUtils';
 import { SlideRenderer } from '../common/SlideRenderer';
 import { DragHandle } from './DragHandle';
+import { getContrastColor } from '../../utils/styleParser';
 
 interface PreviewPaneProps {
   parsedBlocks: ParsedBlock[];
@@ -44,10 +45,10 @@ interface PreviewPaneProps {
 
 const DESIGN_WIDTH = 1200;
 
-const SortableSlideCard: React.FC<{ 
-  slide: SlideObject; 
-  index: number; 
-  layout: { width: number; height: number }; 
+const SortableSlideCard: React.FC<{
+  slide: SlideObject;
+  index: number;
+  layout: { width: number; height: number };
   theme: PptTheme;
   globalBg?: string;
   onUpdateConfig?: (index: number, key: string, value: string) => void;
@@ -102,6 +103,10 @@ const SortableSlideCard: React.FC<{
   const transitionType = slide.config?.transition || 'none';
   const note = slide.notes;
 
+  // Calculate contrast color for the handle
+  const effectiveBg = slide.config?.background || theme.colors.background;
+  const contrastColor = getContrastColor(effectiveBg.startsWith('#') ? effectiveBg : `#${theme.colors.background}`);
+
   return (
     <div 
       ref={setNodeRef}
@@ -110,13 +115,6 @@ const SortableSlideCard: React.FC<{
       data-source-line={slide.sourceLine}
       data-block-type="BACKGROUND"
     >
-      <div className="absolute -left-12 top-0 flex flex-col items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-800 flex items-center justify-center text-xs font-black text-stone-500 border border-stone-300 dark:border-stone-700 shadow-sm">
-          {index + 1}
-        </div>
-        <DragHandle id={`slide-${index}`} />
-      </div>
-
       <div 
         ref={containerRef}
         onDragOver={(e) => { e.preventDefault(); setIsDropTarget(true); }}
@@ -124,12 +122,23 @@ const SortableSlideCard: React.FC<{
         onDrop={handleDrop}
         data-slide-capture
         className={`w-full shadow-[0_30px_60px_rgba(0,0,0,0.12)] relative overflow-hidden bg-[#E7E5E4] dark:bg-[#44403C] rounded-lg transition-all duration-500 ${
-          transitionType === 'fade' ? 'animate-in fade-in' : 
-          transitionType === 'slide' ? 'animate-in slide-in-from-right' : 
+          transitionType === 'fade' ? 'animate-in fade-in' :
+          transitionType === 'slide' ? 'animate-in slide-in-from-right' :
           transitionType === 'zoom' ? 'animate-in zoom-in' : ''
         } ${isDropTarget ? 'ring-4 ring-orange-500 scale-[1.01]' : ''}`} 
         style={{ aspectRatio: `${layout.width} / ${layout.height}` }}
       >
+        {/* Floating Controls Inside Slide */}
+        <div className="absolute top-4 left-4 z-40 flex flex-col items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div 
+            style={{ backgroundColor: contrastColor === '#FFFFFF' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.5)', color: contrastColor }}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black border border-white/10 shadow-sm backdrop-blur-sm"
+          >
+            {index + 1}
+          </div>
+          <DragHandle id={`slide-${index}`} contrastColor={contrastColor} className="backdrop-blur-sm" />
+        </div>
+
         <SlideRenderer 
           slide={slide} 
           theme={theme} 
@@ -139,7 +148,6 @@ const SortableSlideCard: React.FC<{
           scale={scale}
         />
       </div>
-
       {showNotes && note && (
         <div className="bg-amber-50 dark:bg-amber-900/10 border-l-4 border-amber-500 p-6 rounded-r-xl shadow-sm animate-in slide-in-from-top duration-300">
           <div className="flex items-center gap-2 mb-2 text-amber-600 dark:text-amber-400 font-black text-[10px] uppercase tracking-wider">

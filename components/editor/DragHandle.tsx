@@ -11,17 +11,25 @@ import { useSortable } from '@dnd-kit/sortable';
 interface DragHandleProps {
   id: string;
   className?: string;
+  contrastColor?: string;
 }
 
-export const DragHandle: React.FC<DragHandleProps> = ({ id, className = "" }) => {
+export const DragHandle: React.FC<DragHandleProps> = ({ id, className = "", contrastColor }) => {
   const { attributes, listeners, setNodeRef } = useSortable({ id });
+
+  const dynamicStyles = contrastColor ? {
+    color: contrastColor,
+    backgroundColor: contrastColor === '#FFFFFF' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.5)',
+    borderColor: contrastColor === '#FFFFFF' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+  } : {};
 
   return (
     <div
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className={`cursor-grab active:cursor-grabbing p-1.5 bg-white/90 dark:bg-stone-800/90 rounded shadow-sm border border-stone-200 dark:border-stone-700 hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600 transition-colors z-30 ${className}`}
+      style={dynamicStyles}
+      className={`cursor-grab active:cursor-grabbing p-1.5 rounded shadow-sm border transition-colors z-30 ${className}`}
       title="拖拽以重新排列投影片"
     >
       <GripVertical size={16} />
