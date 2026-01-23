@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     return {
       // 改用相對路徑，增加部署靈活性
-      base: './',
+      base: '/',
       server: {
         port: 3000,
         host: '0.0.0.0',
