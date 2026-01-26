@@ -4,7 +4,7 @@
  * Licensed under the MIT License.
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { saveAs } from 'file-saver';
 import { parseMarkdownWithAST } from '../services/parser/ast';
@@ -12,6 +12,7 @@ import { ParsedBlock, DocumentMeta } from '../services/types';
 import { INITIAL_CONTENT_ZH, INITIAL_CONTENT_EN } from '../constants/defaultContent';
 import { PRESET_THEMES, DEFAULT_THEME_ID } from '../constants/themes';
 import { PptTheme, BrandConfig } from '../services/types';
+import { useCTOSMessage } from './useCTOSMessage';
 
 const DEFAULT_BRAND_CONFIG: BrandConfig = {
   primaryColor: '#3b82f6',
@@ -51,6 +52,19 @@ export const useEditorState = () => {
   const [brandConfig, setBrandConfig] = useState<BrandConfig>(() => {
     const saved = localStorage.getItem('brand_config');
     return saved ? JSON.parse(saved) : DEFAULT_BRAND_CONFIG;
+  });
+
+  // CTOS PostMessage Integration
+  const handleCTOSLoadFile = useCallback((filename: string, fileContent: string) => {
+    console.log('[MD2PPT] 載入 CTOS 檔案:', filename);
+    setContent(fileContent);
+    // 清除 localStorage 草稿，避免下次開啟時載入舊內容
+    localStorage.removeItem('draft_content');
+  }, []);
+
+  useCTOSMessage({
+    appId: 'md2ppt',
+    onLoadFile: handleCTOSLoadFile
   });
 
   // Theme Logic
