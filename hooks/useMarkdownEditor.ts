@@ -16,11 +16,11 @@ import { ImageExportService } from '../services/imageExportService';
 
 export const useMarkdownEditor = () => {
   // 1. Core State (Content, Parsing, Language)
-  const { 
-    content, 
-    setContent, 
-    parsedBlocks, 
-    documentMeta, 
+  const {
+    content,
+    setContent,
+    parsedBlocks,
+    documentMeta,
     showNotes,
     toggleNotes,
     activeTheme,
@@ -31,10 +31,11 @@ export const useMarkdownEditor = () => {
     updateBrandConfig,
     saveBrandConfigToFile,
     loadBrandConfigFromFile,
-    language, 
-    toggleLanguage, 
-    resetToDefault, 
-    t 
+    language,
+    toggleLanguage,
+    resetToDefault,
+    t,
+    shareTokenState
   } = useEditorState();
 
   // 2. Auxiliary Logic
@@ -140,6 +141,9 @@ export const useMarkdownEditor = () => {
     toggleLanguage,
     
     // Helpers
-    t
+    t,
+
+    // ShareToken State (for password dialog)
+    shareTokenState
   };
 };

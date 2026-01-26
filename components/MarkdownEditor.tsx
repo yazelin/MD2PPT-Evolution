@@ -21,6 +21,7 @@ import { BrandSettingsModal } from './editor/BrandSettingsModal';
 import { AiPromptModal } from './editor/AiPromptModal';
 import { TweakerOverlay } from './tweaker/TweakerOverlay';
 import { CommandPalette } from './editor/CommandPalette';
+import { ShareTokenDialog } from './common/ShareTokenDialog';
 import Footer from './Footer';
 
 const MarkdownEditor: React.FC = () => {
@@ -41,7 +42,8 @@ const MarkdownEditor: React.FC = () => {
     updateBrandConfig,
     saveBrandConfigToFile,
     loadBrandConfigFromFile,
-    parsedBlocks
+    parsedBlocks,
+    shareTokenState
   } = editorState;
 
   const {
@@ -91,6 +93,18 @@ const MarkdownEditor: React.FC = () => {
               {isThemePanelOpen && <ThemePanel onClose={() => setIsThemePanelOpen(false)} onInsertColor={handleInsertColor} onApplyPalette={handleApplyPalette} />}
               <BrandSettingsModal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)} config={brandConfig} onUpdate={updateBrandConfig} onExport={saveBrandConfigToFile} onImport={loadBrandConfigFromFile} />
               <AiPromptModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
+              {shareTokenState && (
+                <ShareTokenDialog
+                  isOpen={shareTokenState.showPasswordDialog}
+                  isLoading={shareTokenState.isLoading}
+                  error={shareTokenState.error}
+                  password={shareTokenState.password}
+                  attempts={shareTokenState.attempts}
+                  onPasswordChange={shareTokenState.setPassword}
+                  onSubmit={shareTokenState.submitPassword}
+                  onClose={shareTokenState.closeDialog}
+                />
+              )}
               <div className="flex flex-1 overflow-hidden">
                 <div className="w-[45%] flex flex-col" onDragOver={(e) => e.preventDefault()} onDrop={handleEditorDrop}>
                   <EditorPane content={content} setContent={setContent} wordCount={wordCount} textareaRef={textareaRef} onScroll={editorState.handleScroll} />

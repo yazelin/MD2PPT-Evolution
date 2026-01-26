@@ -13,6 +13,7 @@ import { INITIAL_CONTENT_ZH, INITIAL_CONTENT_EN } from '../constants/defaultCont
 import { PRESET_THEMES, DEFAULT_THEME_ID } from '../constants/themes';
 import { PptTheme, BrandConfig } from '../services/types';
 import { useCTOSMessage } from './useCTOSMessage';
+import { useShareToken } from './useShareToken';
 
 const DEFAULT_BRAND_CONFIG: BrandConfig = {
   primaryColor: '#3b82f6',
@@ -65,6 +66,18 @@ export const useEditorState = () => {
   useCTOSMessage({
     appId: 'md2ppt',
     onLoadFile: handleCTOSLoadFile
+  });
+
+  // ShareToken Integration (載入分享連結內容)
+  const handleShareTokenLoadContent = useCallback((fileContent: string, filename?: string) => {
+    console.log('[MD2PPT] 載入分享內容:', filename);
+    setContent(fileContent);
+    // 清除 localStorage 草稿
+    localStorage.removeItem('draft_content');
+  }, []);
+
+  const shareTokenState = useShareToken({
+    onLoadContent: handleShareTokenLoadContent
   });
 
   // Theme Logic
@@ -193,6 +206,8 @@ export const useEditorState = () => {
     language,
     toggleLanguage,
     resetToDefault,
-    t
+    t,
+    // ShareToken State (for password dialog)
+    shareTokenState
   };
 };
