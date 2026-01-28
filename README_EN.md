@@ -4,9 +4,21 @@
 
 **The ultimate tool for converting Markdown notes into professional PowerPoint presentations.**
 
+<!-- Social & Status -->
+[![GitHub stars](https://img.shields.io/github/stars/eric861129/MD2PPT-Evolution?style=social)](https://github.com/eric861129/MD2PPT-Evolution/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/eric861129/MD2PPT-Evolution?style=social)](https://github.com/eric861129/MD2PPT-Evolution/network/members)
 ![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Build](https://img.shields.io/github/actions/workflow/status/eric861129/MD2PPT-Evolution/deploy.yml)
+
+<!-- Tech Stack -->
+![React](https://img.shields.io/badge/React-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-%23646CFF.svg?style=flat&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=flat&logo=tailwind-css&logoColor=white)
+
+<!-- Pro-tip: Insert a 10-second demo GIF here to significantly increase conversion rates -->
+<!-- ![Demo GIF](https://your-demo-url.com/demo.gif) -->
 
 **MD2PPT-Evolution** is a web-based presentation tool designed for developers, educators, and technical writers. It allows you to focus on content creation (Markdown) while automatically handling layout and design (PPTX). No installation required—start creating directly in your browser.
 
