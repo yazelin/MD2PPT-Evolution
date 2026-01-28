@@ -16,8 +16,8 @@ const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     return {
-      // 改用相對路徑，增加部署靈活性
-      base: './',
+      // 明確指定部署子路徑
+      base: '/MD2PPT-Evolution/',
       server: {
         port: 3000,
         host: '0.0.0.0',

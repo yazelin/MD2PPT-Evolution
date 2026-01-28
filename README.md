@@ -44,7 +44,7 @@
 ## 🚀 快速上手 (Quick Start)
 
 ### 線上體驗
-[點此立即試用 Demo](https://eric861129.github.io/MD2PPT-Evolution/) 
+[點此立即試用 Demo](https://huangchiyu.com/MD2PPT-Evolution/) 
 
 ### 基礎語法範例
 

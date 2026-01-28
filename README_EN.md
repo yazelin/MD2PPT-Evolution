@@ -44,7 +44,7 @@
 ## 🚀 Quick Start
 
 ### Online Demo
-[Try it now](https://eric861129.github.io/MD2PPT-Evolution/) _(Link will be active after deployment)_
+[Try it now](https://huangchiyu.com/MD2PPT-Evolution/) _(Link will be active after deployment)_
 
 ### Basic Syntax Example
 

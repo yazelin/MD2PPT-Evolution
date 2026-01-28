@@ -23,6 +23,17 @@ const Footer: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* GoatCounter Visitor Counter */}
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+          <span className="text-[10px] font-bold text-slate-400 dark:text-stone-500 uppercase tracking-tighter">Views</span>
+          <img 
+            src="https://eric861129.goatcounter.com/counter/TOTAL.svg" 
+            alt="Views" 
+            className="h-3 opacity-60 dark:invert dark:contrast-200"
+            style={{ minWidth: '20px' }}
+          />
+        </div>
+
         {/* GitHub Star Link */}
         <a 
           href="https://github.com/eric861129/MD2PPT-Evolution" 
