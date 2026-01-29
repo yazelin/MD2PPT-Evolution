@@ -10,15 +10,15 @@ import { readFileSync } from 'fs';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { applyOverrides } from './vite.overrides';
 
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
-    // Vercel 環境用 '/'，GitHub Pages 用 '/MD2PPT-Evolution/'
-    const isVercel = process.env.VERCEL === '1';
-    return {
-      base: isVercel ? '/' : '/MD2PPT-Evolution/',
+    return applyOverrides({
+      // 明確指定部署子路徑
+      base: '/MD2PPT-Evolution/',
       server: {
         port: 3000,
         host: '0.0.0.0',
@@ -122,5 +122,5 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-    };
+    });
 });
