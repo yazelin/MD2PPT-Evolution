@@ -50,16 +50,40 @@ jobs:
           # 刪除已存在的分支（如果有）
           git push origin --delete $BRANCH_NAME 2>/dev/null || true
           git checkout -b $BRANCH_NAME
-          git merge upstream/main --no-edit
-          git push origin $BRANCH_NAME
-          sleep 5  # 等待 GitHub 同步
-          gh pr create \
-            --title "🔄 Sync with upstream $(date +%Y-%m-%d)" \
-            --body "自動同步上游更新。
+
+          # 嘗試自動合併，處理衝突情況
+          if git merge upstream/main --no-edit; then
+            PR_BODY="自動同步上游更新。
 
           ## 更新內容
           包含上游 ${{ steps.check.outputs.commits }} 個新的 commit。
 
-          請檢查後合併。" \
+          請檢查後合併。"
+          else
+            # 有衝突：標記衝突檔案，提交後建立 PR 讓人工處理
+            CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
+            git add -A
+            git commit --no-edit -m "sync: merge upstream with conflicts
+
+          The following files have conflicts and need manual resolution:
+          $CONFLICTED_FILES"
+            PR_BODY="⚠️ **自動合併遇到衝突，需要手動解決。**
+
+          ## 衝突檔案
+          \`\`\`
+          $CONFLICTED_FILES
+          \`\`\`
+
+          ## 更新內容
+          包含上游 ${{ steps.check.outputs.commits }} 個新的 commit。
+
+          請在本地 checkout 此分支解決衝突後合併。"
+          fi
+
+          git push origin $BRANCH_NAME
+          sleep 5  # 等待 GitHub 同步
+          gh pr create \
+            --title "🔄 Sync with upstream $(date +%Y-%m-%d)" \
+            --body "$PR_BODY" \
             --base main \
             --head $BRANCH_NAME
