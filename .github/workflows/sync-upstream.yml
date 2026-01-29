@@ -41,33 +41,38 @@ jobs:
             echo "沒有新的更新"
           fi
 
-      - name: Create sync branch and PR
+      - name: Sync upstream changes
         if: steps.check.outputs.commits > 0
         env:
           GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
-          BRANCH_NAME="sync-upstream-$(date +%Y%m%d)"
-          # 刪除已存在的分支（如果有）
-          git push origin --delete $BRANCH_NAME 2>/dev/null || true
-          git checkout -b $BRANCH_NAME
-
-          # 嘗試自動合併，處理衝突情況
+          # 嘗試在 main 上直接合併
           if git merge upstream/main --no-edit; then
-            PR_BODY="自動同步上游更新。
-
-          ## 更新內容
-          包含上游 ${{ steps.check.outputs.commits }} 個新的 commit。
-
-          請檢查後合併。"
+            echo "✅ 無衝突，直接推送到 main"
+            git push origin main
           else
-            # 有衝突：標記衝突檔案，提交後建立 PR 讓人工處理
+            # 有衝突：abort，改用分支 + PR
+            git merge --abort
+
+            BRANCH_NAME="sync-upstream-$(date +%Y%m%d)"
+            git push origin --delete $BRANCH_NAME 2>/dev/null || true
+            git checkout -b $BRANCH_NAME
+
+            # 再次 merge，這次保留衝突標記
+            git merge upstream/main --no-edit || true
             CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
             git add -A
             git commit --no-edit -m "sync: merge upstream with conflicts
 
           The following files have conflicts and need manual resolution:
           $CONFLICTED_FILES"
-            PR_BODY="⚠️ **自動合併遇到衝突，需要手動解決。**
+
+            git push origin $BRANCH_NAME
+            sleep 5
+            gh pr create \
+              --title "🔄 Sync with upstream $(date +%Y-%m-%d) - 需要手動解決衝突" \
+              --body "$(cat <<EOF
+          ⚠️ **自動合併遇到衝突，需要手動解決。**
 
           ## 衝突檔案
           \`\`\`
@@ -77,13 +82,9 @@ jobs:
           ## 更新內容
           包含上游 ${{ steps.check.outputs.commits }} 個新的 commit。
 
-          請在本地 checkout 此分支解決衝突後合併。"
+          請在本地 checkout 此分支解決衝突後合併。
+          EOF
+          )" \
+              --base main \
+              --head $BRANCH_NAME
           fi
-
-          git push origin $BRANCH_NAME
-          sleep 5  # 等待 GitHub 同步
-          gh pr create \
-            --title "🔄 Sync with upstream $(date +%Y-%m-%d)" \
-            --body "$PR_BODY" \
-            --base main \
-            --head $BRANCH_NAME
