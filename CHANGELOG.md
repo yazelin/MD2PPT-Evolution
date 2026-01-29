@@ -5,6 +5,17 @@
 格式基於 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)，
 並遵循 [語義化版本 (Semantic Versioning)](https://semver.org/spec/v2.0.0.html)。
 
+## [1.1.0] - 2026-01-28
+
+### 🚀 部署與效能 (Deployment & Analytics)
+- **自定義網域支援 (Custom Domain)**: 
+    - 遷移部署至 `huangchiyu.com/MD2PPT-Evolution/`。
+    - 更新所有 Metadata、Open Graph、Twitter Card 及 Sitemap 網址。
+    - 修正 `vite.config.ts` 中的 `base` 路徑以支援子目錄部署。
+- **數據分析遷移 (Analytics)**:
+    - 移除 CountAPI 並全面遷移至 **GoatCounter** (`eric861129.goatcounter.com`)。
+    - 具備隱私保護且更詳盡的流量統計。
+
 ## [1.0.0] - 2026-01-22
 
 ### 🎉 正式發布 (Official Release)

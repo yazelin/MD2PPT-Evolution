@@ -4,9 +4,21 @@
 
 **將 Markdown 筆記轉化為專業 PowerPoint 簡報的終極工具。**
 
+<!-- Social & Status -->
+[![GitHub stars](https://img.shields.io/github/stars/eric861129/MD2PPT-Evolution?style=social)](https://github.com/eric861129/MD2PPT-Evolution/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/eric861129/MD2PPT-Evolution?style=social)](https://github.com/eric861129/MD2PPT-Evolution/network/members)
 ![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Build](https://img.shields.io/github/actions/workflow/status/eric861129/MD2PPT-Evolution/deploy.yml)
+
+<!-- Tech Stack -->
+![React](https://img.shields.io/badge/React-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-%23646CFF.svg?style=flat&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=flat&logo=tailwind-css&logoColor=white)
+
+<!-- 建議：在此處插入一個 10秒左右的操作演示 GIF，能大幅提升轉換率 -->
+<!-- ![Demo GIF](https://your-demo-url.com/demo.gif) -->
 
 **MD2PPT-Evolution** 是一個基於 Web 的簡報製作工具，專為開發者、講師與技術寫作者設計。它讓您專注於內容創作（Markdown），並自動處理排版設計（PPTX）。無需安裝任何軟體，打開瀏覽器即可開始創作。
 
@@ -32,7 +44,7 @@
 ## 🚀 快速上手 (Quick Start)
 
 ### 線上體驗
-[點此立即試用 Demo](https://eric861129.github.io/MD2PPT-Evolution/) 
+[點此立即試用 Demo](https://huangchiyu.com/MD2PPT-Evolution/) 
 
 ### 基礎語法範例
 
