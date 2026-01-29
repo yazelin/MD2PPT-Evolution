@@ -41,37 +41,89 @@ jobs:
             echo "沒有新的更新"
           fi
 
-      - name: Sync upstream changes
+      - name: Setup Node.js
         if: steps.check.outputs.commits > 0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Attempt merge
+        id: merge
+        if: steps.check.outputs.commits > 0
+        run: |
+          if git merge upstream/main --no-edit; then
+            echo "result=clean" >> $GITHUB_OUTPUT
+          else
+            echo "result=conflict" >> $GITHUB_OUTPUT
+            git merge --abort
+          fi
+
+      - name: Build verification
+        id: build
+        if: steps.merge.outputs.result == 'clean'
+        run: |
+          npm ci
+          if npm run build; then
+            echo "result=pass" >> $GITHUB_OUTPUT
+          else
+            echo "result=fail" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push to main (merge clean + build pass)
+        if: steps.build.outputs.result == 'pass'
+        run: |
+          echo "✅ Merge 無衝突且 build 通過，直接推送到 main"
+          git push origin main
+
+      - name: Revert and create PR (build failed)
+        if: steps.build.outputs.result == 'fail'
         env:
           GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
-          # 嘗試在 main 上直接合併
-          if git merge upstream/main --no-edit; then
-            echo "✅ 無衝突，直接推送到 main"
-            git push origin main
-          else
-            # 有衝突：abort，改用分支 + PR
-            git merge --abort
+          # Revert merge，回到乾淨狀態
+          git reset --hard HEAD~1
 
-            BRANCH_NAME="sync-upstream-$(date +%Y%m%d)"
-            git push origin --delete $BRANCH_NAME 2>/dev/null || true
-            git checkout -b $BRANCH_NAME
+          BRANCH_NAME="sync-upstream-$(date +%Y%m%d)"
+          git push origin --delete $BRANCH_NAME 2>/dev/null || true
+          git checkout -b $BRANCH_NAME
+          git merge upstream/main --no-edit
 
-            # 再次 merge，這次保留衝突標記
-            git merge upstream/main --no-edit || true
-            CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
-            git add -A
-            git commit --no-edit -m "sync: merge upstream with conflicts
+          git push origin $BRANCH_NAME
+          sleep 5
+          gh pr create \
+            --title "🔄 Sync upstream $(date +%Y-%m-%d) - build 失敗需檢查" \
+            --body "$(cat <<'PREOF'
+          ⚠️ **自動合併無衝突，但 build 失敗。**
+
+          上游的更新導致 build 無法通過，請檢查後合併。
+          包含上游 ${{ steps.check.outputs.commits }} 個新的 commit。
+          PREOF
+          )" \
+            --base main \
+            --head $BRANCH_NAME
+
+      - name: Create PR (merge conflict)
+        if: steps.merge.outputs.result == 'conflict'
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          BRANCH_NAME="sync-upstream-$(date +%Y%m%d)"
+          git push origin --delete $BRANCH_NAME 2>/dev/null || true
+          git checkout -b $BRANCH_NAME
+
+          git merge upstream/main --no-edit || true
+          CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
+          git add -A
+          git commit --no-edit -m "sync: merge upstream with conflicts
 
           The following files have conflicts and need manual resolution:
           $CONFLICTED_FILES"
 
-            git push origin $BRANCH_NAME
-            sleep 5
-            gh pr create \
-              --title "🔄 Sync with upstream $(date +%Y-%m-%d) - 需要手動解決衝突" \
-              --body "$(cat <<EOF
+          git push origin $BRANCH_NAME
+          sleep 5
+          gh pr create \
+            --title "🔄 Sync upstream $(date +%Y-%m-%d) - 需要手動解決衝突" \
+            --body "$(cat <<PREOF
           ⚠️ **自動合併遇到衝突，需要手動解決。**
 
           ## 衝突檔案
@@ -83,8 +135,7 @@ jobs:
           包含上游 ${{ steps.check.outputs.commits }} 個新的 commit。
 
           請在本地 checkout 此分支解決衝突後合併。
-          EOF
+          PREOF
           )" \
-              --base main \
-              --head $BRANCH_NAME
-          fi
+            --base main \
+            --head $BRANCH_NAME
