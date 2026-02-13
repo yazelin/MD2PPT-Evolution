@@ -8,12 +8,14 @@ import { useState, useEffect, useCallback } from 'react';
 
 // CTOS API 端點
 const CTOS_API_BASE = 'https://ching-tech.ddns.net/ctos';
+const TRIAL_API_BASE = 'https://ching-tech.ddns.net/trial';
 
 interface ShareTokenState {
   isLoading: boolean;
   showPasswordDialog: boolean;
   error: string | null;
   token: string | null;
+  isTrial: boolean;
 }
 
 interface UseShareTokenOptions {
@@ -31,7 +33,8 @@ export const useShareToken = (options: UseShareTokenOptions) => {
     isLoading: false,
     showPasswordDialog: false,
     error: null,
-    token: null
+    token: null,
+    isTrial: false
   });
 
   const [password, setPassword] = useState('');
@@ -43,16 +46,19 @@ export const useShareToken = (options: UseShareTokenOptions) => {
     const shareToken = params.get('shareToken');
 
     if (shareToken) {
-      console.log('[MD2PPT] 檢測到 shareToken:', shareToken);
+      const isTrial = params.has('trial');
+      console.log('[MD2PPT] 檢測到 shareToken:', shareToken, isTrial ? '(trial)' : '');
       setState(prev => ({
         ...prev,
         token: shareToken,
+        isTrial,
         showPasswordDialog: true
       }));
 
-      // 清除 URL 中的 shareToken 參數，避免重複處理
+      // 清除 URL 中的參數，避免重複處理
       const url = new URL(window.location.href);
       url.searchParams.delete('shareToken');
+      url.searchParams.delete('trial');
       window.history.replaceState({}, '', url.toString());
     }
   }, []);
@@ -64,8 +70,9 @@ export const useShareToken = (options: UseShareTokenOptions) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      const apiBase = state.isTrial ? TRIAL_API_BASE : CTOS_API_BASE;
       const response = await fetch(
-        `${CTOS_API_BASE}/api/public/${state.token}?password=${encodeURIComponent(password)}`,
+        `${apiBase}/api/public/${state.token}?password=${encodeURIComponent(password)}`,
         {
           method: 'GET',
           headers: {
@@ -122,7 +129,7 @@ export const useShareToken = (options: UseShareTokenOptions) => {
         error: '網路錯誤，請稍後再試'
       }));
     }
-  }, [state.token, password, onLoadContent]);
+  }, [state.token, state.isTrial, password, onLoadContent]);
 
   // 關閉對話框
   const closeDialog = useCallback(() => {
